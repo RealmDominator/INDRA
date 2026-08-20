@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+eggs/
+*.egg
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# Node.js / React
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp
+.pnp.js
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite3
+
+# ML artifacts (large files)
+ml/models/*.pkl
+ml/models/*.joblib
+ml/models/*.h5
+
+# Data (large files — seed data is tracked, raw/processed are not)
+data/raw/*
+data/processed/*
+data/historical/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/historical/.gitkeep
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
+
+# Build outputs
+frontend/build/
+frontend/dist/
+backend/dist/
