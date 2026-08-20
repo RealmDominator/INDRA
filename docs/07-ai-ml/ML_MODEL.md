@@ -3,6 +3,10 @@
 > Source: PETRAS Analysis §10; INDRA Master Report §5, §18, §19
 >
 > **Revision:** Post-review corrections. Risk scale frozen to 0.0–1.0 internal / 0–100 display. Weight conflict resolved.
+>
+> **Phase boundary (frozen):**
+> - **Phase 1:** Weighted deterministic risk engine — explainable, no training required
+> - **Phase 2 candidate:** XGBoost disruption-probability model — NOT implemented in Phase 1
 
 ---
 

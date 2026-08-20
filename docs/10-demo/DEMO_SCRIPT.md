@@ -155,7 +155,7 @@ If live data sources fail during demo:
 | Question | Honest Answer |
 |---|---|
 | "Is this real-time AIS data?" | "No. We use historical route baselines and are explicit about this in the UI." |
-| "Did you train any model?" | "Phase 1 uses explainable rule-based risk scoring. The architecture supports drop-in ML models for Phase 2. [If XGBoost was built: We also trained an XGBoost classifier on ACLED/EIA historical data — here are the evaluation metrics.]" |
+| "Did you train any model?" | "Phase 1 uses a weighted deterministic risk engine — every component is visible and explainable. Training a custom ML model from scratch in 4 days would not produce reliable enough labels to be defensible. The architecture is ML-ready: a Phase 2 XGBoost disruption-probability model is the documented next step, using ACLED/EIA historical data." |
 | "The AI is just calling an LLM?" | "The LLM handles event extraction from unstructured text — what it's good at. Risk scoring uses deterministic formulas, procurement uses LP optimization, scenarios use parametric models. The hybrid approach is more reliable than 'LLM does everything.'" |
 | "How is this different from Bloomberg?" | "Bloomberg provides raw data and news. INDRA connects geopolitical disruption to India-specific refinery constraints and procurement actions — the compatibility matrix, SPR integration, and procurement optimization layer don't exist in Bloomberg." |
 | "Are these numbers real?" | "Events come from GDELT/ACLED/OFAC. Refinery data from PPAC. SPR data from ISPRL. Risk scores, supply gaps, and procurement rankings are calculated — labeled as DERIVED. Scenario impacts are modelled — labeled as ESTIMATED." |

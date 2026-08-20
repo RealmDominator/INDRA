@@ -3,6 +3,8 @@
 > This document describes how INDRA manages AI models for two distinct purposes:
 > 1. **Development-agent models** — AI models used by the development team/agents to build and maintain the project
 > 2. **Application LLM** — The AI model embedded within INDRA itself for event extraction and explanation
+>
+> **Revision:** Benchmark candidate list updated to reflect current approved model pool. Final selection remains NOT SELECTED.
 
 ---
 
@@ -106,21 +108,33 @@ When the pipeline is functional, benchmark candidate models on representative IN
 
 #### Candidate Models for Benchmarking
 
-Based on the available model landscape, the following are candidates for the application LLM role:
+> **Status: NOT SELECTED.** The following are candidates to evaluate once the pipeline is functional. No model from this list is the current implementation.
 
-| Model | Provider | Potential Fit |
-|---|---|---|
-| GPT-4o-mini / GPT-4.1-mini | OpenAI | Low cost, good structured output |
-| Claude Haiku / Claude Sonnet | Anthropic | Good extraction quality |
-| Gemini Flash | Google | Low cost, fast |
-| Nemotron 3 Nano / Lightning | NVIDIA | Open model, potentially self-hosted |
-| GLM 5.2 (smaller variants) | Zhipu | Fast, cost-effective |
-| Other approved models | Various | Only after explicit evaluation |
+Candidates are drawn from the project's approved model pool. Access via OpenRouter where direct API is unavailable.
+
+| Model | Access | Priority | Notes |
+|---|---|---|---|
+| **GPT-5.6 Terra** | Direct / OpenRouter | HIGH | Strong structured-output reasoning; evaluate for extraction accuracy |
+| **GPT-5.6 Luna** | Direct / OpenRouter | HIGH | Faster and cheaper variant of Terra; primary cost-efficiency candidate |
+| **Kimi K2.6** | Direct / OpenRouter | HIGH | Large context; good for long articles with multiple entities |
+| **GLM 5.2** | Direct / OpenRouter | MEDIUM | Fast, cost-effective; evaluate structured output reliability |
+| **MiniMax M3** | Direct / OpenRouter | MEDIUM | Agentic strength; evaluate for multi-step extraction pipeline |
+| **Nemotron 3 Super** | OpenRouter / self-host | MEDIUM | Open frontier model; evaluate as free/self-hosted candidate |
+| **Nemotron 3 Nano / Lightning** | OpenRouter / self-host | HIGH | Primary low-latency candidate; best fit for high-frequency event extraction |
+| **Other OpenRouter free candidates** | OpenRouter | LOW | Evaluate any suitable free-tier models available at benchmark time |
+| **Claude Haiku / Claude Sonnet** | Anthropic (optional) | REFERENCE | Quality/accuracy reference benchmark only; not the target deployment model |
+
+**Selection rule:** A model is eligible for the application LLM role only if it passes the structured-output reliability benchmark (≥90% valid JSON) and achieves the highest weighted score across all five evaluation criteria. Claude is included as a reference ceiling, not a deployment target.
+
+**Excluded from consideration:**
+- Models requiring paid commercial tiers that are not already available in the approved pool
+- Models with no OpenRouter or direct API access
+- Models not explicitly added to this list through a documented evaluation
 
 ### Selection Timeline
 
 1. Build the LLM abstraction layer (implementation step)
-2. Implement at least two provider backends (e.g., OpenAI + Anthropic)
+2. Implement at least two provider backends from the candidate list above
 3. Create the benchmark dataset (50 curated articles with ground-truth extractions)
 4. Run benchmarks
 5. Select based on results

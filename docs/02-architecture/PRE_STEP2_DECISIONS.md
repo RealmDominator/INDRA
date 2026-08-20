@@ -202,13 +202,15 @@
 
 These decisions were identified during the correction process and must be resolved during the Architecture Freeze (Step 2).
 
-### U-1: NetworkX vs SQL Joins for Supply Graph
+### ~~U-1: NetworkX vs SQL Joins for Supply Graph~~ — RESOLVED
 
-**Question:** Is NetworkX actually needed, or can simple SQL joins (routes → ports → corridors) handle all Phase 1 queries?
+**Decision:** NetworkX is confirmed for Phase 1 with precisely defined responsibilities:
+- Graph traversal: identify affected refineries, disrupted routes, alternative paths
+- Reachability queries: can supplier X reach refinery Y without passing through corridor Z?
 
-**Context:** The current scenario engine uses fixed-share arithmetic (e.g., `hormuz_share = 0.42`), not graph traversal. NetworkX adds a dependency. If the scenario engine only needs fixed shares from `refinery_supply_mix`, SQL joins may be sufficient.
+SQL joins remain insufficient for these traversal queries. NetworkX is built in-memory from PostgreSQL at runtime. PostgreSQL remains the persistent source of truth.
 
-**Decision needed:** Use NetworkX OR replace with SQL joins. This affects dependency management and scenario engine implementation.
+See `SYSTEM_ARCHITECTURE.md §5a` and `SCENARIO_ENGINE.md — NetworkX / PostgreSQL / Arithmetic Boundary`.
 
 ---
 

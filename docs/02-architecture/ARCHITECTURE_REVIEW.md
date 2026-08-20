@@ -447,7 +447,7 @@ The Phase 1 approach (weighted rule-based scoring) is **correct and defensible.*
 3. Claiming "AI-powered" when the AI is just one LLM extraction call
 4. Not being able to explain what the rule-based weights represent
 
-**Recommendation:** KEEP Phase 1 as rule-based. If time permits on Day 4, train a minimal XGBoost on whatever ACLED/EIA historical data is available. **Do not claim ML unless the evaluation is documented.**
+**Decision (post-review, now authoritative):** Phase 1 risk engine is the **weighted deterministic formula** — not XGBoost. XGBoost is documented as the **Phase 2 ML candidate**, using ACLED/EIA historical data with proper temporal cross-validation. Do not attempt to train XGBoost during Phase 1. The architecture is ML-ready (interface-based engine abstraction) so Phase 2 can drop in without architectural rework.
 
 ---
 

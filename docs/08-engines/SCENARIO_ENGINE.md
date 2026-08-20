@@ -4,7 +4,7 @@
 >
 > The scenario engine is deterministic and parametric. No LLM or ML model is involved in scenario computation.
 >
-> **Revision:** Post-review corrections. Added data semantic classification, provenance tracking, refinery_supply_mix reference.
+> **Revision:** Post-review corrections. Added data semantic classification, provenance tracking, refinery_supply_mix reference. NetworkX graph traversal role explicitly defined.
 
 ---
 
@@ -116,38 +116,60 @@ Scenario multipliers should be calibrated against historical disruption data:
 
 ```
 1. DISRUPTION APPLIED
-   → Mark corridor/supplier as disrupted at specified severity
-   
+   [Arithmetic] Mark corridor/supplier as disrupted at specified severity
+
 2. AFFECTED SUPPLIER FLOWS
-   → Identify suppliers whose routes pass through disrupted corridor
-   → Calculate volume loss per supplier: supplier_volume × (capacity_reduction_pct / 100)
+   [NetworkX] Traverse graph: identify all suppliers whose routes pass through
+              the disrupted corridor (supplier → route → corridor traversal)
+   [Arithmetic] Calculate volume loss per supplier:
+              supplier_volume × (capacity_reduction_pct / 100)
 
 3. ROUTE CAPACITY REDUCED
-   → For each affected route: available_capacity *= (1 - capacity_reduction_pct / 100)
-   → Identify alternate routes
+   [NetworkX] Traverse graph: find all routes passing through the disrupted
+              corridor; mark those routes as capacity-reduced
+   [NetworkX] Find alternative paths: identify feasible routes from affected
+              suppliers to destination ports that avoid the disrupted corridor
+   [Arithmetic] For each affected route:
+              available_capacity *= (1 - capacity_reduction_pct / 100)
 
 4. REFINERY INTAKE REDUCED
-   → For each refinery dependent on affected routes:
-     → Look up crude grade dependencies via refinery_supply_mix table
-     → Calculate feedstock shortfall based on compatibility and share
-     → Check if compatible alternative crude grades exist via non-disrupted routes
+   [NetworkX] Traverse graph: identify all refineries downstream of disrupted
+              routes (port → refinery edges)
+   [PostgreSQL] Look up crude grade dependencies via refinery_supply_mix table
+   [Arithmetic] Calculate feedstock shortfall based on compatibility and share
+   [NetworkX] Check reachability: do compatible alternative crude grades
+              exist via non-disrupted routes?
 
 5. INVENTORY BURN ESTIMATED
-   → For affected refineries:
-     → days_to_minimum = current_inventory / (normal_intake - disrupted_intake)
+   [Arithmetic] For affected refineries:
+              days_to_minimum = current_inventory / (normal_intake - disrupted_intake)
 
 6. NATIONAL SUPPLY GAP
-   → total_gap = Σ(refinery_shortfalls)
-   
+   [Arithmetic] total_gap = Σ(refinery_shortfalls)
+
 7. SPR BRIDGE REQUIREMENT
-   → required_spr = gap that cannot be covered by alternative procurement
-   → days_bridged = available_spr / daily_gap
-   → remaining_reserve = total_spr - drawdown
+   [Arithmetic] required_spr = gap that cannot be covered by alternative procurement
+              days_bridged = available_spr / daily_gap
+              remaining_reserve = total_spr - drawdown
 
 8. COST IMPACT
-   → additional_cost = price_impact × volume × duration_factor
-   → freight_cost = (disrupted_freight - normal_freight) × affected_volume
+   [Arithmetic] additional_cost = price_impact × volume × duration_factor
+              freight_cost = (disrupted_freight - normal_freight) × affected_volume
 ```
+
+---
+
+## NetworkX / PostgreSQL / Arithmetic Boundary
+
+The scenario engine operates in three distinct layers. Each is responsible for a different type of work:
+
+| Layer | Component | What it does in the scenario pipeline |
+|---|---|---|
+| **Graph traversal** | NetworkX (in-memory) | Answers *which entities are affected*: which refineries downstream, which routes disrupted, which alternative paths exist |
+| **Persistent data** | PostgreSQL | Source of truth for all entity attributes: capacities, shares, compatibility, SPR levels, corridor risk scores |
+| **Arithmetic calculation** | Scenario Engine (Python) | Computes *how much impact*: supply gap, volume loss, days-to-critical, cost impact, SPR bridge requirement |
+
+> **The scenario engine does not traverse the supply graph itself.** It calls the NetworkX layer to get the list of affected refineries and feasible alternative routes, then applies the documented arithmetic formulas to those results.
 
 ---
 

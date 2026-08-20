@@ -194,7 +194,7 @@ See [AI_PIPELINE.md](../07-ai-ml/AI_PIPELINE.md) for LLM output schema and extra
 |---|---|---|
 | Event extraction | LLM (abstracted provider) | Convert news articles to structured event JSON |
 | Risk scoring | Weighted formula (deterministic) | Calculate corridor/supplier/route risk from event features |
-| Supply graph | NetworkX | Model India's supply network as a computational graph |
+| Supply graph | NetworkX | Graph traversal: reachability, path analysis, disruption propagation (see §5a below) |
 
 **Phase 1:** Rule-based weighted scoring. Architecture supports drop-in ML models (Phase 2).
 
@@ -204,11 +204,62 @@ See [AI_PIPELINE.md](../07-ai-ml/AI_PIPELINE.md) for LLM boundaries and [ML_MODE
 
 | Engine | Technology | Input | Output |
 |---|---|---|---|
-| Scenario Engine | Python (parametric) | Disruption type, severity, duration, corridor | Supply gap, affected refineries, days-to-critical, cost impact |
+| Scenario Engine | Python (parametric) | Disruption type, severity, duration, corridor + NetworkX-derived affected entities | Supply gap, affected refineries, days-to-critical, cost impact |
 | Procurement Engine | scipy.optimize / PuLP | Suppliers × routes × prices × risk × crude grade compatibility | Ranked procurement options with cost/risk tradeoff |
 | SPR Engine | Python (deterministic) | Supply gap, reserve levels, drawdown rate | Recommended drawdown, remaining reserve, days bridged, uncovered gap |
 
 See [SCENARIO_ENGINE.md](../08-engines/SCENARIO_ENGINE.md) and [OPTIMIZATION.md](../08-engines/OPTIMIZATION.md).
+
+### 5a. Supply Graph Layer (NetworkX)
+
+NetworkX models India's crude oil supply network as an in-memory directed graph. It is used for **graph traversal and connectivity queries only** — not for numerical calculation, risk scoring, or optimization.
+
+#### Graph Structure
+
+```
+Nodes:  Supplier | Port (origin) | Corridor | Port (destination) | Refinery
+Edges:  Supplier → OriginPort → Corridor → DestinationPort → Refinery
+        (weighted by: route capacity, corridor risk score, transit days)
+```
+
+The graph is **built at runtime from PostgreSQL** (the persistent source of truth) and rebuilt when the entity dataset changes. It is not stored separately.
+
+#### What NetworkX IS responsible for in Phase 1
+
+| Operation | Description |
+|---|---|
+| **Affected refinery identification** | Given a disrupted corridor/route, traverse the graph to find all refineries downstream of that corridor |
+| **Alternative route discovery** | Find feasible paths from supplier → refinery that do NOT pass through the disrupted corridor(s) |
+| **Reachability check** | Determine whether a supplier can reach a specific refinery via any non-disrupted path |
+| **Supplier–route–port–refinery traversal** | Traverse the full supply chain to determine which supplier–route combinations serve a given refinery |
+| **Disruption propagation input** | Provide the list of affected entities (refineries, routes, suppliers) that the Scenario Engine then uses for arithmetic calculation |
+
+#### What NetworkX is NOT responsible for
+
+| Task | Correct component |
+|---|---|
+| Calculating risk scores | Risk Engine (weighted formula) |
+| Computing supply gaps or volume loss | Scenario Engine (parametric arithmetic) |
+| Optimizing procurement allocation | Procurement Engine (scipy LP / ranking) |
+| Storing entity relationships | PostgreSQL (source of truth) |
+| Calculating SPR bridge requirements | SPR Engine (deterministic arithmetic) |
+
+#### PostgreSQL / NetworkX Boundary
+
+```
+PostgreSQL (source of truth)
+    stores: corridors, routes, ports, suppliers, refineries, supply_mix
+          ↓ loaded at startup / corridor-state-change
+NetworkX in-memory graph
+    answers: "which refineries are reachable from corridor X?"
+             "which alternative routes exist if corridor Y is disrupted?"
+          ↓ returns affected entity lists
+Scenario Engine (Python arithmetic)
+    computes: supply_gap = affected_volume × disruption_pct × duration
+              days_until_critical, cost_impact, SPR bridge requirement
+```
+
+The Scenario Engine **does not traverse the graph itself** — it receives the graph query results as structured lists and applies the documented arithmetic formulas.
 
 ### 6. Backend (FastAPI)
 

@@ -41,14 +41,14 @@ Do not create synthetic data and present it as real-world data. If seed data is 
 
 ## Rule 5: Never Represent Simulated Data as Live Data
 
-Every data element displayed in the UI must carry its data-classification tag:
-- `LIVE` — currently fetched from external source
-- `RECENT` — updated on schedule (daily/weekly)
-- `HISTORICAL` — static reference data from public sources
-- `DERIVED` — calculated from other data
-- `SIMULATED` — generated for scenario/demo purposes
+Every data element displayed in the UI must carry its data-semantic tag:
+- `OBSERVED` — directly fetched from an external source (EIA price, GDELT event, OFAC sanctions)
+- `DERIVED` — calculated from observed values using a documented formula (risk score, supply gap)
+- `HISTORICAL_CALIBRATED` — parameter derived from analysis of historical events (PPAC import share, price impact multiplier)
+- `ASSUMED` — configuration or user assumption not derived from data (freight multiplier, risk weight)
+- `SIMULATED` — synthetic state generated for scenario/demo purposes
 
-Never display a `SIMULATED` value without the tag. Never claim "real-time" for data that is historical or simulated.
+Never display a `SIMULATED` value without the tag. Never claim "real-time" for data that is HISTORICAL_CALIBRATED or ASSUMED.
 
 ## Rule 6: Never Fabricate ML Metrics
 
@@ -175,7 +175,8 @@ These are explicitly Phase 2/3 concerns. Solving them now wastes hackathon time.
 ```
 ✅ DO:
    - Use real data sources (GDELT, ACLED, EIA, OFAC, RBI, PPAC)
-   - Label every data point with its classification
+   - Label every data point with its data-semantic tag:
+     OBSERVED / DERIVED / HISTORICAL_CALIBRATED / ASSUMED / SIMULATED
    - Show evidence trails for recommendations
    - Use deterministic formulas for quantitative outputs
    - Use the LLM for extraction and explanation only
