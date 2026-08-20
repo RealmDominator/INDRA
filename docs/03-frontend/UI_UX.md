@@ -1,6 +1,8 @@
 # INDRA — UI/UX Specification
 
 > Source: PETRAS Analysis §16, §21; INDRA Master Report §10, §21
+>
+> **Revision:** Post-review corrections. Risk scores display on 0–100 scale. Data badges updated to semantic classification. Evidence panel uses provenance chain.
 
 ---
 
@@ -17,10 +19,11 @@
 ## Design Principles
 
 1. **Information density over decoration** — These are professional decision-makers. Prioritize data clarity over aesthetic flourishes.
-2. **Evidence-first** — Every score, recommendation, and calculation must be inspectable. No unexplained numbers.
-3. **Data classification visible** — Every data element must show whether it is LIVE, RECENT, HISTORICAL, DERIVED, or SIMULATED.
+2. **Evidence-first** — Every score, recommendation, and calculation must be inspectable via the provenance chain. No unexplained numbers.
+3. **Data semantic visible** — Every data element must show its semantic classification: OBSERVED, DERIVED, HISTORICAL_CALIBRATED, ASSUMED, or SIMULATED.
 4. **Crisis-appropriate** — Risk levels must be immediately scannable. Red = urgent. Green = normal.
 5. **Progressive disclosure** — Summary → detail → evidence → source. Don't overwhelm the first view.
+6. **Risk scores display 0–100** — All risk/severity/confidence values shown in the UI use the 0–100 display scale (converted from 0.0–1.0 internal).
 
 ---
 
@@ -58,7 +61,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  INDRA — India Energy Disruption Monitor                    │
-│  Data Status: LIVE / RECENT / ESTIMATED                     │
+│  Data Status: OBSERVED / DERIVED / ASSUMED                   │
 │  Last Updated: [timestamp]                                  │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
@@ -188,9 +191,9 @@ WHY?
 
 CONFIDENCE: 0.72
 DATA FRESHNESS:
-  Geopolitical: 10 min ago (LIVE)
-  Prices: today (RECENT)
-  Import structure: PPAC FY2024-25 (HISTORICAL)
+  Geopolitical: 10 min ago (OBSERVED)
+  Prices: today (OBSERVED)
+  Import structure: PPAC FY2024-25 (HISTORICAL_CALIBRATED)
 ```
 
 ---
@@ -236,22 +239,22 @@ Source: ISPRL official data (capacity). Current levels are estimates unless veri
 
 ---
 
-## Real vs Simulated Data Indicators
+## Data Semantic Indicators
 
-Every data element in the UI must carry a visual classification tag:
+Every data element in the UI must carry a visual semantic tag:
 
 | Tag | Color | Meaning |
 |---|---|---|
-| `LIVE` | Green badge | Currently fetched from external source |
-| `RECENT` | Blue badge | Updated within last 24 hours |
-| `HISTORICAL` | Gray badge | Static reference data from public sources |
-| `DERIVED` | Orange badge | Calculated from other data |
-| `SIMULATED` | Yellow/amber badge with ⚠ | Generated for scenario/demo purposes |
+| `OBSERVED` | Green badge | Directly fetched from external source (EIA price, GDELT event) |
+| `DERIVED` | Blue badge | Calculated from observed values (risk score, supply gap) |
+| `HISTORICAL_CALIBRATED` | Gray badge | Parameter derived from historical analysis (price impact, share %) |
+| `ASSUMED` | Orange badge | Configuration assumption (freight multiplier, risk weight) |
+| `SIMULATED` | Yellow/amber badge with ⚠ | Synthetic state for scenario/demo (demo fixtures, scenario disruption) |
 
 These tags should be:
 - Small but visible next to data values
 - Consistent across all pages
-- Filterable if appropriate (e.g., "show only live data")
+- Filterable if appropriate
 
 ---
 

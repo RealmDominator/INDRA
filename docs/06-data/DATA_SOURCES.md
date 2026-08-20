@@ -3,18 +3,20 @@
 > Source: PETRAS Analysis §6, §7; INDRA Master Report §7
 >
 > Every data source used by INDRA must be classified, documented, and its limitations acknowledged.
+>
+> **Revision:** Post-review corrections. Updated classification to data semantic system. Added price/FX asynchronous architecture.
 
 ---
 
-## Source Classification Framework
+## Source Classification Framework (Data Semantic)
 
-| Classification | Definition | UI Label | Example |
+| Classification | Definition | UI Badge | Example |
 |---|---|---|---|
-| **LIVE** | Data fetched from an external API/feed that updates in real-time or near-real-time | `LIVE` (green badge) | GDELT 15-minute events, OFAC sanctions updates |
-| **RECENT / PERIODIC** | Data updated on a fixed schedule (daily, weekly) | `RECENT` (blue badge) | EIA daily prices, RBI daily FX, ACLED weekly events |
-| **HISTORICAL / SEEDED** | Static reference data from public sources, loaded once | `HISTORICAL` (gray badge) | PPAC import structure, refinery capacities, SPR locations |
-| **DERIVED** | Calculated from other data within INDRA | `DERIVED` (orange badge) | Risk scores, supply gaps, days of coverage, cost premiums |
-| **SIMULATED** | Generated for scenario/demo purposes; does not represent current reality | `SIMULATED` (amber badge + ⚠) | Scenario shocks, perturbed supply flows, demo vessel positions |
+| **OBSERVED** | Data directly fetched from an external API/feed | Green badge | EIA crude prices, GDELT events, OFAC sanctions, RBI FX rate |
+| **DERIVED** | Calculated from observed values using a documented formula | Blue badge | Risk scores, supply gaps, INR prices, procurement rankings |
+| **HISTORICAL_CALIBRATED** | Parameter derived from analysis of historical events | Gray badge | PPAC import shares, price impact multipliers, freight ratios |
+| **ASSUMED** | Configuration/user assumption not derived from data | Orange badge | Risk weights, compatibility estimates, freight multiplier |
+| **SIMULATED** | Synthetic state generated for scenario/demo purposes | Amber badge + ⚠ | Demo fixture events, scenario disruptions |
 
 ---
 
@@ -243,6 +245,25 @@ Source: ISPRL official website, MoPNG reports.
 The system must maintain a `data_sources` table that tracks:
 - Last successful fetch timestamp
 - Current status (ACTIVE, STALE, ERROR, UNAVAILABLE)
-- Classification (LIVE, RECENT, HISTORICAL)
+- Update frequency
 
-This information must be accessible via the `/status/data-sources` API endpoint and displayed in the UI.
+This information must be accessible via the `/health` API endpoint.
+
+---
+
+## Price / FX Asynchronous Architecture
+
+Commodity prices (EIA) and FX rates (RBI) are ingested independently into separate database tables:
+
+| Source | Table | Polling Frequency |
+|---|---|---|
+| EIA API | `commodity_prices` | Daily |
+| RBI API | `fx_rates` | Daily |
+
+**INR price derivation rule:**
+1. Take the commodity price record with `source_timestamp` = T₁
+2. Find the FX rate with the nearest `source_timestamp` ≤ T₁ (nearest-valid-prior rule)
+3. Compute: `price_inr = price_usd × fx_rate`
+4. Record both source timestamps in the evidence trail
+
+This is a **query-time calculation**, not a stored column. The previous design using a PostgreSQL GENERATED column has been removed because EIA and RBI data arrive asynchronously at different timestamps.

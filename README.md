@@ -32,19 +32,22 @@ INDRA is a hackathon MVP that demonstrates one complete, explainable decision lo
 ## High-Level Architecture
 
 ```
-External Data Sources (GDELT, ACLED, OFAC, EIA, RBI, PPAC, RSS)
+External Data Sources (GDELT, ACLED, OFAC, EIA, RBI, RSS)
         ↓
-Python Ingestion Layer (APScheduler)
+Python Ingestion Layer (APScheduler + httpx)
         ↓
-Validation / Normalization (Pydantic, RapidFuzz)
+Validation / Normalization (Pydantic)
+        ↓
+LLM Event Extraction → Entity Resolution (entity_aliases + RapidFuzz)
         ↓
 ┌─────────────────────┬─────────────────┬──────────────────┐
-│ LLM Event Extraction│  Risk Engine    │  Supply Graph    │
-│                     │  (Rules-based)  │  (NetworkX)      │
+│ Risk Engine        │  Supply Graph    │  Corridors        │
+│ (Rules-based)      │  (NetworkX)      │  (first-class)    │
 └─────────┬───────────┴────────┬────────┴─────────┬────────┘
           └────────────────────┼──────────────────┘
                                ↓
                      PostgreSQL (single DB)
+                     + evidence_records (provenance)
                                ↓
           ┌────────────────────┼────────────────────┐
           ↓                    ↓                    ↓
@@ -144,17 +147,17 @@ INDRA/
 └── deployment/                        # Deployment configuration
 ```
 
-## Data Honesty Policy
+## Data Semantic Policy
 
-INDRA enforces a strict data-transparency contract. Every data element displayed in the UI must be classified as one of:
+INDRA enforces a strict data-transparency contract. Every data element displayed in the UI must carry a semantic classification:
 
-| Classification | Meaning | UI Label |
+| Classification | Meaning | UI Badge |
 |---|---|---|
-| **LIVE** | Currently fetched from external source | `LIVE` |
-| **RECENT / PERIODIC** | Updated on a schedule (daily/weekly) | `RECENT` |
-| **HISTORICAL / SEEDED** | Static reference data from public sources | `HISTORICAL` |
-| **DERIVED** | Calculated from other data (risk scores, gaps) | `DERIVED` |
-| **SIMULATED** | Generated for scenario/demo purposes | `SIMULATED` |
+| **OBSERVED** | Directly fetched from external source | Green |
+| **DERIVED** | Calculated from observed values | Blue |
+| **HISTORICAL_CALIBRATED** | Parameter derived from historical analysis | Gray |
+| **ASSUMED** | Configuration/user assumption | Orange |
+| **SIMULATED** | Generated for scenario/demo purposes | Amber + ⚠ |
 
 **Rules:**
 - Never represent simulated data as live data
@@ -221,6 +224,5 @@ Key rules:
 
 ---
 
-**Hackathon:** PSB Cybersecurity, Fraud & AI Hackathon 2026
-**Problem Statement:** AI-Driven Energy Supply Chain Resilience / Problem Statement 1
+**Problem Statement:** AI-Driven Energy Supply Chain Resilience
 **Phase 1 Deadline:** 23 August 2026, 4:00 PM IST

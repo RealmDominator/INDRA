@@ -3,6 +3,8 @@
 > Source: PETRAS Analysis §13; INDRA Master Report §15
 >
 > The scenario engine is deterministic and parametric. No LLM or ML model is involved in scenario computation.
+>
+> **Revision:** Post-review corrections. Added data semantic classification, provenance tracking, refinery_supply_mix reference.
 
 ---
 
@@ -105,6 +107,8 @@ Scenario multipliers should be calibrated against historical disruption data:
 | COVID demand crash (2020) | ✅ | Price spike/crash calibration |
 
 > **Critical:** Show calibration data to judges. This is the difference between a credible model and a "random numbers generator."
+>
+> All calibration values carry data_semantic = **HISTORICAL_CALIBRATED**.
 
 ---
 
@@ -124,8 +128,9 @@ Scenario multipliers should be calibrated against historical disruption data:
 
 4. REFINERY INTAKE REDUCED
    → For each refinery dependent on affected routes:
-     → Calculate feedstock shortfall
-     → Check crude compatibility with alternate suppliers
+     → Look up crude grade dependencies via refinery_supply_mix table
+     → Calculate feedstock shortfall based on compatibility and share
+     → Check if compatible alternative crude grades exist via non-disrupted routes
 
 5. INVENTORY BURN ESTIMATED
    → For affected refineries:
@@ -235,23 +240,50 @@ Outputs:
       "uncovered_gap_mmt": 0
     }
   },
-  "data_classification": "DERIVED",
-  "assumptions_source": "EIA historical calibration, PPAC import structure"
+  "assumptions": [
+    {"name": "india_daily_import_mmt", "value": 0.56, "data_semantic": "HISTORICAL_CALIBRATED", "source": "PPAC annual import data"},
+    {"name": "hormuz_share", "value": 0.42, "data_semantic": "HISTORICAL_CALIBRATED", "source": "PPAC import-by-source FY2024-25"},
+    {"name": "price_impact_per_barrel", "value": 5.0, "data_semantic": "HISTORICAL_CALIBRATED", "source": "EIA Gulf War II / Houthi data"},
+    {"name": "freight_multiplier", "value": 1.4, "data_semantic": "ASSUMED", "source": "Cape/Hormuz distance ratio estimate"},
+    {"name": "spr_total_capacity", "value": 5.33, "data_semantic": "OBSERVED", "source": "ISPRL official data"}
+  ],
+  "data_semantic": "DERIVED"
 }
 ```
 
+> **REMOVED from MVP:** `gdp_impact_estimate` — GDP impact estimation requires macroeconomic modeling beyond this system's scope.
+
 ---
 
-## Distinguishing Formulas from Assumptions
+## Data Semantic Classification for Scenario Values
 
-| Element | Type | Label |
-|---|---|---|
-| India daily import rate | Derived from PPAC data | HISTORICAL/DERIVED |
-| Hormuz share percentage | Derived from PPAC source data | HISTORICAL |
-| Freight multiplier (3.2x for Cape) | Assumption calibrated from historical data | ASSUMPTION |
-| Price impact ($15/bbl) | Assumption calibrated from Gulf War II EIA data | ASSUMPTION |
-| SPR capacity | ISPRL official data | HISTORICAL |
-| Supply gap formula | Deterministic calculation | FORMULA |
-| Days-to-critical formula | Deterministic calculation | FORMULA |
+| Element | Data Semantic | Label | Source |
+|---|---|---|---|
+| India daily import rate | HISTORICAL_CALIBRATED | Derived from PPAC data | PPAC annual report |
+| Hormuz share percentage | HISTORICAL_CALIBRATED | Derived from PPAC source data | PPAC FY2024-25 |
+| Russia share percentage | HISTORICAL_CALIBRATED | Derived from PPAC source data | PPAC FY2024-25 |
+| Freight multiplier (3.2x for Cape) | ASSUMED | Configuration assumption | Distance ratio estimate |
+| Price impact ($15/bbl) | HISTORICAL_CALIBRATED | Calibrated from historical data | EIA Gulf War II data |
+| SPR capacity | OBSERVED | ISPRL official data | ISPRL website |
+| Supply gap formula | DERIVED | Deterministic calculation | Documented formula |
+| Days-to-critical formula | DERIVED | Deterministic calculation | Documented formula |
+| Refinery exposure | DERIVED | Calculated from refinery_supply_mix | refinery_supply_mix table |
 
 Every scenario output must make this distinction clear in the evidence panel.
+
+---
+
+## Provenance
+
+Every scenario computation creates an `evidence_records` entry:
+```json
+{
+  "evidence_type": "SCENARIO_COMPUTATION",
+  "model_or_method": "parametric_scenario_v1",
+  "input_summary": {"scenario_type": "HORMUZ_PARTIAL", "capacity_reduction_pct": 50, "duration_days": 30},
+  "output_summary": {"supply_gap_mmt": 7.06, "days_until_critical": 22.7},
+  "data_semantic": "DERIVED"
+}
+```
+
+The evidence record links back to the risk scores and events that triggered the scenario.

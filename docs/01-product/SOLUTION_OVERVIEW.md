@@ -117,7 +117,7 @@ INDRA Phase-1 is successful if the team can demonstrate ALL of the following:
 6. Refinery-level impact changes accordingly
 7. Procurement alternatives are re-ranked
 8. SPR support changes according to the scenario
-9. Every important output is labeled: real / historical / derived / simulated
+9. Every important output is labeled with its data semantic: OBSERVED / DERIVED / HISTORICAL_CALIBRATED / ASSUMED / SIMULATED
 10. The entire chain runs without manual hardcoding during the demo
 
 > A successful demo is NOT measured by the number of technologies used.

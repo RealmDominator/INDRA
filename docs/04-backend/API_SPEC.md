@@ -1,8 +1,10 @@
 # INDRA — API Specification
 
-> **STATUS: PLANNED — Not yet implemented.**
+> **STATUS: PLANNED — TO BE FROZEN IN STEP 2.**
 >
-> This document defines the planned API surface for the INDRA backend. All endpoints listed here are design targets, not implemented routes. Actual implementation may differ in request/response details.
+> This document defines the planned MVP API surface for the INDRA backend. All endpoints are design targets, not implemented routes. Exact request/response schemas will be finalized during Step 2.
+>
+> **Revision:** Post-review corrections. Reduced from ~30 to ~12 MVP endpoint groups. Risk scores use 0–100 display scale in API responses.
 >
 > Source: PETRAS Analysis §16; INDRA Master Report §11
 
@@ -20,24 +22,27 @@
 
 ---
 
-## Planned API Surface
+## Risk Scale in API Responses
 
-### Events
+> **Convention:** API responses display risk/severity/confidence scores on the **0–100 scale** for human readability. Internal database storage uses 0.0–1.0. The API layer performs the conversion: `display_score = internal_score × 100`.
+
+---
+
+## MVP Endpoint Groups (~12)
+
+### 1. Events
 
 | Method | Endpoint | Description | Status |
 |---|---|---|---|
 | GET | `/events` | List recent geopolitical events with filters | PLANNED |
-| GET | `/events/{id}` | Get single event with full detail and source | PLANNED |
-| GET | `/events/feed` | Real-time event feed (latest N events) | PLANNED |
-| POST | `/events/extract` | Trigger LLM extraction on a news article URL | PLANNED |
+| GET | `/events/{id}` | Single event with full detail and source | PLANNED |
 
 **Planned query parameters for GET `/events`:**
 - `event_type` — filter by type (SANCTION, MILITARY, PORT_CLOSURE, ATTACK, DIPLOMATIC, OTHER)
-- `corridor` — filter by affected corridor (HORMUZ, RED_SEA, SUEZ, MALACCA)
-- `severity_min` — minimum severity threshold
+- `corridor` — filter by affected corridor code (HORMUZ, RED_SEA, SUEZ, RUSSIA)
+- `severity_min` — minimum severity threshold (0–100 display scale)
 - `since` — timestamp filter
-- `limit` — pagination limit
-- `offset` — pagination offset
+- `limit` / `offset` — pagination
 
 **Planned response shape (conceptual):**
 ```json
@@ -45,37 +50,36 @@
   "id": 42,
   "event_type": "SANCTION",
   "title": "US sanctions 3 Iranian tankers",
-  "severity": 0.6,
-  "confidence": 0.91,
-  "affected_corridors": ["HORMUZ"],
-  "affected_entities": ["OFAC", "Iranian tanker fleet"],
+  "severity": 60,
+  "confidence": 91,
+  "affected_corridors": [{"code": "HORMUZ", "name": "Strait of Hormuz"}],
+  "affected_countries": [{"iso3": "IRN", "name": "Iran"}],
   "source_url": "https://...",
   "source_name": "OFAC",
   "occurred_at": "2026-08-17T14:30:00Z",
   "detected_at": "2026-08-17T14:45:00Z",
   "is_verified": true,
-  "data_classification": "LIVE"
+  "is_simulated": false,
+  "data_semantic": "OBSERVED"
 }
 ```
 
+> **Note:** `severity` and `confidence` are displayed on 0–100 scale. Internally stored as 0.0–1.0.
+
 ---
 
-### Risk
+### 2. Risk — Corridors
 
 | Method | Endpoint | Description | Status |
 |---|---|---|---|
 | GET | `/risk/corridors` | Current risk scores for all monitored corridors | PLANNED |
-| GET | `/risk/corridors/{corridor_id}` | Detailed risk breakdown for a corridor | PLANNED |
-| GET | `/risk/routes` | Risk scores for all routes | PLANNED |
-| GET | `/risk/routes/{route_id}` | Detailed risk for a specific route | PLANNED |
-| GET | `/risk/suppliers` | Risk scores for all suppliers | PLANNED |
-| GET | `/risk/evidence/{entity_type}/{entity_id}` | Full evidence chain for a risk score | PLANNED |
+| GET | `/risk/corridors/{corridor_code}` | Detailed risk breakdown for a corridor | PLANNED |
 
-**Planned evidence response shape:**
+**Planned response shape (conceptual):**
 ```json
 {
-  "entity_type": "corridor",
-  "entity_id": "HORMUZ",
+  "corridor_code": "HORMUZ",
+  "corridor_name": "Strait of Hormuz",
   "risk_score": 78,
   "risk_level": "CRITICAL",
   "calculated_at": "2026-08-19T12:00:00Z",
@@ -84,25 +88,66 @@
     {"factor": "chokepoint_exposure", "value": 90, "weight": 0.20},
     {"factor": "india_dependency", "value": 42, "weight": 0.10}
   ],
-  "confidence": 0.72,
+  "confidence": 72,
   "data_freshness": {
     "geopolitical": "10 minutes ago",
     "prices": "today",
     "import_structure": "PPAC FY2024-25"
-  }
+  },
+  "data_semantic": "DERIVED"
 }
 ```
 
+> **Note:** All scores in the response (risk_score, component values, confidence) are 0–100 display scale.
+
 ---
 
-### Scenarios
+### 3. Supply Chain — Routes
+
+| Method | Endpoint | Description | Status |
+|---|---|---|---|
+| GET | `/routes` | All supply routes with risk scores and corridor associations | PLANNED |
+
+---
+
+### 4. Supply Chain — Refineries
+
+| Method | Endpoint | Description | Status |
+|---|---|---|---|
+| GET | `/refineries` | All Indian refineries with capacity, location, and crude compatibility | PLANNED |
+
+---
+
+### 5. Reserves (SPR)
+
+| Method | Endpoint | Description | Status |
+|---|---|---|---|
+| GET | `/reserves` | Current SPR status for all locations | PLANNED |
+
+> **Note:** `days_coverage` is calculated at query time: `current_level_mmt / india_daily_consumption_mmt`. Not stored.
+
+---
+
+### 6. Prices
+
+| Method | Endpoint | Description | Status |
+|---|---|---|---|
+| GET | `/prices/current` | Current crude oil prices + USD/INR rate | PLANNED |
+
+**Response includes:**
+- Latest commodity prices per grade (from `commodity_prices`)
+- Latest USD/INR FX rate (from `fx_rates`)
+- Derived INR prices (computed using nearest-valid-prior FX rate)
+- Source timestamps for both price and FX observations
+
+---
+
+### 7. Scenarios
 
 | Method | Endpoint | Description | Status |
 |---|---|---|---|
 | GET | `/scenarios/presets` | List available preset scenarios | PLANNED |
 | POST | `/scenarios/run` | Run a scenario simulation | PLANNED |
-| GET | `/scenarios/{id}` | Get saved scenario results | PLANNED |
-| GET | `/scenarios/{id}/impact` | Detailed impact breakdown | PLANNED |
 
 **Planned preset scenarios:**
 1. Hormuz 50% disruption / 30 days
@@ -125,36 +170,41 @@
   "scenario_id": 7,
   "supply_gap_mmt": 7.06,
   "days_until_critical": 22.7,
-  "affected_refineries": ["Kochi BPCL", "Paradip IOC"],
+  "affected_refineries": ["BPCL Kochi", "IOC Paradip"],
   "price_impact_per_barrel_usd": 5.0,
   "additional_import_cost_usd_bn": 1.9,
   "freight_cost_increase_pct": 40,
-  "alternative_routes": ["CAPE_OF_GOOD_HOPE"],
+  "alternative_routes": ["Cape of Good Hope"],
   "spr_bridge": {
     "required_mmt": 3.2,
     "available_mmt": 5.33,
-    "days_bridged": 5.7
+    "days_bridged": 5.7,
+    "uncovered_gap_mmt": 0
   },
-  "data_classification": "DERIVED",
-  "assumptions_visible": true
+  "assumptions": [
+    {"name": "hormuz_share", "value": 0.42, "data_semantic": "HISTORICAL_CALIBRATED", "source": "PPAC FY2024-25"},
+    {"name": "price_impact", "value": 5.0, "data_semantic": "HISTORICAL_CALIBRATED", "source": "EIA historical"},
+    {"name": "freight_multiplier", "value": 1.4, "data_semantic": "ASSUMED", "source": "Distance ratio estimate"}
+  ],
+  "data_semantic": "DERIVED"
 }
 ```
 
+> **REMOVED from MVP:** `gdp_impact_estimate_usd_bn` — requires macroeconomic modeling beyond scope.
+
 ---
 
-### Recommendations / Procurement
+### 8. Recommendations / Procurement
 
 | Method | Endpoint | Description | Status |
 |---|---|---|---|
-| GET | `/recommendations/{scenario_id}` | Get procurement recommendations for a scenario | PLANNED |
-| GET | `/recommendations/{scenario_id}/refinery/{refinery_id}` | Refinery-specific recommendations | PLANNED |
-| GET | `/recommendations/{scenario_id}/explain` | LLM-generated action brief | PLANNED |
+| GET | `/recommendations/{scenario_id}` | Procurement recommendations for a scenario | PLANNED |
 
-**Planned recommendation response shape:**
+**Planned response shape:**
 ```json
 {
-  "refinery_id": 14,
-  "refinery_name": "BPCL Kochi",
+  "scenario_id": 7,
+  "refinery": "BPCL Kochi",
   "supply_gap_mmt": 1.2,
   "alternatives": [
     {
@@ -164,71 +214,70 @@
       "compatibility": "HIGH",
       "route": "Cape of Good Hope",
       "transit_days": 21,
-      "cost_premium_usd_per_barrel": 3.5,
-      "route_risk": "LOW",
+      "price_cif_usd_per_barrel": 86.00,
+      "cost_premium_vs_normal": "+$3.50/bbl",
+      "route_risk": 15,
       "compliance": "CLEAR",
-      "overall_score": 0.87
+      "overall_score": 87,
+      "scoring_breakdown": {
+        "compatibility": 90,
+        "cost": 70,
+        "risk": 85,
+        "transit": 65,
+        "compliance": 100
+      },
+      "data_semantic": "DERIVED"
     }
   ]
 }
 ```
 
+> **Note:** All scores in 0–100 display scale.
+
 ---
 
-### Reserves (SPR)
+### 9. Evidence
 
 | Method | Endpoint | Description | Status |
 |---|---|---|---|
-| GET | `/reserves` | Current SPR status for all locations | PLANNED |
-| GET | `/reserves/{location_id}` | Detail for a specific SPR location | PLANNED |
-| GET | `/reserves/scenario/{scenario_id}` | SPR drawdown analysis for a scenario | PLANNED |
+| GET | `/evidence/{entity_type}/{entity_id}` | Full evidence/provenance chain for a result | PLANNED |
+
+**Supported `entity_type` values:** event, risk_score, scenario_result, procurement_option
+
+Returns the provenance chain from the `evidence_records` and `evidence_links` tables, showing the path from source to result.
 
 ---
 
-### Prices
-
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/prices/current` | Current crude oil prices (EIA) | PLANNED |
-| GET | `/prices/history` | Historical price data | PLANNED |
-| GET | `/prices/fx` | Current USD/INR exchange rate (RBI) | PLANNED |
-
----
-
-### Routes
-
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/routes` | All supply routes with risk scores | PLANNED |
-| GET | `/routes/{id}` | Route detail with chokepoint information | PLANNED |
-
----
-
-### Suppliers
-
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/suppliers` | All suppliers with risk and sanctions status | PLANNED |
-| GET | `/suppliers/{id}` | Supplier detail | PLANNED |
-
----
-
-### Refineries
-
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/refineries` | All Indian refineries with capacity and compatibility | PLANNED |
-| GET | `/refineries/{id}` | Refinery detail with compatible crude grades | PLANNED |
-| GET | `/refineries/{id}/exposure` | Current risk exposure for a refinery | PLANNED |
-
----
-
-### System / Health
+### 10. Health / Status
 
 | Method | Endpoint | Description | Status |
 |---|---|---|---|
 | GET | `/health` | System health check | PLANNED |
-| GET | `/status/data-sources` | Status of all external data source connections | PLANNED |
+
+---
+
+## Deferred Endpoints (Post-MVP)
+
+The following endpoints were in the original specification but are deferred to reduce MVP scope:
+
+| Endpoint | Reason for Deferral |
+|---|---|
+| `GET /suppliers` | Not needed for core demo flow |
+| `GET /suppliers/{id}` | Not needed for core demo flow |
+| `GET /routes/{id}` | Individual route detail not critical |
+| `GET /refineries/{id}` | Individual refinery detail not critical |
+| `GET /refineries/{id}/exposure` | Can be derived from scenario results |
+| `GET /risk/routes` | Route risk visible on map |
+| `GET /risk/suppliers` | Supplier risk visible in recommendations |
+| `GET /prices/history` | Historical chart is SHOULD HAVE |
+| `GET /prices/fx` | FX included in `/prices/current` |
+| `GET /reserves/{location_id}` | Individual SPR detail not critical |
+| `GET /reserves/scenario/{id}` | SPR impact included in scenario results |
+| `GET /recommendations/{id}/refinery/{id}` | Refinery-level detail can come later |
+| `GET /recommendations/{id}/explain` | LLM explanation is NICE TO HAVE |
+| `POST /events/extract` | Manual extraction trigger not in core demo |
+| `GET /events/feed` | Event list is sufficient |
+| `GET /status/data-sources` | Useful but not demo-critical |
 
 ---
 
@@ -242,10 +291,6 @@
   "detail": null
 }
 ```
-
-## Rate Limiting
-
-No rate limiting for Phase 1. External API call rate limiting is handled by the ingestion layer, not the client-facing API.
 
 ## CORS
 

@@ -3,6 +3,8 @@
 > Source: PETRAS Analysis §14; INDRA Master Report §16
 >
 > The procurement engine is algorithmic — not LLM-generated. It uses deterministic ranking or linear programming.
+>
+> **Revision:** Post-review corrections. References crude_grades and refinery_supply_mix tables. Added provenance tracking.
 
 ---
 
@@ -85,16 +87,20 @@ Where `λ` is a risk aversion parameter that can be adjusted by the user (higher
 
 ### Compatibility
 
-| Refinery | Crude Grade | Compatibility Score |
-|---|---|---|
-| BPCL Kochi | Basrah Light | HIGH (0.9) |
-| BPCL Kochi | Bonny Light | HIGH (0.85) |
-| BPCL Kochi | Arab Light | MEDIUM (0.7) |
-| BPCL Kochi | WTI | MEDIUM (0.65) |
-| IOC Panipat | Arab Light | HIGH (0.9) |
-| IOC Panipat | Urals | MEDIUM (0.7) |
+Compatibility data comes from the `refinery_supply_mix` table, which references the `crude_grades` table:
 
-> **Note:** Compatibility values are prototype domain assumptions unless backed by verified public/company data. Do not present synthetic refinery-intake numbers as official refinery engineering limits.
+| Refinery | Crude Grade (via crude_grades.name) | Compatibility | Score |
+|---|---|---|---|
+| BPCL Kochi | Basrah Light | HIGH | 0.9 |
+| BPCL Kochi | Bonny Light | HIGH | 0.85 |
+| BPCL Kochi | Arab Light | MEDIUM | 0.7 |
+| BPCL Kochi | WTI | MEDIUM | 0.65 |
+| IOC Panipat | Arab Light | HIGH | 0.9 |
+| IOC Panipat | Urals | MEDIUM | 0.7 |
+
+> **Note:** Compatibility values are looked up from `refinery_supply_mix.compatibility_score`. Values marked with `source_type = 'ESTIMATED'` in the mix table are prototype domain assumptions. Do not present synthetic refinery-intake numbers as official refinery engineering limits.
+>
+> **Crude grade matching:** Supplier grades and refinery compatibility both reference the `crude_grades` reference table, ensuring consistent naming. No free-form text matching.
 
 ---
 
@@ -229,3 +235,20 @@ The user should be able to adjust risk tolerance:
 | 2.0+ | Extreme risk aversion |
 
 This parameter should be adjustable in the UI and visibly changes the procurement ranking.
+
+---
+
+## Provenance
+
+Every procurement optimization run creates an `evidence_records` entry:
+```json
+{
+  "evidence_type": "OPTIMIZATION",
+  "model_or_method": "deterministic_ranking_v1",
+  "input_summary": {"scenario_id": 7, "refinery": "BPCL Kochi", "supply_gap_mmt": 1.2, "risk_aversion": 0.5},
+  "output_summary": {"top_alternative": "Arab Light via Cape", "ranking_score": 0.87},
+  "data_semantic": "DERIVED"
+}
+```
+
+The evidence record links back to the scenario result that triggered the optimization.

@@ -1,6 +1,8 @@
 # INDRA — ML Model Strategy
 
 > Source: PETRAS Analysis §10; INDRA Master Report §5, §18, §19
+>
+> **Revision:** Post-review corrections. Risk scale frozen to 0.0–1.0 internal / 0–100 display. Weight conflict resolved.
 
 ---
 
@@ -22,31 +24,35 @@ Score corridors, routes, and suppliers on a risk scale so that procurement decis
 
 ### Phase 1: Weighted Rule-Based Engine
 
-The risk engine calculates a composite score from observable features using a deterministic weighted formula.
+The risk engine calculates a composite score from observable features using a deterministic weighted formula. All component inputs and the output score are on the **0.0–1.0 internal scale**.
 
-> **CONFLICT: Two different weight schemes exist in the research reports.**
+> **RESOLVED CONFLICT: Two weight schemes in research reports.**
 >
-> **PETRAS Report (§10):**
-> ```
-> risk = 0.35×country_risk + 0.25×event_impact + 0.20×sanctions + 0.10×weather + 0.10×chokepoint
-> ```
->
-> **INDRA Master Report (§5.2):**
+> **Default weights (derived from INDRA Master Report §5.2):**
 > ```
 > risk = 0.25×event_severity + 0.20×event_recency + 0.20×chokepoint_exposure
 >      + 0.15×conflict_sanctions + 0.10×historical_rate + 0.10×india_dependency
 > ```
 >
-> **Resolution:** Both are reasonable starting points. The implementing agent should choose one, document it, and calibrate against historical disruption data. The architecture must allow weight adjustment without code changes (configuration-driven weights).
+> **Alternative weights (from PETRAS Report §10):**
+> ```
+> risk = 0.35×country_risk + 0.25×event_impact + 0.20×sanctions + 0.10×weather + 0.10×chokepoint
+> ```
+>
+> **Resolution:** The INDRA Master Report weights are the default because they include India-specific factors (india_dependency, chokepoint_exposure). All weights must be **configuration-driven** (stored in a config file or database table, not hardcoded). The implementing agent may calibrate against historical disruption data. Changing weights must not require code changes.
 
-### Phase 1 Risk Classification
+### Risk Scale Convention
+
+> **FROZEN:** Internal = 0.0–1.0. Display = 0–100. Conversion: `display_score = internal_score × 100`.
+
+### Phase 1 Risk Classification (on internal 0.0–1.0 scale)
 
 ```
-0–29   LOW
-30–49  MODERATE
-50–69  HIGH
-70–84  CRITICAL
-85–100 EXTREME
+0.00–0.29   LOW
+0.30–0.49   MODERATE
+0.50–0.69   HIGH
+0.70–0.84   CRITICAL
+0.85–1.00   EXTREME
 ```
 
 ### Evidence Requirement
@@ -55,17 +61,21 @@ Every risk score must expose its component breakdown:
 
 ```json
 {
-  "corridor": "Hormuz",
-  "risk_score": 78,
+  "corridor_code": "HORMUZ",
+  "corridor_name": "Strait of Hormuz",
+  "risk_score": 0.78,
   "risk_level": "CRITICAL",
   "components": [
-    {"factor": "event_severity", "value": 82, "weight": 0.25},
-    {"factor": "chokepoint_exposure", "value": 90, "weight": 0.20},
-    {"factor": "india_dependency", "value": 42, "weight": 0.10}
+    {"factor": "event_severity", "value": 0.82, "weight": 0.25},
+    {"factor": "chokepoint_exposure", "value": 0.90, "weight": 0.20},
+    {"factor": "india_dependency", "value": 0.42, "weight": 0.10}
   ],
-  "confidence": 0.72
+  "confidence": 0.72,
+  "data_semantic": "DERIVED"
 }
 ```
+
+> **Note:** All values above are on the internal 0.0–1.0 scale. The API layer converts to 0–100 for display.
 
 A risk score without explanation is meaningless and will be dismissed by judges.
 
@@ -150,11 +160,11 @@ This avoids architectural rework when transitioning from rules to ML.
 
 ### Input Features
 ```
-country_risk        — Base risk for origin country
-recent_events_7d    — ACLED/GDELT event count in corridor
-active_sanctions    — Sanctions changes affecting corridor suppliers
-weather_alert       — Active weather warnings on route
-chokepoint_factor   — Chokepoint proximity and dependency
+country_risk        — Base risk for origin country (0.0–1.0)
+recent_events_7d    — ACLED/GDELT event count in corridor (normalized to 0.0–1.0)
+active_sanctions    — Sanctions changes affecting corridor suppliers (0.0–1.0)
+weather_alert       — Active weather warnings on route (0.0–1.0)
+chokepoint_factor   — Chokepoint proximity and dependency (0.0–1.0, from corridors.india_dependency_share)
 ```
 
 ### Why Not ML for Route Risk?
