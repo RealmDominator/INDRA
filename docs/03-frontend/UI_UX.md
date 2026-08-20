@@ -1,8 +1,10 @@
 # INDRA — UI/UX Specification
 
+> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION**
+>
 > Source: PETRAS Analysis §16, §21; INDRA Master Report §10, §21
 >
-> **Revision:** Post-review corrections. Risk scores display on 0–100 scale. Data badges updated to semantic classification. Evidence panel uses provenance chain.
+> **Revision:** Step 2 Architecture Freeze (20 August 2026). See [ARCHITECTURE_DECISIONS.md](../02-architecture/ARCHITECTURE_DECISIONS.md) ADR-015.
 
 ---
 
@@ -282,8 +284,14 @@ Navigation should be via a top nav bar or sidebar. The evidence drawer slides in
 
 ---
 
-## CSS Framework Decision
+## CSS Framework — Frozen (Step 2)
 
-> **CONFLICT:** The INDRA Master Report specifies Tailwind CSS. The user instructions state "Use Vanilla CSS for maximum flexibility and control. Avoid using TailwindCSS unless the USER explicitly requests it."
->
-> **Resolution:** This decision is deferred. The implementing agent should confirm with the user before selecting a CSS framework. The UI specification above is framework-agnostic.
+**Decision:** **Vanilla CSS** for Phase-1 frontend styling. No Tailwind CSS unless explicitly requested in a future phase.
+
+Rationale: Aligns with project development rules; framework-agnostic UI spec above remains valid.
+
+---
+
+## Out-of-Scope UI (Phase 1)
+
+Do NOT build: mobile layout optimization, 3D globe, fake live AIS tanker layer, extra admin/settings pages, enterprise auth screens, or dashboards beyond the four primary views + evidence drawer.

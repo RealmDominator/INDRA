@@ -1,8 +1,10 @@
 # INDRA — Database Schema
 
-> **STATUS:** This document defines the planned conceptual and logical schema. The schema has NOT been applied to any database yet.
+> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION**
 >
-> **Revision:** Post-review corrections applied (Step 1.5). Schema will be frozen in Step 2.
+> This document defines the authoritative conceptual and logical schema for Phase 1. The schema has NOT been applied to any database yet.
+>
+> **Revision:** Step 2 Architecture Freeze (20 August 2026). Authoritative decisions: [ARCHITECTURE_DECISIONS.md](../02-architecture/ARCHITECTURE_DECISIONS.md)
 >
 > Source: PETRAS Analysis §9; INDRA Master Report §13; Architecture Review corrections
 

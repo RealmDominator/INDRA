@@ -1,6 +1,8 @@
 # INDRA — Testing Strategy
 
-> This document defines the testing strategy for INDRA. Tests should be written alongside implementation, not after.
+> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION** — Test cases defined; tests not yet written.
+>
+> This document defines the testing contract for INDRA. Tests should be written alongside Step 3 implementation, not before.
 
 ---
 
@@ -20,7 +22,7 @@
 
 | Test | Description | Expected |
 |---|---|---|
-| `test_risk_score_within_range` | Score output is always 0–100 | Pass |
+| `test_risk_score_within_range` | Internal score 0.0–1.0; display 0–100 | Pass |
 | `test_risk_score_deterministic` | Same inputs → same output | Pass |
 | `test_risk_components_sum_correctly` | Component weights sum to 1.0 | Pass |
 | `test_risk_level_classification` | Score 78 → CRITICAL | Pass |
@@ -35,7 +37,7 @@
 | `test_hormuz_partial_scales_linearly` | 50% → half the gap of 100% | Pass |
 | `test_russia_loss_affects_correct_share` | Russia loss uses ~37% share | Pass |
 | `test_spr_bridge_calculation` | SPR bridge days = SPR / daily gap | Pass |
-| `test_scenario_output_labeled_derived` | All outputs have `data_classification: DERIVED` | Pass |
+| `test_scenario_output_labeled_derived` | All outputs have `data_semantic: DERIVED` | Pass |
 | `test_zero_duration_returns_no_gap` | 0-day disruption → 0 supply gap | Pass |
 
 ### Procurement Engine Tests
@@ -44,7 +46,7 @@
 |---|---|---|
 | `test_sanctioned_supplier_excluded` | Sanctioned supplier never appears in recommendations | Pass |
 | `test_disrupted_route_excluded` | Route marked disrupted → not recommended | Pass |
-| `test_compatibility_filter` | Incompatible crude grade → not recommended for refinery | Pass |
+| `test_compatibility_filter` | Grade with compatibility_score < 0.5 excluded | Pass |
 | `test_ranking_changes_with_scenario` | Different scenario → different ranking | Pass |
 | `test_risk_aversion_changes_ranking` | Higher λ → safer (but costlier) options ranked higher | Pass |
 | `test_top_recommendation_has_evidence` | Top result includes scoring breakdown | Pass |
@@ -73,17 +75,28 @@
 | `test_event_stored_in_database` | Parsed event correctly inserted into PostgreSQL |
 | `test_duplicate_event_rejected` | Same event from two sources → single record |
 
-### LLM Integration
+### LLM Structured-Output Validation
 
 | Test | Description |
 |---|---|
 | `test_llm_extraction_returns_valid_json` | LLM output parses as valid JSON |
 | `test_llm_extraction_matches_schema` | Output matches Pydantic StructuredEvent schema |
+| `test_llm_extraction_no_database_ids` | Output contains names/codes only, never integer entity IDs |
 | `test_llm_extraction_event_type_valid` | event_type is one of allowed enum values |
 | `test_llm_extraction_severity_in_range` | severity is within valid range |
+| `test_llm_confidence_threshold` | Events with confidence < 0.6 excluded from risk update |
 | `test_llm_fallback_on_api_error` | LLM API timeout → graceful fallback |
 
----
+### Database Tests
+
+| Test | Description |
+|---|---|
+| `test_schema_tables_exist` | All 20 conceptual tables created |
+| `test_corridor_fk_integrity` | Events reference valid corridor IDs after resolution |
+| `test_entity_alias_lookup` | Alias resolves to canonical entity |
+| `test_commodity_fx_separate` | No synchronized INR generated column |
+
+### Ingestion Tests
 
 ## API Tests
 
@@ -145,7 +158,9 @@
 | `test_scenario_form_submits` | Scenario form sends request to backend |
 | `test_recommendation_table_renders` | Procurement table shows ranked results |
 | `test_evidence_drawer_opens` | Clicking risk score opens evidence panel |
-| `test_data_labels_visible` | LIVE/HISTORICAL/DERIVED badges displayed |
+| `test_data_semantic_badges_visible` | OBSERVED/DERIVED/HISTORICAL_CALIBRATED/ASSUMED/SIMULATED badges displayed |
+| `test_stale_data_banner` | Stale feed shows last-updated banner |
+| `test_demo_mode_banner` | Demo mode shows distinct banner when fixtures active |
 
 ---
 

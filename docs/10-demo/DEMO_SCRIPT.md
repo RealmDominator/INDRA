@@ -1,10 +1,8 @@
 # INDRA — Demo Script
 
-> **STATUS: PLANNED** — This is the demonstration structure for Phase 1 submission.
+> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION**
 >
-> Source: PETRAS Analysis §21; INDRA Master Report §23
->
-> **Important:** Do not fabricate final numerical results in this script. The actual numbers will come from the running system at demo time.
+> Demonstration structure for Phase 1 submission. Do not fabricate final numerical results — numbers come from the running system at demo time.
 
 ---
 
@@ -126,17 +124,18 @@ in 3–5 minutes. Everything must be explainable and traceable to a data source.
 
 ## Demo Data Strategy
 
-| Data Element | Source | Classification |
+| Data Element | Source | Data Semantic |
 |---|---|---|
-| Geopolitical events | GDELT / ACLED (live or recent) | LIVE / RECENT |
-| Crude prices | EIA API | RECENT |
-| FX rates | RBI | RECENT |
-| Sanctions | OFAC | LIVE |
-| India refineries | PPAC historical | HISTORICAL |
-| SPR data | ISPRL public | HISTORICAL |
-| Route risk scores | INDRA calculation | DERIVED |
-| Scenario results | INDRA calculation | DERIVED |
-| Procurement ranking | INDRA optimization | DERIVED |
+| Geopolitical events | GDELT / ACLED (when available) | OBSERVED |
+| Crude prices | EIA API | OBSERVED |
+| FX rates | RBI (or fallback) | OBSERVED / HISTORICAL_CALIBRATED |
+| Sanctions | OFAC | OBSERVED |
+| India refineries | PPAC historical seed | HISTORICAL_CALIBRATED |
+| SPR capacity | ISPRL public | OBSERVED / HISTORICAL_CALIBRATED |
+| Route risk scores | Weighted risk engine | DERIVED |
+| Scenario results | Parametric scenario engine | DERIVED (assumptions tagged ASSUMED/HISTORICAL_CALIBRATED) |
+| Procurement ranking | LP / deterministic ranking | DERIVED |
+| Demo fixtures | Pre-loaded events | SIMULATED |
 
 ---
 

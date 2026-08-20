@@ -40,7 +40,9 @@ Where `λ` is a risk aversion parameter that can be adjusted by the user (higher
 | 2 | **Supplier capacity** | `volume[i,j] <= available_capacity[i,j]` — can't exceed what supplier can deliver |
 | 3 | **Sanctions compliance** | `volume[i,j] = 0 if is_sanctioned[i] = True` — OFAC/EU/UN compliance |
 | 4 | **Route operational** | `volume[i,j] = 0 if is_route_disrupted[j] = True` — can't use disrupted routes |
-| 5 | **Crude compatibility** | Refinery must be compatible with the crude grade offered | 
+| 5 | **Crude compatibility** | `refinery_supply_mix.compatibility_score >= threshold` — refinery must accept grade |
+
+**Compatibility threshold (frozen):** Default **0.5** — grades with MEDIUM or higher compatibility are included. Grades below 0.5 or `compatibility = NONE` are excluded. Configurable in `config/optimization.yaml`.
 | 6 | **Risk tolerance** | `risk_score[i,j] <= max_risk_tolerance` — optional risk ceiling |
 | 7 | **Concentration limit** | `Σ volume[russia,j] <= russia_cap` — diversification constraint |
 | 8 | **Transit time** | `transit_days[j] <= max_acceptable_transit` — operational deadline |
@@ -120,7 +122,7 @@ score = w1 × compatibility
 ```
 
 Filter out:
-1. Incompatible grades (compatibility = NONE)
+1. Incompatible grades (`compatibility_score < 0.5` or `compatibility = NONE`)
 2. Sanctioned suppliers
 3. Disrupted routes (per active scenario)
 

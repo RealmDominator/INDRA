@@ -1,12 +1,10 @@
 # INDRA — API Specification
 
-> **STATUS: PLANNED — TO BE FROZEN IN STEP 2.**
+> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION**
 >
-> This document defines the planned MVP API surface for the INDRA backend. All endpoints are design targets, not implemented routes. Exact request/response schemas will be finalized during Step 2.
+> Authoritative Phase-1 REST contract for the INDRA backend. All endpoints are design targets — not yet implemented.
 >
-> **Revision:** Post-review corrections. Reduced from ~30 to ~12 MVP endpoint groups. Risk scores use 0–100 display scale in API responses.
->
-> Source: PETRAS Analysis §16; INDRA Master Report §11
+> **Revision:** Step 2 Architecture Freeze (20 August 2026). See [ARCHITECTURE_DECISIONS.md](../02-architecture/ARCHITECTURE_DECISIONS.md) ADR-014.
 
 ---
 
@@ -19,63 +17,190 @@
 | Documentation | Auto-generated at `/docs` (Swagger) and `/redoc` |
 | Format | JSON |
 | Authentication | None for Phase 1 |
+| CORS | Allow frontend origin (default `http://localhost:3000`) |
 
 ---
 
-## Risk Scale in API Responses
+## Cross-Cutting Conventions
 
-> **Convention:** API responses display risk/severity/confidence scores on the **0–100 scale** for human readability. Internal database storage uses 0.0–1.0. The API layer performs the conversion: `display_score = internal_score × 100`.
+### Risk Scale in API Responses
+
+Internal storage uses **0.0–1.0**. API responses use **0–100** display scale:
+
+`display_score = internal_score × 100`
+
+Applies to: `risk_score`, `severity`, `confidence`, component values, compatibility scores where displayed.
+
+### Data Semantics in Responses
+
+Responses include `data_semantic` where relevant: `OBSERVED` | `DERIVED` | `HISTORICAL_CALIBRATED` | `ASSUMED` | `SIMULATED`.
+
+### Error Response Format
+
+```json
+{
+  "error": true,
+  "code": "SCENARIO_INVALID_PARAMS",
+  "message": "Human-readable description",
+  "detail": null
+}
+```
+
+| HTTP Status | When |
+|---|---|
+| 400 | Malformed request body |
+| 404 | Entity not found |
+| 422 | Pydantic validation failure |
+| 500 | Unhandled server error |
+| 503 | Critical dependency unavailable (optional; prefer degraded response with stale-data flag for demo) |
+
+### Provenance
+
+Endpoints returning computed results SHOULD include enough identifiers for the evidence drawer (`entity_type`, `entity_id`) or embed a `evidence_url` path.
 
 ---
 
-## MVP Endpoint Groups (~12)
+## MVP Endpoint Groups (12 groups, 14 routes)
 
-### 1. Events
+---
 
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/events` | List recent geopolitical events with filters | PLANNED |
-| GET | `/events/{id}` | Single event with full detail and source | PLANNED |
+### 1. Health
 
-**Planned query parameters for GET `/events`:**
-- `event_type` — filter by type (SANCTION, MILITARY, PORT_CLOSURE, ATTACK, DIPLOMATIC, OTHER)
-- `corridor` — filter by affected corridor code (HORMUZ, RED_SEA, SUEZ, RUSSIA)
-- `severity_min` — minimum severity threshold (0–100 display scale)
-- `since` — timestamp filter
-- `limit` / `offset` — pagination
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/health` |
+| **Purpose** | Smoke test; report database connectivity and data-source freshness |
 
-**Planned response shape (conceptual):**
+**Request:** None
+
+**Response (200):**
+```json
+{
+  "status": "ok",
+  "database": "connected",
+  "data_sources": [
+    {"name": "GDELT", "status": "ACTIVE", "last_fetched_at": "2026-08-20T10:00:00Z"},
+    {"name": "EIA", "status": "ACTIVE", "last_fetched_at": "2026-08-19T18:00:00Z"}
+  ],
+  "demo_mode": false
+}
+```
+
+**Validation:** None
+
+**Major errors:** 503 if database unreachable
+
+---
+
+### 2. Events — List
+
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/events` |
+| **Purpose** | List recent geopolitical events for dashboard feed |
+
+**Query parameters:**
+| Parameter | Type | Validation |
+|---|---|---|
+| `event_type` | string | Optional enum: SANCTION, MILITARY, PORT_CLOSURE, ATTACK, DIPLOMATIC, OTHER |
+| `corridor` | string | Optional corridor code (HORMUZ, RED_SEA, etc.) |
+| `severity_min` | number | Optional 0–100 display scale |
+| `since` | ISO8601 | Optional timestamp lower bound |
+| `limit` | int | Default 20, max 100 |
+| `offset` | int | Default 0 |
+
+**Response (200):** Array of event summaries (see Event Detail shape, abbreviated).
+
+**Major errors:** 422 invalid query params
+
+**Provenance:** Each event includes `source_url`, `source_name`, `is_simulated`, `data_semantic` (`OBSERVED` for live ingested events).
+
+---
+
+### 3. Events — Detail
+
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/events/{id}` |
+| **Purpose** | Single event with full detail for evidence drill-down |
+
+**Path parameters:** `id` — integer event ID
+
+**Response (200):**
 ```json
 {
   "id": 42,
   "event_type": "SANCTION",
   "title": "US sanctions 3 Iranian tankers",
+  "description": "...",
   "severity": 60,
   "confidence": 91,
   "affected_corridors": [{"code": "HORMUZ", "name": "Strait of Hormuz"}],
   "affected_countries": [{"iso3": "IRN", "name": "Iran"}],
+  "affected_routes": [],
   "source_url": "https://...",
   "source_name": "OFAC",
   "occurred_at": "2026-08-17T14:30:00Z",
   "detected_at": "2026-08-17T14:45:00Z",
   "is_verified": true,
   "is_simulated": false,
-  "data_semantic": "OBSERVED"
+  "llm_model_used": "provider/model-name",
+  "data_semantic": "OBSERVED",
+  "evidence_url": "/api/v1/evidence/event/42"
 }
 ```
 
-> **Note:** `severity` and `confidence` are displayed on 0–100 scale. Internally stored as 0.0–1.0.
+**Major errors:** 404 event not found
 
 ---
 
-### 2. Risk — Corridors
+### 4. Risk — All Corridors
 
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/risk/corridors` | Current risk scores for all monitored corridors | PLANNED |
-| GET | `/risk/corridors/{corridor_code}` | Detailed risk breakdown for a corridor | PLANNED |
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/risk/corridors` |
+| **Purpose** | Current risk scores for all monitored corridors (landing page cards) |
 
-**Planned response shape (conceptual):**
+**Request:** None
+
+**Response (200):**
+```json
+{
+  "corridors": [
+    {
+      "corridor_code": "HORMUZ",
+      "corridor_name": "Strait of Hormuz",
+      "risk_score": 78,
+      "risk_level": "CRITICAL",
+      "trend_delta": 12,
+      "calculated_at": "2026-08-19T12:00:00Z",
+      "confidence": 72,
+      "contributing_event_count": 3,
+      "data_semantic": "DERIVED"
+    }
+  ]
+}
+```
+
+**Provenance:** Scores derived from weighted_rule_v1; link to detail endpoint for components.
+
+---
+
+### 5. Risk — Corridor Detail
+
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/risk/corridors/{corridor_code}` |
+| **Purpose** | Detailed risk breakdown with component contributions |
+
+**Path parameters:** `corridor_code` — stable code (HORMUZ, RED_SEA, RUSSIA, SUEZ, MALACCA, CAPE)
+
+**Response (200):**
 ```json
 {
   "corridor_code": "HORMUZ",
@@ -83,6 +208,7 @@
   "risk_score": 78,
   "risk_level": "CRITICAL",
   "calculated_at": "2026-08-19T12:00:00Z",
+  "calculation_method": "weighted_rule_v1",
   "components": [
     {"factor": "event_severity", "value": 82, "weight": 0.25, "contributing_events": [42, 43]},
     {"factor": "chokepoint_exposure", "value": 90, "weight": 0.20},
@@ -94,87 +220,198 @@
     "prices": "today",
     "import_structure": "PPAC FY2024-25"
   },
-  "data_semantic": "DERIVED"
+  "data_semantic": "DERIVED",
+  "evidence_url": "/api/v1/evidence/risk_score/123"
 }
 ```
 
-> **Note:** All scores in the response (risk_score, component values, confidence) are 0–100 display scale.
+**Major errors:** 404 unknown corridor code
 
 ---
 
-### 3. Supply Chain — Routes
+### 6. Routes
 
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/routes` | All supply routes with risk scores and corridor associations | PLANNED |
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/routes` |
+| **Purpose** | Supply routes with risk scores and corridor associations for map rendering |
 
----
+**Query parameters:** `corridor` (optional filter), `operational_only` (bool, default true)
 
-### 4. Supply Chain — Refineries
+**Response (200):** Array of routes with origin/dest ports, corridor codes, `risk_score` (0–100), `is_operational`, coordinates for map polylines.
 
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/refineries` | All Indian refineries with capacity, location, and crude compatibility | PLANNED |
-
----
-
-### 5. Reserves (SPR)
-
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/reserves` | Current SPR status for all locations | PLANNED |
-
-> **Note:** `days_coverage` is calculated at query time: `current_level_mmt / india_daily_consumption_mmt`. Not stored.
+**Provenance:** Route risk is DERIVED; corridor associations from reference data (HISTORICAL_CALIBRATED / OBSERVED seed).
 
 ---
 
-### 6. Prices
+### 7. Refineries
 
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/prices/current` | Current crude oil prices + USD/INR rate | PLANNED |
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/refineries` |
+| **Purpose** | Indian refineries with capacity, location, and crude compatibility summary |
 
-**Response includes:**
-- Latest commodity prices per grade (from `commodity_prices`)
-- Latest USD/INR FX rate (from `fx_rates`)
-- Derived INR prices (computed using nearest-valid-prior FX rate)
-- Source timestamps for both price and FX observations
+**Response (200):** Array including `id`, `name`, `owner`, `capacity_mmtpa`, `port_id`, lat/lon, `compatible_grades` (from `refinery_supply_mix`), exposure hints.
+
+**Provenance:** Capacity/location from PPAC seed (HISTORICAL_CALIBRATED); compatibility from `refinery_supply_mix` with `source_type`.
 
 ---
 
-### 7. Scenarios
+### 8. Reserves (SPR)
 
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/scenarios/presets` | List available preset scenarios | PLANNED |
-| POST | `/scenarios/run` | Run a scenario simulation | PLANNED |
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/reserves` |
+| **Purpose** | Strategic Petroleum Reserve status for all locations |
 
-**Planned preset scenarios:**
-1. Hormuz 50% disruption / 30 days
-2. Hormuz 100% closure / 30 days
-3. Russia supply reduction (100% loss)
-4. Red Sea full suspension
+**Response (200):**
+```json
+{
+  "locations": [
+    {
+      "location_name": "Padur",
+      "capacity_mmt": 2.5,
+      "current_level_mmt": 2.5,
+      "days_coverage": 4.5,
+      "data_semantic": "HISTORICAL_CALIBRATED"
+    }
+  ],
+  "total_capacity_mmt": 5.33,
+  "total_current_mmt": 5.33,
+  "total_days_coverage": 9.5,
+  "daily_consumption_mmt_used": 0.56
+}
+```
 
-**Planned scenario request shape:**
+**Note:** `days_coverage = current_level_mmt / india_daily_consumption_mmt` computed at query time from config.
+
+---
+
+### 9. Prices
+
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/prices/current` |
+| **Purpose** | Current crude prices, USD/INR FX, and derived INR prices |
+
+**Response (200):**
+```json
+{
+  "commodity_prices": [
+    {
+      "grade_name": "Brent",
+      "price_usd_per_barrel": 82.50,
+      "source": "EIA",
+      "source_timestamp": "2026-08-19T00:00:00Z",
+      "observed_at": "2026-08-19T06:00:00Z",
+      "data_semantic": "OBSERVED"
+    }
+  ],
+  "fx_rate": {
+    "currency_pair": "USD_INR",
+    "rate": 83.25,
+    "source": "RBI",
+    "source_timestamp": "2026-08-19T00:00:00Z",
+    "data_semantic": "OBSERVED"
+  },
+  "derived_inr_prices": [
+    {
+      "grade_name": "Brent",
+      "price_inr_per_barrel": 6868.13,
+      "derivation_method": "nearest_valid_prior_fx",
+      "commodity_source_timestamp": "2026-08-19T00:00:00Z",
+      "fx_source_timestamp": "2026-08-19T00:00:00Z",
+      "data_semantic": "DERIVED"
+    }
+  ]
+}
+```
+
+**Provenance:** INR derivation uses nearest-valid-prior FX rule (ADR-011).
+
+---
+
+### 10. Scenarios — Presets
+
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/scenarios/presets` |
+| **Purpose** | List available preset scenario definitions |
+
+**Response (200):**
+```json
+{
+  "presets": [
+    {
+      "scenario_type": "HORMUZ_PARTIAL",
+      "name": "Hormuz 50% disruption / 30 days",
+      "default_parameters": {"capacity_reduction_pct": 50, "duration_days": 30}
+    },
+    {
+      "scenario_type": "HORMUZ_FULL",
+      "name": "Hormuz 100% closure / 30 days",
+      "default_parameters": {"capacity_reduction_pct": 100, "duration_days": 30}
+    },
+    {
+      "scenario_type": "RUSSIA_LOSS",
+      "name": "Russia supply reduction",
+      "default_parameters": {"volume_loss_pct": 100, "duration_days": 30}
+    },
+    {
+      "scenario_type": "RED_SEA",
+      "name": "Red Sea full suspension",
+      "default_parameters": {"capacity_reduction_pct": 100, "duration_days": 30}
+    }
+  ]
+}
+```
+
+Parameters loaded from `config/scenario_assumptions.yaml`.
+
+---
+
+### 11. Scenarios — Run
+
+| | |
+|---|---|
+| **Method** | POST |
+| **Path** | `/scenarios/run` |
+| **Purpose** | Execute deterministic scenario simulation |
+
+**Request body:**
 ```json
 {
   "scenario_type": "HORMUZ_PARTIAL",
   "capacity_reduction_pct": 50,
-  "duration_days": 30
+  "duration_days": 30,
+  "refinery_id": null
 }
 ```
 
-**Planned scenario response shape:**
+**Validation:**
+| Field | Rules |
+|---|---|
+| `scenario_type` | Required; enum of preset types |
+| `capacity_reduction_pct` | 0–100 |
+| `duration_days` | 1–365 |
+| `refinery_id` | Optional int |
+
+**Response (200):**
 ```json
 {
   "scenario_id": 7,
   "supply_gap_mmt": 7.06,
   "days_until_critical": 22.7,
-  "affected_refineries": ["BPCL Kochi", "IOC Paradip"],
+  "affected_refineries": [{"id": 12, "name": "BPCL Kochi", "shortfall_mmt": 1.2}],
   "price_impact_per_barrel_usd": 5.0,
   "additional_import_cost_usd_bn": 1.9,
   "freight_cost_increase_pct": 40,
-  "alternative_routes": ["Cape of Good Hope"],
+  "alternative_routes": ["CAPE"],
   "spr_bridge": {
     "required_mmt": 3.2,
     "available_mmt": 5.33,
@@ -182,116 +419,110 @@
     "uncovered_gap_mmt": 0
   },
   "assumptions": [
-    {"name": "hormuz_share", "value": 0.42, "data_semantic": "HISTORICAL_CALIBRATED", "source": "PPAC FY2024-25"},
-    {"name": "price_impact", "value": 5.0, "data_semantic": "HISTORICAL_CALIBRATED", "source": "EIA historical"},
-    {"name": "freight_multiplier", "value": 1.4, "data_semantic": "ASSUMED", "source": "Distance ratio estimate"}
+    {"name": "hormuz_share", "value": 0.42, "data_semantic": "HISTORICAL_CALIBRATED", "source": "PPAC FY2024-25"}
   ],
-  "data_semantic": "DERIVED"
+  "data_semantic": "DERIVED",
+  "evidence_url": "/api/v1/evidence/scenario_result/7"
 }
 ```
 
-> **REMOVED from MVP:** `gdp_impact_estimate_usd_bn` — requires macroeconomic modeling beyond scope.
+**Major errors:**
+- 422 invalid parameters
+- 404 unknown scenario_type
+
+**Note:** GDP impact removed from scope. LLM does not compute scenario math.
 
 ---
 
-### 8. Recommendations / Procurement
+### 12. Recommendations / Procurement
 
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/recommendations/{scenario_id}` | Procurement recommendations for a scenario | PLANNED |
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/recommendations/{scenario_id}` |
+| **Purpose** | Ranked procurement alternatives for a completed scenario |
 
-**Planned response shape:**
+**Query parameters:**
+| Parameter | Type | Notes |
+|---|---|---|
+| `refinery_id` | int | Optional; default = most exposed refinery |
+| `risk_aversion` | float | Optional λ, default 0.5 |
+
+**Response (200):** Ranked alternatives with compatibility, route, cost, risk (0–100), compliance, scoring_breakdown, `data_semantic: DERIVED`.
+
+**Major errors:** 404 scenario not found; 422 scenario not yet computed
+
+**Provenance:** Links to OPTIMIZATION evidence record.
+
+---
+
+### 13. Evidence
+
+| | |
+|---|---|
+| **Method** | GET |
+| **Path** | `/evidence/{entity_type}/{entity_id}` |
+| **Purpose** | Full provenance chain for a result |
+
+**Path parameters:**
+| Parameter | Values |
+|---|---|
+| `entity_type` | `event`, `risk_score`, `scenario_result`, `procurement_option` |
+| `entity_id` | Integer ID |
+
+**Response (200):**
 ```json
 {
-  "scenario_id": 7,
-  "refinery": "BPCL Kochi",
-  "supply_gap_mmt": 1.2,
-  "alternatives": [
+  "entity_type": "risk_score",
+  "entity_id": 123,
+  "chain": [
     {
-      "rank": 1,
-      "supplier": "Saudi Arabia",
-      "crude_grade": "Arab Light",
-      "compatibility": "HIGH",
-      "route": "Cape of Good Hope",
-      "transit_days": 21,
-      "price_cif_usd_per_barrel": 86.00,
-      "cost_premium_vs_normal": "+$3.50/bbl",
-      "route_risk": 15,
-      "compliance": "CLEAR",
-      "overall_score": 87,
-      "scoring_breakdown": {
-        "compatibility": 90,
-        "cost": 70,
-        "risk": 85,
-        "transit": 65,
-        "compliance": 100
-      },
+      "evidence_type": "SOURCE",
+      "source_url": "https://...",
+      "timestamp": "2026-08-19T10:00:00Z",
+      "data_semantic": "OBSERVED"
+    },
+    {
+      "evidence_type": "LLM_EXTRACTION",
+      "model_or_method": "provider/model",
+      "output_summary": {"event_type": "MILITARY", "severity": 0.68},
+      "data_semantic": "DERIVED"
+    },
+    {
+      "evidence_type": "RISK_CALCULATION",
+      "model_or_method": "weighted_rule_v1",
+      "output_summary": {"score": 0.78},
       "data_semantic": "DERIVED"
     }
   ]
 }
 ```
 
-> **Note:** All scores in 0–100 display scale.
-
----
-
-### 9. Evidence
-
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/evidence/{entity_type}/{entity_id}` | Full evidence/provenance chain for a result | PLANNED |
-
-**Supported `entity_type` values:** event, risk_score, scenario_result, procurement_option
-
-Returns the provenance chain from the `evidence_records` and `evidence_links` tables, showing the path from source to result.
-
----
-
-### 10. Health / Status
-
-| Method | Endpoint | Description | Status |
-|---|---|---|---|
-| GET | `/health` | System health check | PLANNED |
+**Major errors:** 404 entity or evidence not found
 
 ---
 
 ## Deferred Endpoints (Post-MVP)
 
-The following endpoints were in the original specification but are deferred to reduce MVP scope:
-
-| Endpoint | Reason for Deferral |
+| Endpoint | Reason |
 |---|---|
-| `GET /suppliers` | Not needed for core demo flow |
-| `GET /suppliers/{id}` | Not needed for core demo flow |
-| `GET /routes/{id}` | Individual route detail not critical |
-| `GET /refineries/{id}` | Individual refinery detail not critical |
-| `GET /refineries/{id}/exposure` | Can be derived from scenario results |
-| `GET /risk/routes` | Route risk visible on map |
-| `GET /risk/suppliers` | Supplier risk visible in recommendations |
-| `GET /prices/history` | Historical chart is SHOULD HAVE |
-| `GET /prices/fx` | FX included in `/prices/current` |
-| `GET /reserves/{location_id}` | Individual SPR detail not critical |
-| `GET /reserves/scenario/{id}` | SPR impact included in scenario results |
-| `GET /recommendations/{id}/refinery/{id}` | Refinery-level detail can come later |
+| `GET /suppliers`, `GET /suppliers/{id}` | Not needed for core demo |
+| `GET /routes/{id}`, `GET /refineries/{id}` | Detail deferred; list endpoints sufficient |
+| `GET /refineries/{id}/exposure` | Derivable from scenario results |
+| `GET /risk/routes`, `GET /risk/suppliers` | Visible on map/recommendations |
+| `GET /prices/history`, `GET /prices/fx` | Included in `/prices/current` |
+| `GET /reserves/{location_id}`, `GET /reserves/scenario/{id}` | Aggregated in `/reserves` and scenario response |
 | `GET /recommendations/{id}/explain` | LLM explanation is NICE TO HAVE |
-| `POST /events/extract` | Manual extraction trigger not in core demo |
-| `GET /events/feed` | Event list is sufficient |
-| `GET /status/data-sources` | Useful but not demo-critical |
+| `POST /events/extract` | Not in core demo flow |
+| `GET /events/feed` | `/events` sufficient |
+| `GET /status/data-sources` | Covered by `/health` |
 
 ---
 
-## Error Response Format (Planned)
+## Implementation Notes (Phase 1)
 
-```json
-{
-  "error": true,
-  "code": "SCENARIO_INVALID_PARAMS",
-  "message": "Duration must be between 1 and 365 days",
-  "detail": null
-}
-```
-
-## CORS
-
-Frontend origin (default `http://localhost:3000`) must be allowed in CORS configuration.
+- All routes implemented in single FastAPI app under `/api/v1` router
+- Pydantic models enforce request/response shapes
+- Internal 0.0–1.0 → display 0–100 conversion in response serializers
+- CORS middleware required for React frontend
+- No authentication middleware in Phase 1

@@ -1,9 +1,9 @@
 # =============================================================================
 # INDRA — Docker Compose (Development Skeleton)
 # =============================================================================
-# This file provides infrastructure services only (database, cache).
+# This file provides infrastructure services only (database).
 # Application services (backend, frontend) are NOT yet implemented.
-# They will be added when feature code is ready.
+# Redis excluded from Phase 1 per ARCHITECTURE_DECISIONS.md ADR / U-2 resolution.
 # =============================================================================
 
 version: '3.8'
@@ -29,14 +29,14 @@ services:
       # - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
 
   # ---------------------------------------------------------------------------
-  # Redis — API response cache (optional for Phase 1)
+  # Redis — EXCLUDED from Phase 1 (see docs/02-architecture/ARCHITECTURE_DECISIONS.md)
   # ---------------------------------------------------------------------------
-  redis:
-    image: redis:7-alpine
-    container_name: indra-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: indra-redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
 
   # ---------------------------------------------------------------------------
   # Backend — FastAPI (PLACEHOLDER — not yet implemented)

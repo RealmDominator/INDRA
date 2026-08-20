@@ -40,7 +40,7 @@ These features significantly strengthen the demo but can be partially descoped w
 | S1 | **Russian Crude Risk Model** — Explicit modeling of Russia supply risk given India's ~37% dependency, shadow fleet logistics, sanctions exposure | Strong India differentiator |
 | S2 | **Weather Disruption Overlay** — IMD/NOAA weather data affecting maritime routes | Easy to add; real data |
 | S3 | **Historical Scenario Calibration** — Calibrate scenario parameters using historical EIA data from Gulf War II, Houthi disruptions, 2020 events | Makes numbers defensible to judges |
-| S4 | **Redis API Cache** — Cache dashboard API responses for performance | Low complexity; improves UX |
+| S4 | **Redis API Cache** | Deferred to Phase 2 — excluded from Phase-1 docker-compose per ADR |
 | S5 | **USD/INR FX Integration** — RBI daily exchange rate data for compound cost modeling | Free, real; adds India-specific value |
 | S6 | **Price Charts** — Historical crude price charts using Recharts | Visual enrichment; real data |
 | S7 | **ACLED Conflict Events** — Structured conflict data for risk scoring | Authoritative; free for research |

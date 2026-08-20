@@ -46,10 +46,10 @@ This is a **hackathon MVP**, not an enterprise production platform.
 |---|---|---|
 | **Step 0** | Project Foundation | ✅ COMPLETE |
 | **Step 1** | Architecture Adversarial Review + Corrections | ✅ COMPLETE |
-| **Step 2** | Architecture Freeze | ❌ NOT STARTED |
-| Step 3+ | Implementation | ❌ NOT STARTED |
+| **Step 2** | Architecture Freeze | ✅ COMPLETE |
+| **Step 3** | Implementation | ❌ NOT STARTED |
 
-> **IMPORTANT:** The project MUST remain at the boundary between Step 1 and Step 2 until the user explicitly starts Step 2. Do NOT assume the architecture freeze has happened. Do NOT mark architecture as finally frozen.
+> **Architecture is frozen for Phase-1 implementation.** Do NOT start Step 3 until explicitly initiated by the user.
 
 ---
 
@@ -73,7 +73,8 @@ INDRA/
 │   │   ├── SOLUTION_OVERVIEW.md
 │   │   └── MVP_SCOPE.md
 │   ├── 02-architecture/
-│   │   ├── SYSTEM_ARCHITECTURE.md
+│   │   ├── SYSTEM_ARCHITECTURE.md      ← FROZEN
+│   │   ├── ARCHITECTURE_DECISIONS.md   ← authoritative ADRs (Step 2)
 │   │   ├── ARCHITECTURE_REVIEW.md
 │   │   └── PRE_STEP2_DECISIONS.md
 │   ├── 03-frontend/
@@ -437,20 +438,50 @@ Data Source → status, classification
 
 ---
 
-## Unresolved Decisions (from PRE_STEP2_DECISIONS.md)
+## Step 2 Summary — Architecture Freeze (COMPLETE)
 
-These must be resolved during Step 2:
+Step 2 reconciled all Step-1 corrections into a frozen Phase-1 technical contract. Created `docs/02-architecture/ARCHITECTURE_DECISIONS.md` (ADR-001 through ADR-015). Marked frozen: `SYSTEM_ARCHITECTURE.md`, `DATABASE_SCHEMA.md`, `API_SPEC.md`.
 
-| ID | Question | Status |
+**Architecture is frozen for Phase-1 implementation.**
+
+### Frozen Architecture Summary
+
+| Area | Decision |
+|---|---|
+| **Architecture pattern** | Monolithic: PostgreSQL + FastAPI + React |
+| **Domain model** | 20 entities; corridors first-class; entity resolution layer; LLM outputs names not IDs |
+| **Risk engine (Phase 1)** | Weighted deterministic formula (0.0–1.0 internal, 0–100 display) |
+| **Risk engine (Phase 2)** | XGBoost disruption-probability candidate — NOT implemented |
+| **LLM** | Abstraction layer; extraction + explanation only; **application LLM NOT SELECTED** |
+| **NetworkX** | In-memory graph traversal only; PostgreSQL is source of truth |
+| **Scenario engine** | Deterministic parametric; config in `config/scenario_assumptions.yaml` |
+| **Procurement** | PuLP/scipy LP preferred; ranking fallback; compatibility threshold 0.5 |
+| **Price/FX** | Separate `commodity_prices` + `fx_rates`; INR derived at query time |
+| **Provenance** | `evidence_records` + `evidence_links` + `data_sources` |
+| **Data semantics** | OBSERVED / DERIVED / HISTORICAL_CALIBRATED / ASSUMED / SIMULATED |
+| **API boundary** | ~12 endpoint groups / 14 routes (see API_SPEC.md) |
+| **UI boundary** | EVENT→RISK→SCENARIO→PROCUREMENT→EVIDENCE; Vanilla CSS |
+| **Redis** | Excluded from Phase 1 |
+
+### Canonical Domain Model
+
+Entities: countries, corridors, suppliers, crude_grades, ports, routes, refineries, refinery_supply_mix, geopolitical_events, risk_scores, scenarios, scenario_results, procurement_options, strategic_reserves, commodity_prices, fx_rates, evidence_records, evidence_links, entity_aliases, data_sources.
+
+Key flow: Geopolitical Event → countries/corridors/routes → Risk Score → Scenario → Procurement Option → Evidence chain.
+
+### Out-of-Scope Technologies (Phase 1)
+
+Kafka, Neo4j, MongoDB, Elasticsearch, ClickHouse, Kubernetes, microservices, blockchain, Redis, LSTM, GNN, reinforcement learning, vector databases, enterprise authentication, paid commercial feeds, real-time global AIS.
+
+### Step-2 Resolved Items
+
+U-2 Redis excluded · U-3 ACLED best-effort · U-4 RBI verify Day 1 · U-5 compatibility ≥0.5 · U-6 YAML config files · U-7 Vanilla CSS · U-8 confidence threshold 0.6 default.
+
+### Remaining Open Item
+
+| ID | Item | Status |
 |---|---|---|
-| U-1 | NetworkX vs SQL Joins | ✅ RESOLVED — NetworkX confirmed |
-| U-2 | Redis in Phase 1 | ❌ OPEN — recommendation: remove |
-| U-3 | ACLED Availability | ❌ OPEN — treat as best-effort |
-| U-4 | RBI API Verification | ❌ OPEN — verify Day 1, fallback: hardcoded rate |
-| U-5 | Compatibility Threshold | ❌ OPEN — recommendation: 0.5 default |
-| U-6 | Scenario Configuration Source | ❌ OPEN — config file vs DB table |
-| U-7 | Frontend CSS Framework | ❌ OPEN — system rules specify Vanilla CSS |
-| U-8 | Event Confidence Threshold | ❌ OPEN — current default: 0.6 |
+| U-8b | Final application LLM selection | OPEN — deferred to INDRA-specific benchmark during Step 3 |
 
 ---
 
@@ -475,7 +506,8 @@ If two research reports disagree and the review process did not resolve the disa
 | `docs/DEVELOPMENT_RULES.md` | **READ BEFORE ANY IMPLEMENTATION** |
 | `docs/01-product/SOLUTION_OVERVIEW.md` | Product description, success criteria |
 | `docs/01-product/MVP_SCOPE.md` | Feature classification: MUST/SHOULD/NICE/DO NOT |
-| `docs/02-architecture/SYSTEM_ARCHITECTURE.md` | Technical architecture specification |
+| `docs/02-architecture/ARCHITECTURE_DECISIONS.md` | **Authoritative ADRs — read before implementation** |
+| `docs/02-architecture/SYSTEM_ARCHITECTURE.md` | Technical architecture (FROZEN) |
 | `docs/02-architecture/ARCHITECTURE_REVIEW.md` | Adversarial review findings |
 | `docs/02-architecture/PRE_STEP2_DECISIONS.md` | Accepted corrections + unresolved decisions |
 | `docs/03-frontend/UI_UX.md` | UI specification |

@@ -200,9 +200,9 @@
 
 ## Unresolved Decisions for Step 2
 
-These decisions were identified during the correction process and must be resolved during the Architecture Freeze (Step 2).
+> **All items below were resolved during Step 2 Architecture Freeze.** See [ARCHITECTURE_DECISIONS.md](ARCHITECTURE_DECISIONS.md) for authoritative decisions.
 
-### ~~U-1: NetworkX vs SQL Joins for Supply Graph~~ — RESOLVED
+### ~~U-1: NetworkX vs SQL Joins for Supply Graph~~ — RESOLVED (Step 1)
 
 **Decision:** NetworkX is confirmed for Phase 1 with precisely defined responsibilities:
 - Graph traversal: identify affected refineries, disrupted routes, alternative paths
@@ -214,77 +214,45 @@ See `SYSTEM_ARCHITECTURE.md §5a` and `SCENARIO_ENGINE.md — NetworkX / Postgre
 
 ---
 
-### U-2: Redis in Phase 1
+### ~~U-2: Redis in Phase 1~~ — RESOLVED (Step 2)
 
-**Question:** Should Redis be included in Phase 1 docker-compose?
-
-**Context:** At demo data volumes (~hundreds of events, 20 refineries), PostgreSQL queries will be fast. Redis adds deployment complexity with no measurable benefit.
-
-**Recommendation from review:** Remove Redis from Phase 1.
-
-**Decision needed:** Include or exclude Redis from Phase 1 docker-compose.
+**Decision:** **Exclude Redis from Phase 1.** Remove from docker-compose. Direct PostgreSQL queries are sufficient at demo volumes. Redis deferred to Phase 2 if needed.
 
 ---
 
-### U-3: ACLED Availability
+### ~~U-3: ACLED Availability~~ — RESOLVED (Step 2)
 
-**Question:** Will ACLED API access be approved in time?
-
-**Context:** ACLED requires registration approval which can take days. If not approved by Day 2, the system must function without it (GDELT + RSS + OFAC provide sufficient coverage).
-
-**Decision needed:** Treat ACLED as best-effort. Verify on Day 1.
+**Decision:** Treat ACLED as **best-effort**. Verify registration on Day 1. System MUST function with GDELT + RSS + OFAC if ACLED is unavailable.
 
 ---
 
-### U-4: RBI API Verification
+### ~~U-4: RBI API Verification~~ — RESOLVED (Step 2)
 
-**Question:** Does the RBI statistical API actually work reliably?
-
-**Context:** RBI's API documentation is sparse. The reference rate page may require scraping rather than clean API calls.
-
-**Decision needed:** Verify RBI API on Day 1. Fallback: hardcoded recent USD/INR rate labeled HISTORICAL_CALIBRATED.
+**Decision:** Verify RBI API on Day 1 of implementation. **Fallback:** hardcoded recent USD/INR rate labeled `HISTORICAL_CALIBRATED` with source note in evidence.
 
 ---
 
-### U-5: Compatibility Threshold
+### ~~U-5: Compatibility Threshold~~ — RESOLVED (Step 2)
 
-**Question:** What `compatibility_score` threshold means "incompatible" for the optimizer?
-
-**Context:** The `refinery_supply_mix` table stores compatibility as HIGH/MEDIUM/LOW/NONE with a numeric score (0.0–1.0). The LP optimizer needs a binary include/exclude decision at some threshold.
-
-**Recommendation:** Use 0.5 as default threshold (MEDIUM or above = include). Make configurable.
-
-**Decision needed:** Freeze the default threshold during Step 2.
+**Decision:** Default **compatibility_score ≥ 0.5** (MEDIUM or above = include in optimizer). Configurable via `config/optimization.yaml`.
 
 ---
 
-### U-6: Scenario Configuration Source
+### ~~U-6: Scenario Configuration Source~~ — RESOLVED (Step 2)
 
-**Question:** Should hardcoded scenario parameters (hormuz_share, freight_multiplier, price_impact) come from a config file, database table, or environment variables?
-
-**Context:** These values must be changeable without code changes per the development rules. A `scenario_assumptions` config file or database table would work.
-
-**Decision needed:** Choose the configuration mechanism during Step 2.
+**Decision:** Phase-1 scenario and risk parameters stored in **`config/scenario_assumptions.yaml`** and **`config/risk_weights.yaml`** (changeable without code edits). Database `scenarios.parameters` JSONB stores runtime instances.
 
 ---
 
-### U-7: Frontend CSS Framework
+### ~~U-7: Frontend CSS Framework~~ — RESOLVED (Step 2)
 
-**Question:** Vanilla CSS or another approach?
-
-**Context:** User's system rules specify Vanilla CSS unless explicitly requested otherwise. This is viable but slower for building a polished UI in 4 days.
-
-**Decision needed:** Confirm with user during Step 2.
+**Decision:** **Vanilla CSS** for Phase-1 frontend. No Tailwind unless explicitly requested later.
 
 ---
 
-### U-8: Event Confidence Threshold
+### ~~U-8: Event Confidence Threshold~~ — RESOLVED (Step 2)
 
-**Question:** Should the default LLM extraction confidence threshold (currently 0.6) be adjusted?
-
-**Context:** The threshold determines which extracted events enter the risk calculation. Too high = miss real events. Too low = noise.
-
-**Decision needed:** Finalize during LLM benchmarking (Step 2 or later).
+**Decision:** Default LLM extraction confidence threshold **0.6** (stored in config). Events below threshold are logged but excluded from risk recalculation. Threshold may be tuned during LLM benchmark without architecture change.
 
 ---
 

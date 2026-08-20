@@ -1,8 +1,10 @@
 # INDRA — System Architecture
 
+> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION**
+>
 > Source: PETRAS Analysis §8, §16; INDRA Master Report §11, §12
 >
-> **Revision:** Post-review corrections applied (Step 1.5). Architecture will be frozen in Step 2.
+> **Revision:** Step 2 Architecture Freeze (20 August 2026). Authoritative decisions: [ARCHITECTURE_DECISIONS.md](ARCHITECTURE_DECISIONS.md)
 
 ---
 
@@ -14,6 +16,49 @@
 4. **Evidence-first** — Every computation preserves its source chain via the provenance model.
 5. **Data honesty** — Every data point carries its semantic classification (OBSERVED / DERIVED / HISTORICAL_CALIBRATED / ASSUMED / SIMULATED).
 6. **Corridor-first modeling** — Corridors (Hormuz, Red Sea, Russia, Suez, etc.) are first-class domain entities, not free-form strings.
+
+---
+
+## Canonical Domain Model (Phase 1 — Frozen)
+
+Authoritative entity list and relationships for implementation:
+
+| Entity | Purpose |
+|---|---|
+| `countries` | Supplier/transit countries, base risk |
+| `corridors` | Strategic pathways/chokepoints (stable codes) |
+| `suppliers` | Crude suppliers linked to country + grades |
+| `crude_grades` | Controlled vocabulary for crude types |
+| `ports` | Origin and Indian receiving ports |
+| `routes` | Supplier paths: origin port → corridors → destination port |
+| `refineries` | Indian refineries linked to receiving port |
+| `refinery_supply_mix` | Refinery–grade compatibility and share constraints |
+| `geopolitical_events` | Ingested events with country/corridor/route associations |
+| `risk_scores` | Computed risk for corridor/route/supplier/country |
+| `scenarios` | Disruption parameter sets |
+| `scenario_results` | Deterministic scenario outputs |
+| `procurement_options` | Ranked alternatives per scenario + refinery |
+| `strategic_reserves` | SPR locations and levels |
+| `commodity_prices` | USD price observations (EIA) |
+| `fx_rates` | FX observations (RBI) — separate stream |
+| `evidence_records` | Provenance nodes |
+| `evidence_links` | Evidence chain edges |
+| `entity_aliases` | Entity resolution mappings |
+| `data_sources` | External feed registry |
+
+**Frozen relationships:**
+
+```
+Geopolitical Event → affected countries, corridors, routes (when known)
+Supplier → country, crude grades
+Route → origin port, destination port, corridor_ids[]
+Refinery → receiving port, refinery_supply_mix
+Refinery Supply Mix → refinery, crude grade, compatibility, share constraints
+Scenario → disruption parameters → scenario_results
+Procurement Option → scenario, supplier, route, crude grade
+```
+
+The LLM outputs human-readable names only — never internal database IDs. See [DATABASE_SCHEMA.md](../05-database/DATABASE_SCHEMA.md) and [ARCHITECTURE_DECISIONS.md](ARCHITECTURE_DECISIONS.md).
 
 ---
 
