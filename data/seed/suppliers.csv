@@ -1,0 +1,9 @@
+id,name,country_id,crude_grade_ids,annual_supply_capacity_mmtpa,current_sanctions_risk,is_sanctioned,sanction_source,source,source_date,notes
+1,Saudi Aramco,2,"1,2",,"0.100",FALSE,,PPAC import-by-source / research reports,FY2024-25,State oil company. ~14-16% of India's crude imports FY2025.
+2,Iraq SOMO,3,"3,4",,"0.200",FALSE,,PPAC import-by-source / research reports,FY2024-25,State Oil Marketing Organization. ~20-22% of India's crude imports FY2025.
+3,ADNOC,4,"5",,"0.100",FALSE,,PPAC import-by-source / research reports,FY2024-25,Abu Dhabi National Oil Company. ~5-6% of India's crude imports FY2025.
+4,Kuwait Petroleum,5,"6",,"0.100",FALSE,,PPAC import-by-source / research reports,FY2024-25,State oil company. ~3-4% of India's crude imports FY2025.
+5,Russian Suppliers,8,"7,8",,"0.500",FALSE,,PPAC import-by-source / research reports,FY2024-25,"Composite: Rosneft, Lukoil, Surgutneftegas etc. ~36-38% of India's crude imports FY2025. Subject to G7 price cap and secondary sanctions risk."
+6,US Producers,9,"9,10",,"0.050",FALSE,,PPAC import-by-source / research reports,FY2024-25,"Composite: various US producers/traders. ~5-6% of India's crude imports FY2025."
+7,Nigeria NNPC,10,"11",,"0.150",FALSE,,PPAC import-by-source / research reports,FY2024-25,Nigerian National Petroleum Company. ~2-3% of India's crude imports FY2025.
+8,NIOC (Iran),6,"14",,"0.900",TRUE,OFAC,PPAC import-by-source / OFAC SDN / research reports,FY2024-25,National Iranian Oil Company. Currently under US sanctions. Minimal/no direct India imports in FY2025.

@@ -1,0 +1,11 @@
+id,name,url,update_frequency,status,classification,notes
+1,GDELT,gdeltproject.org,15 minutes,ACTIVE,OBSERVED,Free global news event database. Deferred to event-ingestion step.
+2,ACLED,acleddata.com,Weekly,ACTIVE,OBSERVED,Armed conflict data. Requires registration. Deferred to event-ingestion step.
+3,EIA,api.eia.gov,Daily/weekly,ACTIVE,OBSERVED,US Energy Information Administration. Free API key required. Commodity prices.
+4,RBI,rbi.org.in/statistics,Daily (business days),ACTIVE,OBSERVED,Reserve Bank of India. USD/INR reference rate. No registration required.
+5,OFAC,sanctionslist.treasury.gov,Multiple times per day,ACTIVE,OBSERVED,US Treasury sanctions data. SDN list. Free XML/CSV download.
+6,PPAC,ppac.gov.in,Monthly,ACTIVE,HISTORICAL_CALIBRATED,India petroleum data. PDF/CSV reports. No real-time API.
+7,ISPRL,isprl.gov.in,Annual,ACTIVE,HISTORICAL_CALIBRATED,Indian Strategic Petroleum Reserves. Public reports. Capacity data only.
+8,NewsAPI,newsapi.org,24-hour delay (free),UNAVAILABLE,OBSERVED,Free tier has 24-hour delay. Deferred to event-ingestion step.
+9,World Bank Commodities,worldbank.org/commodities,Monthly,ACTIVE,OBSERVED,Historical commodity price data. Free API.
+10,Data.gov.in,data.gov.in,Varies,ACTIVE,OBSERVED,Indian government open data portal. Various petroleum datasets.

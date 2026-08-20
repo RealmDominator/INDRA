@@ -1,0 +1,21 @@
+id,name,owner,state,port_id,capacity_mmtpa,throughput_current_mmtpa,latitude,longitude,source,source_date,notes
+1,Jamnagar DTA,Reliance Industries,Gujarat,1,35.80,,22.4710,69.6690,PPAC Annual Report / research report §6,FY2024-25,World's largest single-location refinery complex
+2,Jamnagar SEZ,Reliance Industries,Gujarat,1,22.80,,22.4600,69.6500,PPAC Annual Report / research report §6,FY2024-25,Export-oriented unit within Jamnagar complex
+3,Paradip,Indian Oil Corporation,Odisha,8,15.00,,20.2610,86.6270,PPAC Annual Report / research report §6,FY2024-25,
+4,Koyali (Vadodara),Indian Oil Corporation,Gujarat,1,13.70,,22.3270,73.1190,PPAC Annual Report / research report §6,FY2024-25,Inland refinery; crude piped from Vadinar/Sikka
+5,Panipat,Indian Oil Corporation,Haryana,,15.00,,29.3840,76.9640,PPAC Annual Report / research report §6,FY2024-25,Inland refinery; crude piped from Mundra/JNPT
+6,Mathura,Indian Oil Corporation,Uttar Pradesh,,8.00,,27.4750,77.6500,PPAC Annual Report / research report §6,FY2024-25,Inland refinery
+7,Bongaigaon,Indian Oil Corporation,Assam,,2.70,,26.4780,90.5480,PPAC Annual Report / research report §6,FY2024-25,Northeast India; uses Assam crude + imported
+8,Barauni,Indian Oil Corporation,Bihar,,6.00,,25.4510,86.0050,PPAC Annual Report / research report §6,FY2024-25,Inland refinery
+9,Haldia,Indian Oil Corporation,West Bengal,9,7.50,,22.0440,88.0550,PPAC Annual Report / research report §6,FY2024-25,
+10,Guwahati,Indian Oil Corporation,Assam,,1.00,,26.1960,91.7310,PPAC Annual Report / research report §6,FY2024-25,Smallest IOC refinery; primarily domestic crude
+11,Mumbai (BPCL),Bharat Petroleum,Maharashtra,3,12.00,,19.0170,72.8700,PPAC Annual Report / research report §6,FY2024-25,
+12,Kochi,Bharat Petroleum,Kerala,5,15.50,,9.9450,76.2710,PPAC Annual Report / research report §6,FY2024-25,
+13,Bina,Bharat Petroleum,Madhya Pradesh,,7.80,,24.1930,78.1030,PPAC Annual Report / research report §6,FY2024-25,Inland refinery
+14,Visakhapatnam,Hindustan Petroleum,Andhra Pradesh,7,8.30,,17.6810,83.2070,PPAC Annual Report / research report §6,FY2024-25,
+15,Mumbai (HPCL),Hindustan Petroleum,Maharashtra,3,7.50,,19.0380,72.8590,PPAC Annual Report / research report §6,FY2024-25,
+16,Bathinda,HPCL-Mittal Energy Ltd,Punjab,,11.25,,30.2420,74.9500,PPAC Annual Report / research report §6,FY2024-25,JV with Mittal Energy
+17,Mangalore,Mangalore Refinery (MRPL),Karnataka,4,15.00,,12.8620,74.8470,PPAC Annual Report / research report §6,FY2024-25,ONGC subsidiary
+18,Chennai,Chennai Petroleum (CPCL),Tamil Nadu,6,10.50,,13.0460,80.2530,PPAC Annual Report / research report §6,FY2024-25,IOC subsidiary
+19,Numaligarh,Numaligarh Refinery Ltd,Assam,,3.00,,26.6270,93.7200,PPAC Annual Report / research report §6,FY2024-25,Oil India subsidiary
+20,Tatipaka,ONGC,Andhra Pradesh,,0.07,,16.5730,81.8520,PPAC Annual Report / research report §6,FY2024-25,Micro-refinery; minimal capacity

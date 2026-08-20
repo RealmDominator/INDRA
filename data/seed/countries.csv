@@ -1,0 +1,16 @@
+id,name,iso3,region,is_hormuz_dependent,is_red_sea_dependent,notes
+1,India,IND,South Asia,FALSE,FALSE,Primary consuming country
+2,Saudi Arabia,SAU,Middle East,TRUE,FALSE,Major crude supplier to India (~14-16% FY2025)
+3,Iraq,IRQ,Middle East,TRUE,FALSE,Major crude supplier to India (~20-22% FY2025)
+4,United Arab Emirates,ARE,Middle East,TRUE,FALSE,Crude supplier to India (~5-6% FY2025)
+5,Kuwait,KWT,Middle East,TRUE,FALSE,Crude supplier to India (~3-4% FY2025)
+6,Iran,IRN,Middle East,TRUE,FALSE,Historical supplier; currently under sanctions
+7,Qatar,QAT,Middle East,TRUE,FALSE,LNG/condensate supplier
+8,Russia,RUS,Europe/Asia,FALSE,FALSE,Largest crude supplier to India (~36-38% FY2025)
+9,United States,USA,Americas,FALSE,FALSE,Crude supplier to India (~5-6% FY2025)
+10,Nigeria,NGA,West Africa,FALSE,FALSE,Crude supplier to India (~2-3% FY2025)
+11,Angola,AGO,West Africa,FALSE,FALSE,Occasional crude supplier
+12,Brazil,BRA,South America,FALSE,FALSE,Emerging crude supplier
+13,Oman,OMN,Middle East,FALSE,FALSE,Gulf supplier; exports via Arabian Sea not Hormuz
+14,Malaysia,MYS,Southeast Asia,FALSE,FALSE,Crude/condensate supplier
+15,Egypt,EGY,North Africa,FALSE,TRUE,Suez Canal transit country

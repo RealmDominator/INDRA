@@ -1,0 +1,52 @@
+refinery_id,crude_grade_id,compatibility,compatibility_score,current_share_pct,max_share_pct,source_type,notes
+1,1,HIGH,0.90,,,ESTIMATED,Jamnagar DTA: Complex heavy sour refinery. High compatibility with Arab Light.
+1,2,HIGH,0.85,,,ESTIMATED,Jamnagar DTA: Complex refinery handles light grades well.
+1,3,HIGH,0.90,,,ESTIMATED,Jamnagar DTA: Designed for medium sour grades like Basrah Light.
+1,4,HIGH,0.90,,,ESTIMATED,Jamnagar DTA: Complex configuration handles heavy sour.
+1,5,MEDIUM,0.70,,,ESTIMATED,Jamnagar DTA: Can process light sweet but not optimal for complex config.
+1,6,HIGH,0.85,,,ESTIMATED,Jamnagar DTA: Good for medium sour Kuwait blend.
+1,7,HIGH,0.85,,,ESTIMATED,Jamnagar DTA: Russian Urals is medium sour; good fit.
+1,8,MEDIUM,0.65,,,ESTIMATED,Jamnagar DTA: ESPO is light sweet; processable but sub-optimal.
+2,1,HIGH,0.90,,,ESTIMATED,Jamnagar SEZ: Same complex as DTA.
+2,3,HIGH,0.90,,,ESTIMATED,Jamnagar SEZ: Same complex as DTA.
+2,4,HIGH,0.90,,,ESTIMATED,Jamnagar SEZ: Same complex as DTA.
+2,7,HIGH,0.85,,,ESTIMATED,Jamnagar SEZ: Same complex as DTA.
+3,1,HIGH,0.85,,,ESTIMATED,Paradip: Medium sour configuration.
+3,3,HIGH,0.90,,,ESTIMATED,Paradip: Designed for Basrah Light processing.
+3,6,HIGH,0.85,,,ESTIMATED,Paradip: Good for medium sour blends.
+3,7,HIGH,0.85,,,ESTIMATED,Paradip: Good for Urals (medium sour).
+3,8,MEDIUM,0.65,,,ESTIMATED,Paradip: Can handle ESPO but not primary design.
+4,1,HIGH,0.85,,,ESTIMATED,Koyali: Light-medium configuration.
+4,2,HIGH,0.90,,,ESTIMATED,Koyali: Well suited for light grades.
+4,5,HIGH,0.85,,,ESTIMATED,Koyali: Good for Murban (light sweet).
+4,7,MEDIUM,0.70,,,ESTIMATED,Koyali: Can process Urals but not primary design.
+5,1,HIGH,0.85,,,ESTIMATED,Panipat: Medium configuration.
+5,3,MEDIUM,0.70,,,ESTIMATED,Panipat: Can handle medium sour.
+5,7,MEDIUM,0.70,,,ESTIMATED,Panipat: Can process Urals.
+5,9,MEDIUM,0.65,,,ESTIMATED,Panipat: Can process WTI.
+6,1,MEDIUM,0.70,,,ESTIMATED,Mathura: Light configuration.
+6,2,HIGH,0.85,,,ESTIMATED,Mathura: Suited for lighter grades.
+6,9,MEDIUM,0.65,,,ESTIMATED,Mathura: Can handle light sweet US crude.
+11,1,MEDIUM,0.70,,,ESTIMATED,BPCL Mumbai: Light configuration.
+11,5,HIGH,0.85,,,ESTIMATED,BPCL Mumbai: Good for light sweet Murban.
+11,9,MEDIUM,0.65,,,ESTIMATED,BPCL Mumbai: Can process WTI.
+12,3,HIGH,0.90,,,ESTIMATED,BPCL Kochi: Heavy sour configuration.
+12,4,HIGH,0.85,,,ESTIMATED,BPCL Kochi: Handles heavy grades.
+12,1,MEDIUM,0.70,,,ESTIMATED,BPCL Kochi: Can process Arab Light.
+12,11,HIGH,0.85,,,ESTIMATED,BPCL Kochi: Good for Bonny Light.
+12,7,MEDIUM,0.70,,,ESTIMATED,BPCL Kochi: Can handle Urals.
+12,9,MEDIUM,0.65,,,ESTIMATED,BPCL Kochi: Can process WTI.
+14,1,MEDIUM,0.70,,,ESTIMATED,HPCL Vizag: Light-medium configuration.
+14,2,HIGH,0.85,,,ESTIMATED,HPCL Vizag: Suited for lighter grades.
+14,8,MEDIUM,0.70,,,ESTIMATED,HPCL Vizag: Can handle ESPO.
+16,1,HIGH,0.85,,,ESTIMATED,Bathinda HMEL: Medium sour configuration.
+16,3,HIGH,0.85,,,ESTIMATED,Bathinda HMEL: Designed for medium sour.
+16,7,HIGH,0.85,,,ESTIMATED,Bathinda HMEL: Good for Urals.
+17,1,HIGH,0.85,,,ESTIMATED,MRPL Mangalore: Heavy sour configuration.
+17,3,HIGH,0.90,,,ESTIMATED,MRPL Mangalore: Designed for Basrah Light/Heavy.
+17,4,HIGH,0.90,,,ESTIMATED,MRPL Mangalore: Handles heavy sour grades.
+17,6,HIGH,0.85,,,ESTIMATED,MRPL Mangalore: Good for Kuwait blend.
+17,7,HIGH,0.85,,,ESTIMATED,MRPL Mangalore: Can process Urals well.
+18,1,HIGH,0.85,,,ESTIMATED,CPCL Chennai: Medium configuration.
+18,3,MEDIUM,0.70,,,ESTIMATED,CPCL Chennai: Can handle medium sour.
+18,7,MEDIUM,0.70,,,ESTIMATED,CPCL Chennai: Can process Urals.

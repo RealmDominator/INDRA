@@ -1,0 +1,21 @@
+id,name,un_locode,country_id,is_indian,latitude,longitude,annual_crude_throughput_mmtpa,current_operational_status,source,notes
+1,Sikka (Vadinar),INSIK,1,TRUE,22.4570,69.7610,,OPERATIONAL,Indian Port Association / PPAC,Reliance Jamnagar crude-receiving port
+2,Mundra,INMUN,1,TRUE,22.8394,69.7196,,OPERATIONAL,Indian Port Association,Gujarat port; serves Mundra refinery area
+3,Mumbai (JNPT/BPT),INBOM,1,TRUE,18.9500,72.8500,,OPERATIONAL,Indian Port Association / PPAC,BPCL Mumbai refinery receiving
+4,Mangalore (New Mangalore),INMAA,1,TRUE,12.9170,74.8060,,OPERATIONAL,Indian Port Association / PPAC,MRPL Mangalore refinery receiving
+5,Kochi,INCOK,1,TRUE,9.9666,76.2353,,OPERATIONAL,Indian Port Association / PPAC,BPCL Kochi refinery receiving
+6,Chennai (Ennore),INMAA,1,TRUE,13.2130,80.3210,,OPERATIONAL,Indian Port Association / PPAC,CPCL Chennai refinery receiving
+7,Visakhapatnam,INVISP,1,TRUE,17.6868,83.2185,,OPERATIONAL,Indian Port Association / PPAC,HPCL Vizag refinery receiving; SPR location
+8,Paradip,INPRT,1,TRUE,20.2649,86.6713,,OPERATIONAL,Indian Port Association / PPAC,IOC Paradip refinery receiving
+9,Haldia,INHAL,1,TRUE,22.0256,88.0580,,OPERATIONAL,Indian Port Association,IOC Haldia refinery receiving
+10,Dahej,INDAH,1,TRUE,21.7142,72.5644,,OPERATIONAL,Indian Port Association,Gujarat LNG/crude terminal
+11,Ras Tanura,SARTA,2,FALSE,26.6440,50.1530,,OPERATIONAL,Saudi Aramco / public data,Major Saudi crude export terminal
+12,Basrah Oil Terminal (ABOT),IQBSR,3,FALSE,29.6900,48.8000,,OPERATIONAL,Iraq SOMO / public data,Primary Iraqi crude export terminal (Persian Gulf)
+13,Jebel Ali,AEJEA,4,FALSE,25.0070,55.0830,,OPERATIONAL,DP World / public data,Major UAE port; Fujairah also used for crude
+14,Fujairah,AEFJR,4,FALSE,25.1200,56.3300,,OPERATIONAL,Port of Fujairah / public data,UAE crude storage and export hub (outside Hormuz)
+15,Mina al-Ahmadi,KWMAA,5,FALSE,29.0570,48.1650,,OPERATIONAL,Kuwait Oil Company / public data,Primary Kuwaiti crude export terminal
+16,Primorsk,RUPRI,8,FALSE,60.3530,28.6560,,OPERATIONAL,Transneft / public data,Russian Baltic crude export terminal (Urals grade)
+17,Kozmino,RUKOZ,8,FALSE,42.7370,132.8860,,OPERATIONAL,Transneft / public data,Russian Pacific ESPO crude export terminal
+18,Ust-Luga,RUULU,8,FALSE,59.6790,28.3920,,OPERATIONAL,Transneft / public data,Russian Baltic crude export terminal
+19,Houston Ship Channel,USHOU,9,FALSE,29.7261,-95.0828,,OPERATIONAL,Port of Houston / public data,US Gulf Coast crude export terminal
+20,Bonny,NGBON,10,FALSE,4.4340,7.1660,,OPERATIONAL,NNPC / public data,Primary Nigerian crude export terminal

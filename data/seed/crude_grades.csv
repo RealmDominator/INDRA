@@ -1,0 +1,15 @@
+id,name,api_gravity,sulfur_content_pct,category,origin_country_id,notes,source
+1,Arab Light,32.80,1.770,MEDIUM_SOUR,2,Primary Saudi export grade,EIA / industry reference
+2,Arab Extra Light,38.50,1.150,LIGHT_SOUR,2,Premium Saudi grade,EIA / industry reference
+3,Basrah Light,29.00,2.900,MEDIUM_SOUR,3,Primary Iraqi export grade,EIA / industry reference
+4,Basrah Heavy,23.00,3.800,HEAVY_SOUR,3,Heavy Iraqi export grade,EIA / industry reference
+5,Murban,40.50,0.780,LIGHT_SWEET,4,Primary UAE (ADNOC) export grade,EIA / industry reference
+6,Kuwait Export Blend,31.40,2.520,MEDIUM_SOUR,5,Primary Kuwaiti export grade,EIA / industry reference
+7,Urals,31.70,1.350,MEDIUM_SOUR,8,Primary Russian export grade (Baltic/Black Sea),EIA / industry reference
+8,ESPO,34.80,0.620,LIGHT_SWEET,8,Russian Eastern Siberia-Pacific Ocean grade (Kozmino),EIA / industry reference
+9,WTI,39.60,0.240,LIGHT_SWEET,9,US benchmark grade (West Texas Intermediate),EIA / industry reference
+10,Eagle Ford,47.00,0.100,LIGHT_SWEET,9,US shale light crude,EIA / industry reference
+11,Bonny Light,33.40,0.160,LIGHT_SWEET,10,Primary Nigerian export grade,EIA / industry reference
+12,Brent,38.30,0.370,LIGHT_SWEET,,International benchmark grade (North Sea). Not a single origin.,EIA / industry reference
+13,Dubai,31.00,2.040,MEDIUM_SOUR,,Middle East benchmark grade,EIA / industry reference
+14,Iran Heavy,30.20,1.770,MEDIUM_SOUR,6,Iranian export grade (currently under sanctions),EIA / industry reference

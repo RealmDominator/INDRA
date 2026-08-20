@@ -1,0 +1,4 @@
+id,location_name,operator,state,capacity_mmt,current_level_mmt,latitude,longitude,data_classification,source,source_date,notes
+1,Visakhapatnam,ISPRL,Andhra Pradesh,1.33,,17.6868,83.2185,HISTORICAL,ISPRL official website / MoPNG reports,2025,Underground rock cavern storage. Current fill level NOT publicly disclosed.
+2,Mangalore,ISPRL,Karnataka,1.50,,12.8680,74.8430,HISTORICAL,ISPRL official website / MoPNG reports,2025,Underground rock cavern storage. Current fill level NOT publicly disclosed.
+3,Padur,ISPRL,Karnataka,2.50,,12.5550,74.9380,HISTORICAL,ISPRL official website / MoPNG reports,2025,Largest Indian SPR facility. Underground rock cavern. Current fill level NOT publicly disclosed.
