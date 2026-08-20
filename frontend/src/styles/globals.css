@@ -1,0 +1,20 @@
+:root {
+  font-family: Arial, sans-serif;
+  color: #172033;
+  background: #f6f8fb;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; }
+
+.app-shell {
+  max-width: 720px;
+  margin: 12vh auto;
+  padding: 2rem;
+  border: 1px solid #d9e0ea;
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.status { color: #526075; }

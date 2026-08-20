@@ -4,7 +4,7 @@
 >
 > **Date:** 20 August 2026
 >
-> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 NOT STARTED
+> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 NOT STARTED
 
 ---
 
@@ -47,9 +47,10 @@ This is a **hackathon MVP**, not an enterprise production platform.
 | **Step 0** | Project Foundation | ✅ COMPLETE |
 | **Step 1** | Architecture Adversarial Review + Corrections | ✅ COMPLETE |
 | **Step 2** | Architecture Freeze | ✅ COMPLETE |
-| **Step 3** | Implementation | ❌ NOT STARTED |
+| **Step 3** | Local Development Foundation | ✅ COMPLETE |
+| **Step 4** | Feature Implementation | ❌ NOT STARTED |
 
-> **Architecture is frozen for Phase-1 implementation.** Do NOT start Step 3 until explicitly initiated by the user.
+> **Architecture is frozen for Phase-1 implementation.** Step 3 established only the local development foundation; Step 4 must not start without explicit user direction.
 
 ---
 
@@ -528,23 +529,34 @@ If two research reports disagree and the review process did not resolve the disa
 
 ## What Has NOT Been Done
 
-- ❌ Step 2 Architecture Freeze
-- ❌ ARCHITECTURE_DECISIONS.md creation
-- ❌ Environment setup for implementation
-- ❌ PostgreSQL implementation
-- ❌ Redis implementation
-- ❌ Real external API integration
-- ❌ Dataset acquisition
-- ❌ LLM benchmark
-- ❌ LLM provider implementation
-- ❌ Entity resolution implementation
-- ❌ Risk engine implementation
-- ❌ Scenario engine implementation
-- ❌ Optimization engine implementation
-- ❌ FastAPI implementation
-- ❌ React implementation
-- ❌ ML experimentation
+- ❌ Data acquisition and external API ingestion
+- ❌ LLM integration and final application-LLM selection
+- ❌ Entity resolution
+- ❌ Risk engine
+- ❌ Scenario engine
+- ❌ Optimization / procurement engine
+- ❌ Real dashboard (maps, charts, risk cards, simulator, recommendations, evidence drawer)
+- ❌ ML
 - ❌ Deployment
+
+---
+
+## Step 3 Summary — Local Development Foundation (COMPLETE)
+
+Step 3 established a reproducible local foundation without implementing product features:
+
+- Python 3.11+ virtual-environment workflow and a minimal dependency baseline: FastAPI, Uvicorn, Pydantic/Pydantic Settings, SQLAlchemy, and asyncpg.
+- FastAPI application skeleton with local CORS and the sole implemented endpoint, `GET /health`. The endpoint reports PostgreSQL connectivity without exposing credentials.
+- PostgreSQL-only Docker Compose development service with configurable credentials/database name, an exposed local port, named persistent volume, and health check. No Redis or other infrastructure was added.
+- React/Vite startup shell using vanilla CSS, configured on port 3000. It makes no business API calls.
+- `.env.example` placeholders for application, database, and future LLM provider/model settings; no real `.env`, API keys, or secrets were added.
+- Windows PowerShell instructions in `docs/04-backend/DEVELOPMENT_SETUP.md` and `docs/03-frontend/DEVELOPMENT_SETUP.md`; README and testing documentation reflect the foundation scope.
+
+`db/schema.sql` and `db/seed.sql` remain planned review artifacts. They were not deployed and no fabricated data was inserted.
+
+**Review note:** `db/schema.sql` is syntactically structured PostgreSQL DDL, but it still reflects the pre-freeze model (for example, it lacks the frozen `corridors` table and uses the older price table names). It must be reconciled with the frozen database documentation in its own authorized implementation step before any schema deployment; Step 3 did not change or execute it.
+
+**NOT IMPLEMENTED YET:** data acquisition; external API ingestion; LLM integration; entity resolution; risk engine; scenario engine; optimization; real dashboard; ML; deployment.
 
 ---
 
@@ -566,17 +578,14 @@ If documentation conflicts with this context:
 
 ---
 
-## Step 2 Boundary
+## Step 4 Boundary
 
-> **STEP 2 HAS NOT STARTED.**
+> **STEP 4 HAS NOT STARTED.**
 >
 > Do not:
-> - Perform architecture freeze
-> - Create ARCHITECTURE_DECISIONS.md
-> - Mark the architecture as FROZEN
-> - Finalize the API contract
-> - Finalize the database implementation
-> - Finalize the application LLM
-> - Start implementation
+> - Implement business features
+> - Integrate external data services or an LLM
+> - Implement entity resolution or any engine
+> - Build dashboard views or deployment infrastructure
 >
-> The user will explicitly initiate Step 2.
+> The user will explicitly initiate Step 4.

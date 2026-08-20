@@ -1,6 +1,6 @@
 # INDRA — Testing Strategy
 
-> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION** — Test cases defined; tests not yet written.
+> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION.** Step 3 verified the local foundation manually; feature test cases below remain planned until their corresponding implementation steps.
 >
 > This document defines the testing contract for INDRA. Tests should be written alongside Step 3 implementation, not before.
 
@@ -13,6 +13,12 @@
 3. **Test data integrity** — Every data classification tag must be accurate
 4. **Test gracefully degradation** — External API failures should not crash the system
 5. **No fabricated test results** — Report actual test outcomes
+
+## Step 3 Foundation Checks
+
+Implemented scope is deliberately limited to the FastAPI startup foundation, `GET /health`, PostgreSQL connectivity reporting, and the React/Vite startup shell. Run the commands in the backend and frontend development setup documents to verify them independently.
+
+`GET /health` must respond successfully whether PostgreSQL is connected or temporarily unavailable; its `database` field communicates the dependency state without leaking credentials. Full schema, business API, engine, and UI tests below are planned for later steps.
 
 ---
 

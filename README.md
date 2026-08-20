@@ -62,23 +62,18 @@ LLM Event Extraction → Entity Resolution (entity_aliases + RapidFuzz)
 
 ## Current Development Status
 
-**Step 0 — Foundation (CURRENT)**
+**Step 3 — Local Development Foundation (COMPLETE)**
 
 The project is in the foundation phase. The repository structure, documentation contract, and development rules have been established. No application feature code has been implemented.
 
-**What exists:**
-- Complete documentation contract (architecture, API spec, database schema, AI/ML strategy, etc.)
-- Research reports that define scope and constraints
-- Development rules and conventions
-- Planned directory structure
+**Implemented in Step 3:**
+- Python 3.11+ virtual-environment workflow and minimal backend dependency manifest
+- FastAPI application with local CORS and `GET /health`
+- Docker Compose PostgreSQL-only development service with a named volume and health check
+- React/Vite startup shell using vanilla CSS (port 3000)
+- `.env.example` configuration template and Windows PowerShell setup instructions
 
-**What does NOT exist yet:**
-- FastAPI routes / business logic
-- React components / UI
-- Trained ML models
-- Live API integrations
-- Database migrations
-- Docker deployment services
+**Planned for later steps:** business API routes, database schema deployment and migrations, data acquisition, external API ingestion, LLM integration, entity resolution, risk/scenario/optimization engines, dashboard features, ML, and deployment.
 
 ## Repository Structure
 
@@ -199,6 +194,10 @@ Key rules:
 6. Numerical calculations must remain reproducible
 7. Every important output must have an evidence/source path
 8. Maintain the existing folder structure
+
+## Local Development
+
+See [backend setup](docs/04-backend/DEVELOPMENT_SETUP.md) and [frontend setup](docs/03-frontend/DEVELOPMENT_SETUP.md) for tested commands. The local services are FastAPI at `http://localhost:8000`, health check at `http://localhost:8000/health`, Vite at `http://localhost:3000`, and PostgreSQL through `docker compose up -d postgres`.
 
 ## Links to Important Documents
 

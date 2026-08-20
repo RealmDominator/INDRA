@@ -1,0 +1,68 @@
+"""
+INDRA — Health endpoint
+
+GET /api/v1/health
+
+Returns basic application health status and database connectivity.
+This is the ONLY implemented endpoint in Step 3.
+
+Business endpoints (events, risk, scenarios, etc.) are NOT implemented here.
+See docs/04-backend/API_SPEC.md for the full planned API contract.
+"""
+import time
+from datetime import datetime, timezone
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+
+from app.database import check_db_connection
+
+router = APIRouter(tags=["health"])
+
+_start_time = time.time()
+
+
+class HealthResponse(BaseModel):
+    status: str
+    environment: str
+    version: str
+    uptime_seconds: float
+    timestamp: str
+    database: str
+    message: str
+
+
+@router.get(
+    "/health",
+    response_model=HealthResponse,
+    summary="Application health check",
+    description=(
+        "Returns application health status and database connectivity. "
+        "This is the only endpoint implemented in Step 3 (foundation). "
+        "Business endpoints are planned for later steps."
+    ),
+)
+async def health_check() -> HealthResponse:
+    """
+    Lightweight health check.
+    - status: 'ok' if service is running
+    - database: 'connected' | 'unavailable'
+    """
+    from app.config.settings import get_settings
+    settings = get_settings()
+
+    db_ok = await check_db_connection()
+
+    return HealthResponse(
+        status="ok",
+        environment=settings.app_env,
+        version="0.1.0-step3",
+        uptime_seconds=round(time.time() - _start_time, 2),
+        timestamp=datetime.now(timezone.utc).isoformat(),
+        database="connected" if db_ok else "unavailable",
+        message=(
+            "INDRA backend is running. Database connected."
+            if db_ok
+            else "INDRA backend is running. Database unavailable — start Docker PostgreSQL."
+        ),
+    )
