@@ -98,8 +98,8 @@ INDRA/
 │   └── 10-demo/
 │       └── DEMO_SCRIPT.md
 │
-├── backend/                            ← empty, not implemented
-├── frontend/                           ← empty, not implemented
+├── backend/                            ← FastAPI development foundation exists; /health endpoint implemented; business API routes not implemented
+├── frontend/                           ← React/Vite development foundation exists; basic application shell exists; business dashboard/features not implemented
 ├── data/                               ← empty, no datasets acquired
 ├── ml/                                 ← empty, no models trained
 ├── prompts/                            ← empty
