@@ -371,23 +371,23 @@ This is marked as `ESTIMATED` in provenance.
 
 ---
 
-## Summary Table
+## Summary Table (Updated: Phase B Execution)
 
-| Dataset | Target Table | Source | Status | Semantic Class |
-|---|---|---|---|---|
-| Countries | `countries` | ISO 3166-1 / research | CURATED | OBSERVED |
-| Corridors | `corridors` | Architecture docs / research | CURATED | ASSUMED |
-| Ports | `ports` | UN/LOCODE / IPA / research | CURATED | OBSERVED |
-| Refineries | `refineries` | PPAC / research report §6 | CURATED | HISTORICAL_CALIBRATED |
-| Suppliers | `suppliers` | PPAC / OFAC / research | CURATED | HISTORICAL_CALIBRATED |
-| Crude Grades | `crude_grades` | EIA / industry refs | CURATED | OBSERVED |
-| Refinery Supply Mix | `refinery_supply_mix` | Research / PPAC partial | CURATED | ESTIMATED |
-| Routes | `routes` | Nautical refs / research | CURATED | ESTIMATED |
-| SPR | `strategic_reserves` | ISPRL official | CURATED | OBSERVED |
-| Data Sources | `data_sources` | Architecture docs | CURATED | N/A |
-| Preset Scenarios | `scenarios` | Scenario Engine doc | CURATED | ASSUMED |
-| EIA Prices | `commodity_prices` | EIA API/bulk | REQUIRES_REGISTRATION | OBSERVED |
-| RBI FX | `fx_rates` | RBI DBIE | AVAILABLE | OBSERVED |
-| OFAC SDN | Reference data | OFAC Treasury | AVAILABLE | OBSERVED |
-| GDELT | `geopolitical_events` | gdeltproject.org | DEFERRED | N/A |
-| ACLED | `geopolitical_events` | acleddata.com | DEFERRED | N/A |
+| Dataset | Target Table | Source | Plan Status | Execution Status | Records | Semantic Class |
+|---|---|---|---|---|---|---|
+| Countries | `countries` | ISO 3166-1 / research | CURATED | **ACQUIRED** | 15 | OBSERVED |
+| Corridors | `corridors` | Architecture docs / research | CURATED | **ACQUIRED** | 6 | ASSUMED |
+| Ports | `ports` | UN/LOCODE / IPA / research | CURATED | **ACQUIRED** | 20 | OBSERVED |
+| Refineries | `refineries` | PPAC / research report | CURATED | **ACQUIRED** | 20 | HISTORICAL_CALIBRATED |
+| Suppliers | `suppliers` | PPAC / OFAC / research | CURATED | **ACQUIRED** | 8 | HISTORICAL_CALIBRATED |
+| Crude Grades | `crude_grades` | EIA / industry refs | CURATED | **ACQUIRED** | 14 | OBSERVED |
+| Refinery Supply Mix | `refinery_supply_mix` | Research / PPAC partial | CURATED | **ACQUIRED** | 51 | ESTIMATED |
+| Routes | `routes` | Nautical refs / research | CURATED | **ACQUIRED** | 15 | ESTIMATED |
+| SPR | `strategic_reserves` | ISPRL official | CURATED | **ACQUIRED** | 3 | OBSERVED |
+| Data Sources | `data_sources` | Architecture docs | CURATED | **ACQUIRED** | 10 | N/A |
+| Preset Scenarios | `scenarios` | Scenario Engine doc | CURATED | **ACQUIRED** | 5 | ASSUMED |
+| EIA Prices | `commodity_prices` | EIA API/bulk | REQUIRES_REGISTRATION | REQUIRES_REGISTRATION | 0 | OBSERVED |
+| RBI FX | `fx_rates` | RBI DBIE | AVAILABLE | **DOCUMENTED** | 3 (sample) | OBSERVED |
+| OFAC SDN | Reference data | OFAC Treasury | AVAILABLE | **ACQUIRED** | 1,674 (filtered) | OBSERVED |
+| GDELT | `geopolitical_events` | gdeltproject.org | DEFERRED | DEFERRED | 0 | N/A |
+| ACLED | `geopolitical_events` | acleddata.com | DEFERRED | DEFERRED | 0 | N/A |

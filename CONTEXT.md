@@ -2,9 +2,9 @@
 
 > **Purpose:** Durable context file for AI development agents taking over the INDRA project.
 >
-> **Date:** 20 August 2026
+> **Date:** 21 August 2026
 >
-> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 NOT STARTED
+> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 NOT STARTED
 
 ---
 
@@ -48,9 +48,10 @@ This is a **hackathon MVP**, not an enterprise production platform.
 | **Step 1** | Architecture Adversarial Review + Corrections | ✅ COMPLETE |
 | **Step 2** | Architecture Freeze | ✅ COMPLETE |
 | **Step 3** | Local Development Foundation | ✅ COMPLETE |
-| **Step 4** | Feature Implementation | ❌ NOT STARTED |
+| **Step 4** | Data Foundation | ✅ COMPLETE |
+| **Step 5** | Feature Implementation | ❌ NOT STARTED |
 
-> **Architecture is frozen for Phase-1 implementation.** Step 3 established only the local development foundation; Step 4 must not start without explicit user direction.
+> **Architecture is frozen for Phase-1 implementation.** Step 4 established the India-specific data foundation. Step 5 must not start without explicit user direction.
 
 ---
 
@@ -100,11 +101,16 @@ INDRA/
 │
 ├── backend/                            ← FastAPI development foundation exists; /health endpoint implemented; business API routes not implemented
 ├── frontend/                           ← React/Vite development foundation exists; basic application shell exists; business dashboard/features not implemented
-├── data/                               ← empty, no datasets acquired
+├── data/
+│   ├── seed/                           ← 11 curated seed CSV files (167 rows total)
+│   ├── raw/ofac/                       ← OFAC SDN list (raw download, .gitignored)
+│   ├── processed/ofac/                 ← Energy-relevant OFAC extract (.gitignored)
+│   ├── processed/rbi/                  ← RBI FX sample format (.gitignored)
+│   └── metadata/                       ← data_manifest.json (provenance)
 ├── ml/                                 ← empty, no models trained
 ├── prompts/                            ← empty
-├── db/                                 ← empty, no migrations
-├── scripts/                            ← empty
+├── db/                                 ← schema.sql (reconciled with frozen schema), seed.sql (generated from CSVs)
+├── scripts/data/                       ← validation, acquisition, and loader scripts
 └── deployment/                         ← empty
 ```
 
@@ -529,7 +535,7 @@ If two research reports disagree and the review process did not resolve the disa
 
 ## What Has NOT Been Done
 
-- ❌ Data acquisition and external API ingestion
+- ✅ Data acquisition and seed datasets (Step 4)
 - ❌ LLM integration and final application-LLM selection
 - ❌ Entity resolution
 - ❌ Risk engine
@@ -578,14 +584,76 @@ If documentation conflicts with this context:
 
 ---
 
-## Step 4 Boundary
+## Step 4 Summary — Data Foundation (COMPLETE)
 
-> **STEP 4 HAS NOT STARTED.**
+Step 4 created the India-specific supply-chain data foundation:
+
+### Seed Datasets Created (11 files, 167 rows total)
+- `data/seed/countries.csv` — 15 countries (India + supplier/transit nations)
+- `data/seed/corridors.csv` — 6 Phase-1 corridors (HORMUZ, RED_SEA, SUEZ, MALACCA, RUSSIA, CAPE)
+- `data/seed/crude_grades.csv` — 14 crude oil grades with API gravity/sulfur specs
+- `data/seed/ports.csv` — 20 ports (10 Indian + 10 international)
+- `data/seed/refineries.csv` — 20 Indian refineries with PPAC-sourced capacities
+- `data/seed/suppliers.csv` — 8 major crude supplier entities
+- `data/seed/refinery_supply_mix.csv` — 51 refinery-grade compatibility entries (all ESTIMATED)
+- `data/seed/routes.csv` — 15 supply routes with distances and corridor refs
+- `data/seed/spr.csv` — 3 ISPRL strategic reserve locations
+- `data/seed/data_sources.csv` — 10 external data source registry entries
+- `data/seed/scenarios.csv` — 5 preset disruption scenarios
+
+### Historical / Reference Data
+- OFAC SDN list downloaded (5.4 MB raw; 1,674 energy-relevant entities extracted)
+- RBI FX sample format file created (bulk download requires manual DBIE access)
+- EIA commodity prices: REQUIRES_REGISTRATION (free API key at api.eia.gov)
+
+### Schema Reconciliation
+- `db/schema.sql` reconciled with frozen `DATABASE_SCHEMA.md` (added corridors, crude_grades, refinery_supply_mix, fx_rates, evidence tables; removed deprecated columns)
+- `db/seed.sql` generated from seed CSVs with proper INSERT statements
+
+### Provenance
+- `data/metadata/data_manifest.json` — 17 dataset entries with checksums and source metadata
+- `data/metadata/historical_acquisition.json` — acquisition execution log
+
+### Validation
+- All seed datasets pass validation (0 errors, 167 rows)
+- All historical datasets pass validation (0 errors, 1,677 rows)
+- Cross-dataset referential integrity verified
+
+### Scripts Created
+- `scripts/data/validate_seed_data.py`
+- `scripts/data/validate_historical_data.py`
+- `scripts/data/load_seed_data.py`
+- `scripts/data/acquire_historical_data.py`
+
+### Documentation Created
+- `docs/06-data/DATA_ACQUISITION_PLAN.md` (Phase A)
+- `docs/06-data/DATA_ACQUISITION_REPORT.md` (Phase B)
+
+### Deferred Sources
+- GDELT: deferred to event-ingestion step
+- ACLED: deferred to event-ingestion step
+- EIA prices: deferred until API key registration
+- RBI bulk FX: deferred until manual DBIE download
+
+### Data Honesty
+- All ESTIMATED values explicitly labeled with methodology
+- All UNKNOWN/NULL values documented
+- No fabricated values exist
+- SIMULATED data never represented as live data
+- GDELT/ACLED documented as DEFERRED only
+
+**NOT IMPLEMENTED:** LLM integration; entity resolution; risk engine; scenario engine; optimization; frontend dashboard; ML; deployment.
+
+---
+
+## Step 5 Boundary
+
+> **STEP 5 HAS NOT STARTED.**
 >
 > Do not:
-> - Implement business features
+> - Implement business features without explicit user direction
 > - Integrate external data services or an LLM
 > - Implement entity resolution or any engine
 > - Build dashboard views or deployment infrastructure
 >
-> The user will explicitly initiate Step 4.
+> The user will explicitly initiate Step 5.

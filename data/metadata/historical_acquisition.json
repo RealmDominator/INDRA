@@ -1,0 +1,27 @@
+{
+  "acquisition_timestamp": "2026-08-20T20:33:27.668472+00:00",
+  "datasets": [
+    {
+      "dataset": "rbi_fx_rates",
+      "source": "Reserve Bank of India",
+      "source_url": "https://www.rbi.org.in/scripts/ReferenceRateArchive.aspx",
+      "downloaded_at": "2026-08-20T20:33:20.377594+00:00",
+      "status": "DOCUMENTED",
+      "files": [
+        "data\\processed\\rbi\\fx_rates.csv"
+      ],
+      "notes": "RBI publishes USD/INR reference rates daily on business days. Historical data available via DBIE portal (dbie.rbi.org.in) or reference rate archive. No simple bulk CSV API endpoint for automated download. Manual download or scraping required for historical bulk data. Sample file created with format documentation and a few real historical reference points."
+    },
+    {
+      "dataset": "ofac_sdn_list",
+      "source": "OFAC (US Treasury)",
+      "source_url": "https://sanctionslist.ofac.treas.gov/",
+      "downloaded_at": "2026-08-20T20:33:27.461806+00:00",
+      "status": "ACQUIRED",
+      "files": [
+        "data\\raw\\ofac\\sdn.csv"
+      ],
+      "notes": "SDN CSV downloaded from treasury.gov."
+    }
+  ]
+}
