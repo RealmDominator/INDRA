@@ -67,10 +67,11 @@ def validate_commodity_prices():
             except ValueError:
                 error(name, "Row %d: invalid timestamp '%s'" % (i + 1, ts))
 
-        # Data semantic must be valid
+        # Data semantic must match frozen schema classification
         semantic = row.get("data_semantic", "")
-        if semantic and semantic not in ("OBSERVED", "HISTORICAL"):
-            error(name, "Row %d: unexpected data_semantic '%s'" % (i + 1, semantic))
+        valid_semantics = ("OBSERVED", "DERIVED", "HISTORICAL_CALIBRATED", "ASSUMED", "SIMULATED")
+        if semantic and semantic not in valid_semantics:
+            error(name, "Row %d: unexpected data_semantic '%s' (valid: %s)" % (i + 1, semantic, ', '.join(valid_semantics)))
 
 
 def validate_fx_rates():

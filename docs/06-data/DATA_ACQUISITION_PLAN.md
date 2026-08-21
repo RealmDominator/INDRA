@@ -387,7 +387,7 @@ This is marked as `ESTIMATED` in provenance.
 | Data Sources | `data_sources` | Architecture docs | CURATED | **ACQUIRED** | 10 | N/A |
 | Preset Scenarios | `scenarios` | Scenario Engine doc | CURATED | **ACQUIRED** | 5 | ASSUMED |
 | EIA Prices | `commodity_prices` | EIA API/bulk | REQUIRES_REGISTRATION | REQUIRES_REGISTRATION | 0 | OBSERVED |
-| RBI FX | `fx_rates` | RBI DBIE | AVAILABLE | **DOCUMENTED** | 3 (sample) | OBSERVED |
+| RBI FX | `fx_rates` | RBI DBIE | AVAILABLE | **PARTIAL** | 3 (real values) | OBSERVED |
 | OFAC SDN | Reference data | OFAC Treasury | AVAILABLE | **ACQUIRED** | 1,674 (filtered) | OBSERVED |
 | GDELT | `geopolitical_events` | gdeltproject.org | DEFERRED | DEFERRED | 0 | N/A |
 | ACLED | `geopolitical_events` | acleddata.com | DEFERRED | DEFERRED | 0 | N/A |

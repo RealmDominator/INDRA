@@ -25,7 +25,7 @@
 | Preset Scenarios | `scenarios` | Scenario Engine doc | 5 | `data/seed/scenarios.csv` | ACQUIRED |
 | OFAC SDN (raw) | Reference | OFAC Treasury | ~12,500+ | `data/raw/ofac/sdn.csv` | ACQUIRED |
 | OFAC SDN (processed) | Reference | OFAC (filtered) | 1,674 | `data/processed/ofac/sanctions_entities.csv` | ACQUIRED |
-| RBI FX rates (sample) | `fx_rates` | RBI | 3 | `data/processed/rbi/fx_rates.csv` | DOCUMENTED |
+| RBI FX rates (sample) | `fx_rates` | RBI | 3 | `data/processed/rbi/fx_rates.csv` | PARTIAL |
 
 **Total seed records:** 167
 **Total historical/reference records:** 1,677
@@ -41,7 +41,7 @@
 | PPAC | ppac.gov.in | Public reports (manual curation) |
 | ISPRL | isprl.gov.in | Public data |
 | EIA | api.eia.gov | REQUIRES_REGISTRATION |
-| RBI | rbi.org.in/scripts/ReferenceRateArchive.aspx | DOCUMENTED (no bulk CSV API) |
+| RBI | rbi.org.in/scripts/ReferenceRateArchive.aspx | PARTIAL (no bulk CSV API; 3 real data points documented) |
 | OFAC SDN | treasury.gov/ofac/downloads/sdn.csv | Downloaded successfully |
 | Sea-distances | sea-distances.org | Public nautical reference |
 

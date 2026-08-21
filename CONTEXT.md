@@ -602,9 +602,9 @@ Step 4 created the India-specific supply-chain data foundation:
 - `data/seed/scenarios.csv` — 5 preset disruption scenarios
 
 ### Historical / Reference Data
-- OFAC SDN list downloaded (5.4 MB raw; 1,674 energy-relevant entities extracted)
-- RBI FX sample format file created (bulk download requires manual DBIE access)
-- EIA commodity prices: REQUIRES_REGISTRATION (free API key at api.eia.gov)
+- OFAC SDN list downloaded (5.4 MB raw; 1,674 energy-relevant entities extracted; status: ACQUIRED)
+- RBI FX: 3 real reference-rate data points documented (status: PARTIAL; RBI has no bulk CSV API; full historical requires manual DBIE portal download)
+- EIA commodity prices: not acquired (status: REQUIRES_REGISTRATION; free API key at api.eia.gov)
 
 ### Schema Reconciliation
 - `db/schema.sql` reconciled with frozen `DATABASE_SCHEMA.md` (added corridors, crude_grades, refinery_supply_mix, fx_rates, evidence tables; removed deprecated columns)
@@ -635,7 +635,8 @@ Step 4 created the India-specific supply-chain data foundation:
 - EIA prices: deferred until API key registration
 - RBI bulk FX: deferred until manual DBIE download
 
-### Data Honesty
+### Data Semantic Compliance
+- All data_semantic values use frozen schema classifications: OBSERVED, DERIVED, HISTORICAL_CALIBRATED, ASSUMED, SIMULATED
 - All ESTIMATED values explicitly labeled with methodology
 - All UNKNOWN/NULL values documented
 - No fabricated values exist

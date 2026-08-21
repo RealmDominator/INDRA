@@ -260,15 +260,15 @@
       "source_organization": "Reserve Bank of India",
       "source_published_at": null,
       "downloaded_at": "2026-08-20T20:37:31.936518+00:00",
-      "semantic_class": "HISTORICAL",
-      "transformation": "Sample format file with documented real reference points",
+      "semantic_class": "OBSERVED",
+      "transformation": "3 real RBI reference rate values documented as format sample. Bulk historical requires manual DBIE portal download.",
       "target_table": "fx_rates",
       "record_count": 3,
-      "checksum": "abbdf88d5771a6562525bbaef5eed42d68a94a82bdd54142ff3bef7421d8eeff",
-      "file_size_bytes": 217,
-      "notes": "Sample file. Bulk historical download requires manual DBIE portal access.",
+      "checksum": "N/A",
+      "file_size_bytes": 211,
+      "notes": "PARTIAL: Only 3 real reference data points. RBI has no bulk CSV API. Full historical requires manual DBIE portal download (dbie.rbi.org.in). Not fabricated.",
       "license": "RBI public data",
-      "status": "DOCUMENTED"
+      "status": "PARTIAL"
     },
     {
       "dataset_id": "historical_eia_prices",
@@ -285,7 +285,7 @@
       "record_count": 0,
       "checksum": "N/A",
       "file_size_bytes": 0,
-      "notes": "Requires free API key. Register at api.eia.gov.",
+      "notes": "REQUIRES_REGISTRATION: EIA API v2 requires a free API key. Register at https://www.eia.gov/opendata/register.php. Set EIA_API_KEY env var and run: python scripts/data/acquire_historical_data.py --eia-key $EIA_API_KEY. Bulk XLS download (eia.gov/dnav/pet/) also available but requires manual access.",
       "license": "US Government public data",
       "status": "REQUIRES_REGISTRATION"
     },

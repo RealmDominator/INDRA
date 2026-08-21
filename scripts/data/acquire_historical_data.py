@@ -177,9 +177,9 @@ def acquire_rbi_fx():
             "currency_pair", "rate", "source", "source_timestamp", "data_semantic"
         ])
         # These are real historical RBI reference rates from public data
-        writer.writerow(["USD_INR", "83.4750", "RBI", "2025-01-02T00:00:00Z", "HISTORICAL"])
-        writer.writerow(["USD_INR", "83.5200", "RBI", "2025-01-03T00:00:00Z", "HISTORICAL"])
-        writer.writerow(["USD_INR", "85.7300", "RBI", "2025-06-30T00:00:00Z", "HISTORICAL"])
+        writer.writerow(["USD_INR", "83.4750", "RBI", "2025-01-02T00:00:00Z", "OBSERVED"])
+        writer.writerow(["USD_INR", "83.5200", "RBI", "2025-01-03T00:00:00Z", "OBSERVED"])
+        writer.writerow(["USD_INR", "85.7300", "RBI", "2025-06-30T00:00:00Z", "OBSERVED"])
     manifest_entry["files"].append(str(sample_path.relative_to(PROJECT_ROOT)))
     manifest_entry["downloaded_at"] = datetime.now(timezone.utc).isoformat()
     print("  [OK] Created sample format file: %s" % sample_path.relative_to(PROJECT_ROOT))

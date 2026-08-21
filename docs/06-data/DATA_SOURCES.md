@@ -267,3 +267,22 @@ Commodity prices (EIA) and FX rates (RBI) are ingested independently into separa
 4. Record both source timestamps in the evidence trail
 
 This is a **query-time calculation**, not a stored column. The previous design using a PostgreSQL GENERATED column has been removed because EIA and RBI data arrive asynchronously at different timestamps.
+
+---
+
+## Step 4 — Acquisition Status (21 August 2026)
+
+| Source | Step 4 Status | Details |
+|---|---|---|
+| **GDELT** | DEFERRED | Deferred to event-ingestion step. Not seed data. |
+| **OFAC** | **ACQUIRED** | SDN list downloaded (5.6 MB raw). 1,674 energy-relevant entities extracted. |
+| **RSS** | DEFERRED | Deferred to event-ingestion step. |
+| **ACLED** | DEFERRED | Deferred to event-ingestion step. Requires registration. |
+| **EIA** | REQUIRES_REGISTRATION | Free API key required (api.eia.gov). Bulk XLS download also requires programmatic access. No commodity price data acquired in Step 4. |
+| **RBI** | PARTIAL | 3 real reference-rate data points documented. No bulk CSV API available. Full historical requires manual DBIE portal download. |
+| **NewsAPI** | DEFERRED | Deferred to event-ingestion step. |
+| **PPAC** | **ACQUIRED** (manual) | Refinery capacities, import shares, and supplier data curated from PPAC annual reports via research reports into seed datasets. |
+| **ISPRL** | **ACQUIRED** (manual) | 3 SPR locations with capacities from ISPRL official website. Current fill levels not publicly disclosed. |
+| **Data.gov.in** | DEFERRED | No specific datasets required for Phase 1 seed data beyond PPAC. |
+| **World Bank** | DEFERRED | Historical commodity prices deferred; EIA is primary source. |
+
