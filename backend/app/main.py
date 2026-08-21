@@ -1,4 +1,4 @@
-"""INDRA FastAPI application — Step 3 development foundation only."""
+"""INDRA FastAPI application — Step 5 database foundation only."""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -9,7 +9,7 @@ settings = get_settings()
 
 app = FastAPI(
     title="INDRA API",
-    version="0.1.0-step3",
+    version="0.1.0-step5",
     description="Local development foundation. Business API routes are planned for later steps.",
 )
 

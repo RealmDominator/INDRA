@@ -62,7 +62,7 @@ LLM Event Extraction → Entity Resolution (entity_aliases + RapidFuzz)
 
 ## Current Development Status
 
-**Step 3 — Local Development Foundation (COMPLETE)**
+**Step 5 — PostgreSQL Implementation + Verified Data Loading (COMPLETE)**
 
 The project is in the foundation phase. The repository structure, documentation contract, and development rules have been established. No application feature code has been implemented.
 
@@ -72,6 +72,13 @@ The project is in the foundation phase. The repository structure, documentation 
 - Docker Compose PostgreSQL-only development service with a named volume and health check
 - React/Vite startup shell using vanilla CSS (port 3000)
 - `.env.example` configuration template and Windows PowerShell setup instructions
+
+**Implemented in Step 5:**
+- Frozen PostgreSQL schema applied and verified against a clean PostgreSQL 16 container
+- Curated Step-4 seed SQL loaded with 167 validated reference rows
+- Reproducible initialization, reset/reseed, and integrity-check scripts
+- SQLAlchemy PostgreSQL connectivity and `/health` database status verified
+- Minimal Alembic structure prepared; `db/schema.sql` remains authoritative and no migration was generated
 
 **Planned for later steps:** business API routes, database schema deployment and migrations, data acquisition, external API ingestion, LLM integration, entity resolution, risk/scenario/optimization engines, dashboard features, ML, and deployment.
 

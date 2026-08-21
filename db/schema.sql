@@ -282,7 +282,7 @@ CREATE TABLE IF NOT EXISTS data_sources (
     update_frequency VARCHAR(50),
     last_fetched_at TIMESTAMP,
     status VARCHAR(20) DEFAULT 'ACTIVE',         -- ACTIVE, STALE, ERROR, UNAVAILABLE
-    classification VARCHAR(20)                   -- OBSERVED, HISTORICAL_CALIBRATED
+    classification VARCHAR(30)                   -- OBSERVED, HISTORICAL_CALIBRATED
 );
 
 -- =============================================================================

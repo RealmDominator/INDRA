@@ -250,7 +250,8 @@ def generate_refinery_supply_mix_sql(rows):
         lines.append(
             "INSERT INTO refinery_supply_mix (refinery_id, crude_grade_id, compatibility, "
             "compatibility_score, current_share_pct, max_share_pct, source_type, notes) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s);" % (
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            " ON CONFLICT (refinery_id, crude_grade_id) DO NOTHING;" % (
                 format_int(row["refinery_id"]),
                 format_int(row["crude_grade_id"]),
                 escape_sql(row.get("compatibility", "")),

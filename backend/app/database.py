@@ -1,5 +1,5 @@
 """
-INDRA — Database session factory (Step 3 foundation)
+INDRA — Database session factory (Step 5 PostgreSQL foundation)
 
 Provides an async SQLAlchemy engine and session factory.
 Business-logic repositories are NOT implemented here.
