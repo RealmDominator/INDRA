@@ -10,13 +10,9 @@
 
 ## Project
 
-**STEP 6 COMPLETE — MVP FEATURE IMPLEMENTATION COMPLETE.** Backend intelligence, risk/scenario/optimization foundations, React/Vite frontend integration, semantic states, evidence presentation, automated tests, and the documented demo path are implemented. Step 7 is NOT STARTED.
-
-## Step 6B completion summary (21 August 2026)
-
-Implemented the provider-neutral structured event contract with bounded timeout/retries and validation, Step-6A-compatible entity resolution, deterministic weighted risk scoring, NetworkX supply-graph primitives, scenario supply-gap simulation, procurement ranking fallback, provenance/evidence-chain metadata, and narrow FastAPI intelligence endpoints. Current tests pass (6 tests). No external LLM provider, data source, dataset, or dashboard feature is included. Step 6C remains NOT STARTED.
-
 **INDRA — India Disruption Response Architecture**
+
+**STEP 6 COMPLETE — MVP FEATURE IMPLEMENTATION COMPLETE.** Steps 6A (core backend domain layer), 6B (event intelligence and risk), and 6C (frontend dashboard) are verified complete. Backend tests pass (6 total). Frontend builds successfully. The EVENT → RISK → SCENARIO → PROCUREMENT → EVIDENCE flow works end-to-end against real backend APIs. Step 7 (Polish and Demo Preparation) is NOT STARTED.
 
 INDRA is an India-specific energy supply-chain decision-support system that connects geopolitical events to supply-chain risk, disruption scenarios, procurement alternatives, and evidence-backed recommendations.
 
@@ -57,10 +53,11 @@ This is a **hackathon MVP**, not an enterprise production platform.
 | **Step 4** | Data Foundation | ✅ COMPLETE |
 | **Step 5** | PostgreSQL Implementation + Verified Data Loading | ✅ COMPLETE |
 | **Step 6A** | Core Backend Domain Layer | ✅ COMPLETE |
-| **Step 6B** | Event Intelligence and Risk | ❌ NOT STARTED |
-| **Step 6C** | Scenarios and Procurement | ❌ NOT STARTED |
+| **Step 6B** | Event Intelligence and Risk | ✅ COMPLETE |
+| **Step 6C** | Frontend Dashboard | ✅ COMPLETE |
+| **Step 7** | Polish and Demo Preparation | ❌ NOT STARTED |
 
-> **Architecture is frozen for Phase-1 implementation.** Step 6A implemented only the core domain/data layer. Steps 6B and 6C must not start without explicit user direction.
+> **Architecture is frozen for Phase-1 implementation.** Step 6 is COMPLETE. Step 7 must not start without explicit user direction.
 
 ---
 
@@ -108,8 +105,8 @@ INDRA/
 │   └── 10-demo/
 │       └── DEMO_SCRIPT.md
 │
-├── backend/                            ← FastAPI development foundation exists; /health endpoint implemented; business API routes not implemented
-├── frontend/                           ← React/Vite development foundation exists; basic application shell exists; business dashboard/features not implemented
+├── backend/                            ← FastAPI with domain models, repositories, services, entity resolution, intelligence APIs, and tests (Step 6 COMPLETE)
+├── frontend/                           ← React/Vite dashboard with EVENT→RISK→SCENARIO→PROCUREMENT→EVIDENCE flow, semantic states, evidence presentation (Step 6 COMPLETE)
 ├── data/
 │   ├── seed/                           ← 11 curated seed CSV files (167 rows total)
 │   ├── raw/ofac/                       ← OFAC SDN list (raw download, .gitignored)
@@ -308,8 +305,8 @@ NetworkX is NOT:
 
 | | Status |
 |---|---|
-| **Phase 1** | Weighted deterministic risk engine |
-| **Phase 2 candidate** | XGBoost disruption-probability model |
+| **Phase 1** | Weighted deterministic risk engine — **implemented (Step 6B)** |
+| **Phase 2 candidate** | XGBoost disruption-probability model — **NOT implemented** |
 
 > **IMPORTANT:** Phase 1 risk scoring is a **weighted deterministic risk engine**, NOT XGBoost. Do not claim that INDRA currently uses trained XGBoost risk scoring. XGBoost is a Phase 2 candidate / ML-ready extension that is NOT implemented.
 
@@ -327,7 +324,7 @@ All weights must be changeable without code changes.
 
 The application LLM has **NOT been selected** yet.
 
-The application must use a **provider abstraction** so the model can be changed without rewriting application code.
+The **provider abstraction is implemented (Step 6B)**: `LLMProvider` protocol with `UnconfiguredLLMProvider` (safe default) and `CallableLLMProvider`. No external LLM provider is connected.
 
 Development-agent models and application LLMs are **separate decisions**.
 
@@ -369,7 +366,7 @@ The LLM must NOT:
 
 ## Scenario Engine Status
 
-Scenario computation is **deterministic and parametric**.
+Scenario computation is **deterministic and parametric** — **implemented (Step 6B)** via `scenario_supply_gap`.
 
 It may calculate: disrupted capacity, affected supply, refinery impact, inventory pressure, national supply gap, SPR support requirement, procurement gap, modeled cost effects.
 
@@ -381,10 +378,10 @@ The LLM is NOT responsible for scenario mathematics.
 
 ## Procurement Engine Status
 
-| Approach | Description |
-|---|---|
-| **Preferred (Phase 1)** | PuLP/scipy linear programming |
-| **Fallback** | Deterministic weighted ranking |
+| Approach | Description | Status |
+|---|---|---|
+| **Preferred (Phase 1)** | PuLP/scipy linear programming | NOT implemented |
+| **Fallback** | Deterministic weighted ranking | **Implemented (Step 6B)** via `rank_procurement` |
 
 Potential constraints: supplier availability, route capacity, sanctions, crude compatibility, transit time, disrupted routes, required supply volume.
 
@@ -394,24 +391,51 @@ LLM may explain the result but must NOT generate the numerical optimization resu
 
 ## API Status
 
-The current API is still a **specification** (not implemented).
+The MVP API is **implemented (Steps 6A–6B)** within the frozen ~12 endpoint-group boundary. See `docs/04-backend/API_SPEC.md` for the authoritative contract.
 
-The intended MVP is deliberately small (~12 endpoint groups):
-- events, corridor risk, routes, refineries, reserves, prices, scenarios, recommendations, evidence, health
+### Implemented Endpoints
+
+| Group | Routes | Status |
+|---|---|---|
+| Health | `GET /health` | ✅ Implemented |
+| Domain reference | `GET /countries`, `/corridors`, `/crude-grades`, `/suppliers`, `/routes`, `/refineries`, `/reserves` | ✅ Implemented (Step 6A) |
+| Events | `POST /events`, `GET /events` | ✅ Implemented (Step 6B) |
+| Risk | `GET /corridors/risk`, `POST /risk`, `GET /risk` | ✅ Implemented (Step 6B) |
+| Scenarios | `POST /scenarios` | ✅ Implemented (Step 6B) |
+| Recommendations | `POST /recommendations` | ✅ Implemented (Step 6B) |
+
+### Not Yet Implemented
+
+- `GET /prices` — EIA commodity prices (deferred; no API key)
+- Dedicated evidence endpoints — evidence chain returned inline with intelligence responses; standalone evidence routes not yet exposed
 
 Do NOT expand the API into a large CRUD surface.
-
-Step 2 has NOT frozen the final API contract yet.
 
 ---
 
 ## UI Status
 
-The primary UI workflow: EVENT → RISK → SCENARIO → PROCUREMENT → EVIDENCE
+The primary UI workflow is **implemented (Step 6C)**: EVENT → RISK → SCENARIO → PROCUREMENT → EVIDENCE.
 
-Planned UI includes: risk dashboard, corridor risk cards, event feed, India supply-network map, scenario simulator, procurement recommendations, evidence drawer, SPR information, price/FX information, data-semantic indicators.
+### Implemented UI (Step 6C)
 
-Do NOT build the frontend yet.
+- Dashboard shell with responsive layout (`App.jsx`)
+- Event feed panel with semantic markers
+- Corridor risk cards with display scores and risk levels
+- Scenario simulator panel (30-day Hormuz disruption demo)
+- Procurement recommendations panel
+- Evidence drawer (Source → Extraction → Entity Resolution → Risk → Scenario → Optimization)
+- Strategic reserves (SPR) panel
+- Supply network summary (suppliers → routes → ports → refineries)
+- `StatusBadge` for DERIVED, OBSERVED, UNAVAILABLE, LOADING states
+- Loading, error, and retry handling
+- Frontend calls real backend APIs — no fake demo data
+
+### Not Yet Implemented
+
+- Interactive India supply-network map
+- Price/FX display panels (EIA/RBI integration deferred)
+- Advanced visualizations and polish (Step 7 scope)
 
 ---
 
@@ -497,7 +521,7 @@ U-2 Redis excluded · U-3 ACLED best-effort · U-4 RBI verify Day 1 · U-5 compa
 
 | ID | Item | Status |
 |---|---|---|
-| U-8b | Final application LLM selection | OPEN — deferred to INDRA-specific benchmark during Step 3 |
+| U-8b | Final application LLM selection | OPEN — deferred to INDRA-specific benchmark (Step 7 or post-MVP) |
 
 ---
 
@@ -545,31 +569,36 @@ If two research reports disagree and the review process did not resolve the disa
 ## What Has NOT Been Done
 
 - ✅ Data acquisition and seed datasets (Step 4)
+- ✅ Entity resolution (Step 6A)
+- ✅ Risk engine — weighted deterministic (Step 6B)
+- ✅ Scenario engine — deterministic parametric (Step 6B)
+- ✅ Optimization / procurement engine — ranking fallback (Step 6B)
+- ✅ Dashboard with EVENT → RISK → SCENARIO → PROCUREMENT → EVIDENCE flow (Step 6C)
 - ❌ LLM integration and final application-LLM selection
-- ❌ Entity resolution
-- ❌ Risk engine
-- ❌ Scenario engine
-- ❌ Optimization / procurement engine
-- ❌ Real dashboard (maps, charts, risk cards, simulator, recommendations, evidence drawer)
-- ❌ ML
-- ❌ Deployment
+- ❌ Real-time data ingestion (GDELT, ACLED)
+- ❌ EIA commodity prices API integration
+- ❌ RBI FX bulk data integration
+- ❌ PuLP/scipy linear programming for procurement
+- ❌ Maps and advanced visualizations
+- ❌ ML / XGBoost risk model
+- ❌ Deployment infrastructure
 
 ---
 
 ## Step 3 Summary — Local Development Foundation (COMPLETE)
 
+*Historical record — reflects Step 3 completion scope. Extended in Steps 5–6.*
+
 Step 3 established a reproducible local foundation without implementing product features:
 
 - Python 3.11+ virtual-environment workflow and a minimal dependency baseline: FastAPI, Uvicorn, Pydantic/Pydantic Settings, SQLAlchemy, and asyncpg.
-- FastAPI application skeleton with local CORS and the sole implemented endpoint, `GET /health`. The endpoint reports PostgreSQL connectivity without exposing credentials.
+- FastAPI application skeleton with local CORS and `GET /health` (the only endpoint at Step 3 completion).
 - PostgreSQL-only Docker Compose development service with configurable credentials/database name, an exposed local port, named persistent volume, and health check. No Redis or other infrastructure was added.
-- React/Vite startup shell using vanilla CSS, configured on port 3000. It makes no business API calls.
-- `.env.example` placeholders for application, database, and future LLM provider/model settings; no real `.env`, API keys, or secrets were added.
-- Windows PowerShell instructions in `docs/04-backend/DEVELOPMENT_SETUP.md` and `docs/03-frontend/DEVELOPMENT_SETUP.md`; README and testing documentation reflect the foundation scope.
+- React/Vite startup shell using vanilla CSS, configured on port 3000 (no business API calls at Step 3 completion).
+- `.env.example` placeholders for application, database, and future LLM provider/model settings.
+- Windows PowerShell instructions in `docs/04-backend/DEVELOPMENT_SETUP.md` and `docs/03-frontend/DEVELOPMENT_SETUP.md`.
 
-`db/schema.sql` and `db/seed.sql` were subsequently reconciled and applied in Step 5. No fabricated data was inserted.
-
-**NOT IMPLEMENTED YET:** data acquisition; external API ingestion; LLM integration; entity resolution; risk engine; scenario engine; optimization; real dashboard; ML; deployment.
+`db/schema.sql` and `db/seed.sql` were subsequently reconciled and applied in Step 5. Business APIs, engines, and dashboard were implemented in Step 6.
 
 ---
 
@@ -580,7 +609,7 @@ Before performing any development task:
 1. Read `CONTEXT.md` (this file)
 2. Read the relevant project documentation listed above
 3. Follow `docs/DEVELOPMENT_RULES.md`
-4. Do not assume later steps are complete
+4. Check the **Current Development Status** table — do not assume later steps are complete
 5. Do not invent missing architecture decisions
 6. Do not expand scope without explicit approval
 
@@ -593,7 +622,7 @@ If documentation conflicts with this context:
 
 ## Step 4 Summary — Data Foundation (COMPLETE)
 
-Step 4 created the India-specific supply-chain data foundation:
+*Historical record — reflects Step 4 completion scope.*
 
 ### Seed Datasets Created (11 files, 167 rows total)
 - `data/seed/countries.csv` — 15 countries (India + supplier/transit nations)
@@ -650,21 +679,13 @@ Step 4 created the India-specific supply-chain data foundation:
 - SIMULATED data never represented as live data
 - GDELT/ACLED documented as DEFERRED only
 
-**NOT IMPLEMENTED:** LLM integration; event extraction; risk engine; scenario engine; optimization; frontend dashboard; ML; deployment.
+*At Step 4 completion, the following remained deferred: external LLM provider connection, live event ingestion, engines, frontend dashboard, ML, deployment. These were addressed in Step 6 (except external LLM provider, live ingestion, ML, and deployment).*
 
 ---
 
-## Step 5 Boundary
-
-> **STEP 5 COMPLETE.**
->
-> Do not:
-> - Implement business features without explicit user direction
-> - Integrate external data services or an LLM
-> - Implement entity resolution or any engine
-> - Build dashboard views or deployment infrastructure
->
 ## Step 5 Summary — PostgreSQL Implementation + Verified Data Loading (COMPLETE)
+
+*Historical record — reflects Step 5 completion scope. Business features were added in Step 6.*
 
 - PostgreSQL 16 container is healthy through Docker Compose.
 - Frozen schema applied successfully after correcting the `data_sources.classification` width required by the frozen `HISTORICAL_CALIBRATED` semantic label.
@@ -673,7 +694,7 @@ Step 4 created the India-specific supply-chain data foundation:
 - SQLAlchemy async connectivity and FastAPI `/health` database status both report PostgreSQL connected.
 - Initialization and reset/reseed are reproducible through `scripts/db/init_db.py` and `scripts/db/reset_db.py`; generated seed SQL is conflict-safe on repeated initialization.
 - Minimal Alembic structure is prepared with no invented migration; `db/schema.sql` remains authoritative.
-- No business APIs or feature engines were implemented.
+- No business APIs or feature engines were implemented at Step 5 completion (added in Step 6).
 
 ## Step 6A Summary — Core Backend Domain Layer (COMPLETE)
 
@@ -685,8 +706,100 @@ Step 4 created the India-specific supply-chain data foundation:
 - Added backend tests for seeded API responses, invalid corridor filtering, exact/fuzzy/unresolved entity resolution. Current suite: 3 passed.
 - Removed hard-coded database URL/password fallbacks from application and database scripts; credentials must be supplied through environment variables.
 
-## Step 6B / 6C Boundary
+## Step 6B Summary — Event Intelligence and Risk (COMPLETE)
 
-> **STEP 6B NOT STARTED. STEP 6C NOT STARTED.**
+Step 6B implemented the provider-neutral structured event contract with bounded timeout/retries and validation, Step-6A-compatible entity resolution, deterministic weighted risk scoring, NetworkX supply-graph primitives, scenario supply-gap simulation, procurement ranking fallback, provenance/evidence-chain metadata, and narrow FastAPI intelligence endpoints.
 
-> Do not implement event intelligence, LLM integration, risk computation, scenario execution, procurement optimization, NetworkX runtime, dashboard features, ML, or external data ingestion until explicitly directed.
+### What Was Implemented
+- **LLM Provider Abstraction**: `LLMProvider` protocol with `UnconfiguredLLMProvider` (safe default) and `CallableLLMProvider` (adapter for caller-supplied functions with timeout/retries)
+- **Structured Event Contract**: `StructuredEvent` model with validation that rejects database IDs (LLM outputs names only)
+- **Entity Resolution Integration**: `resolve_structured_event` joins LLM output to entity resolution
+- **Phase-1 Weighted Deterministic Risk Engine**: `calculate_risk` with configurable `RiskWeights` (0.0–1.0 internal, 0–100 display)
+- **Risk Classification**: LOW (<0.30), MODERATE (0.30–0.49), HIGH (0.50–0.69), CRITICAL (0.70–0.84), EXTREME (≥0.85)
+- **NetworkX Graph Operations**: `build_supply_graph` for in-memory traversal, `affected_refineries` for corridor disruption analysis
+- **Deterministic Scenario Engine**: `scenario_supply_gap` calculates supply gap from corridor disruption scenarios
+- **Procurement Ranking Fallback**: `rank_procurement` with compatibility threshold (0.5 default), sanctions exclusion, cost+risk ranking
+- **Evidence Chain Builder**: `build_evidence_chain` creates provenance DAG from source → extraction → entity_resolution → risk → scenario → optimization
+
+### API Endpoints Added
+- `POST /events` — Submit structured event, resolve entities, return evidence chain
+- `GET /events` — Event feed (returns empty list with semantic marker)
+- `GET /corridors/risk` — Corridor risk scores from seed data
+- `POST /risk` — Calculate risk from feature vector
+- `GET /risk` — Risk summary
+- `POST /scenarios` — Run scenario simulation
+- `POST /recommendations` — Get procurement recommendations
+
+### Tests Added
+- `test_structured_event_rejects_database_ids` — Validates LLM boundary
+- `test_risk_formula_and_thresholds_are_deterministic` — Validates risk calculation
+- `test_scenario_and_optimizer_semantics_and_constraints` — Validates scenario and procurement
+
+**Current test suite: 6 passed (3 domain + 3 intelligence)**
+
+## Step 6C Summary — Frontend Dashboard (COMPLETE)
+
+Step 6C implemented the React/Vite dashboard with the full EVENT → RISK → SCENARIO → PROCUREMENT → EVIDENCE workflow, semantic state indicators, evidence presentation, and end-to-end backend integration.
+
+### What Was Implemented
+- **React/Vite Dashboard**: Full application shell with responsive layout
+- **API Client**: `api.js` with timeout handling, error handling, and methods for risk/scenario/recommendations
+- **Event UI**: Event feed panel with semantic markers
+- **Corridor Risk UI**: Corridor risk cards with display scores and risk levels
+- **Scenario Simulator**: Panel for running 30-day Hormuz disruption scenario
+- **Procurement Recommendations**: Panel showing feasibility, unmet volume, selected candidates
+- **Evidence Drawer**: Visual chain showing Source → Extraction → Entity Resolution → Risk → Scenario → Optimization
+- **Strategic Reserves**: Panel showing SPR locations and levels
+- **Supply Network View**: Summary of suppliers → routes → ports → refineries
+- **Semantic States**: StatusBadge component for DERIVED, OBSERVED, UNAVAILABLE, LOADING states
+- **Error Handling**: Error alerts with retry functionality
+- **Loading States**: Busy indicator during flow execution
+
+### Frontend Architecture
+- Vanilla CSS (no Tailwind/UI framework)
+- No frontend recalculation of backend-derived values
+- All computed values come from backend APIs
+- Semantic markers on all derived data
+
+### End-to-End Flow Verified
+1. Backend APIs respond correctly to all endpoints
+2. Frontend calls backend for risk, scenario, and recommendations
+3. Results display with semantic markers
+4. Evidence chain is presented visually
+
+## Step 6 Verification Summary (21 August 2026)
+
+### Tests Run
+- Backend: 6 passed (3 domain + 3 intelligence)
+- Frontend: Build successful
+
+### Architecture Compliance Verified
+- ✅ No forbidden architecture changes (Kafka, Neo4j, MongoDB, etc. excluded)
+- ✅ XGBoost NOT presented as Phase 1 (correctly documented as Phase 2 candidate)
+- ✅ LLM does NOT perform deterministic calculations (LLM only for extraction)
+- ✅ No fabricated data (all seed data documented with sources)
+- ✅ No fake frontend demo data (frontend uses real backend APIs)
+- ✅ Risk engine is weighted deterministic (not ML/XGBoost)
+- ✅ Scenario engine is deterministic parametric
+- ✅ Procurement uses ranking fallback (not PuLP/scipy yet)
+- ✅ Entity resolution uses exact alias + RapidFuzz fuzzy (no vector DB)
+- ✅ PostgreSQL is source of truth
+- ✅ NetworkX for in-memory traversal only
+
+### Data Semantic Compliance
+- All computed values marked DERIVED
+- Observed values marked OBSERVED
+- No SIMULATED data represented as live
+- NULL values preserved (not fabricated)
+
+## Step 6 Boundary
+
+> **STEP 6 COMPLETE (6A + 6B + 6C).**
+>
+> Step 6 delivered: core backend domain layer, event intelligence and risk engines, and the React/Vite dashboard with end-to-end workflow. Step 7 must not start without explicit user direction.
+
+## Step 7 Boundary
+
+> **STEP 7 HAS NOT STARTED.**
+>
+> Step 7 scope (Polish and Demo Preparation) may include: demo script rehearsal, UI polish, map/visualization enhancements, price/FX panels (if data available), documentation updates, and final application-LLM benchmark. Do not start Step 7 without explicit user direction.
