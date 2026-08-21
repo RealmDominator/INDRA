@@ -8,6 +8,10 @@
 
 ---
 
+## Step-6A Implementation Status
+
+Implemented against the verified PostgreSQL seed database: `GET /health`, `/countries`, `/corridors`, `/crude-grades`, `/routes`, `/refineries`, `/suppliers`, and `/reserves`. The remaining event, risk, scenario, procurement, prices, and evidence routes remain planned.
+
 ## Base Configuration
 
 | Setting | Value |
@@ -520,6 +524,10 @@ Parameters loaded from `config/scenario_assumptions.yaml`.
 ---
 
 ## Implementation Notes (Phase 1)
+
+### Step 6B implemented
+
+The deterministic intelligence foundation now exposes `POST /events` (validated event plus Step-6A entity-resolution results), `GET /risk` readiness, `POST /risk`, `POST /scenarios`, and `POST /recommendations`. These are foundation endpoints only; external ingestion, LLM provider credentials, and dashboard workflows remain planned.
 
 - All routes implemented in single FastAPI app under `/api/v1` router
 - Pydantic models enforce request/response shapes

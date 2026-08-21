@@ -4,7 +4,7 @@ INDRA — Health endpoint
 GET /health
 
 Returns basic application health status and database connectivity.
-This is the ONLY implemented application endpoint in Step 5.
+This is the only health endpoint; Step-6A adds read-only domain endpoints.
 
 Business endpoints (events, risk, scenarios, etc.) are NOT implemented here.
 See docs/04-backend/API_SPEC.md for the full planned API contract.
@@ -38,7 +38,7 @@ class HealthResponse(BaseModel):
     summary="Application health check",
     description=(
         "Returns application health status and database connectivity. "
-        "This is the only endpoint implemented in Step 5 (foundation). "
+        "This endpoint reports application and database health. "
         "Business endpoints are planned for later steps."
     ),
 )
@@ -56,7 +56,7 @@ async def health_check() -> HealthResponse:
     return HealthResponse(
         status="ok",
         environment=settings.app_env,
-        version="0.1.0-step5",
+        version="0.1.0-step6a",
         uptime_seconds=round(time.time() - _start_time, 2),
         timestamp=datetime.now(timezone.utc).isoformat(),
         database="connected" if db_ok else "unavailable",

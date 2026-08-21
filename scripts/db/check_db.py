@@ -352,7 +352,7 @@ def main():
         sys.exit(1)
 
     dsn = _get_dsn()
-    pg_pass = os.environ.get("POSTGRES_PASSWORD", "indra_dev_password")
+    pg_pass = os.environ.get("POSTGRES_PASSWORD", "")
     display_dsn = dsn.replace(pg_pass, "***") if pg_pass and pg_pass in dsn else dsn
     print("Connecting to: %s\n" % display_dsn)
 

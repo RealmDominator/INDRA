@@ -24,9 +24,8 @@ class Settings(BaseSettings):
     app_debug: bool = True
 
     # Database
-    database_url: str = (
-        "postgresql+asyncpg://indra_user:indra_dev_password@localhost:5432/indra_db"
-    )
+    database_url: str = ""
+    entity_resolution_threshold: int = 85
 
     # CORS — local frontend dev server
     frontend_url: str = "http://localhost:3000"

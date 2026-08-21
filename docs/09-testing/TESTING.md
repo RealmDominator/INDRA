@@ -223,3 +223,8 @@ This test should be runnable as a single command for demo preparation.
 | API tests | pytest + httpx (TestClient) |
 | Frontend tests | Jest + React Testing Library |
 | E2E tests | pytest (scripted) or Playwright |
+### Step 6B verification
+
+Run `python -m pytest backend/tests -q`. The suite covers structured-event validation, provider retry/validation behavior, deterministic risk/scenario/optimizer calculations, and Step-6A resolution integration. No external APIs or datasets are required.
+
+Step 6C frontend verification: `npm run build` completes successfully. The browser flow uses the live FastAPI endpoints and renders unavailable/empty states when optional data is absent.

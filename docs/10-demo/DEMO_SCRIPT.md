@@ -158,3 +158,6 @@ If live data sources fail during demo:
 | "The AI is just calling an LLM?" | "The LLM handles event extraction from unstructured text — what it's good at. Risk scoring uses deterministic formulas, procurement uses LP optimization, scenarios use parametric models. The hybrid approach is more reliable than 'LLM does everything.'" |
 | "How is this different from Bloomberg?" | "Bloomberg provides raw data and news. INDRA connects geopolitical disruption to India-specific refinery constraints and procurement actions — the compatibility matrix, SPR integration, and procurement optimization layer don't exist in Bloomberg." |
 | "Are these numbers real?" | "Events come from GDELT/ACLED/OFAC. Refinery data from PPAC. SPR data from ISPRL. Risk scores, supply gaps, and procurement rankings are calculated — labeled as DERIVED. Scenario impacts are modelled — labeled as ESTIMATED." |
+### Step 6C MVP demo path
+
+Open the Vite console, confirm backend status, review corridor risk and recent-event availability, click **Run demo flow**, then inspect the derived risk score, 30-day Hormuz scenario supply gap, procurement feasibility, and evidence chain. Values are fetched from FastAPI; missing observations are explicitly labeled.

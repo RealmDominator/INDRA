@@ -4,11 +4,17 @@
 >
 > **Date:** 21 August 2026
 >
-> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6 NOT STARTED
+> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6A COMPLETE · Step 6B COMPLETE · Step 6C COMPLETE · Step 7 NOT STARTED
 
 ---
 
 ## Project
+
+**STEP 6 COMPLETE — MVP FEATURE IMPLEMENTATION COMPLETE.** Backend intelligence, risk/scenario/optimization foundations, React/Vite frontend integration, semantic states, evidence presentation, automated tests, and the documented demo path are implemented. Step 7 is NOT STARTED.
+
+## Step 6B completion summary (21 August 2026)
+
+Implemented the provider-neutral structured event contract with bounded timeout/retries and validation, Step-6A-compatible entity resolution, deterministic weighted risk scoring, NetworkX supply-graph primitives, scenario supply-gap simulation, procurement ranking fallback, provenance/evidence-chain metadata, and narrow FastAPI intelligence endpoints. Current tests pass (6 tests). No external LLM provider, data source, dataset, or dashboard feature is included. Step 6C remains NOT STARTED.
 
 **INDRA — India Disruption Response Architecture**
 
@@ -50,9 +56,11 @@ This is a **hackathon MVP**, not an enterprise production platform.
 | **Step 3** | Local Development Foundation | ✅ COMPLETE |
 | **Step 4** | Data Foundation | ✅ COMPLETE |
 | **Step 5** | PostgreSQL Implementation + Verified Data Loading | ✅ COMPLETE |
-| **Step 6** | Feature Implementation | ❌ NOT STARTED |
+| **Step 6A** | Core Backend Domain Layer | ✅ COMPLETE |
+| **Step 6B** | Event Intelligence and Risk | ❌ NOT STARTED |
+| **Step 6C** | Scenarios and Procurement | ❌ NOT STARTED |
 
-> **Architecture is frozen for Phase-1 implementation.** Step 5 implemented only PostgreSQL persistence and verified data loading. Step 6 must not start without explicit user direction.
+> **Architecture is frozen for Phase-1 implementation.** Step 6A implemented only the core domain/data layer. Steps 6B and 6C must not start without explicit user direction.
 
 ---
 
@@ -642,7 +650,7 @@ Step 4 created the India-specific supply-chain data foundation:
 - SIMULATED data never represented as live data
 - GDELT/ACLED documented as DEFERRED only
 
-**NOT IMPLEMENTED:** LLM integration; entity resolution; risk engine; scenario engine; optimization; frontend dashboard; ML; deployment.
+**NOT IMPLEMENTED:** LLM integration; event extraction; risk engine; scenario engine; optimization; frontend dashboard; ML; deployment.
 
 ---
 
@@ -667,8 +675,18 @@ Step 4 created the India-specific supply-chain data foundation:
 - Minimal Alembic structure is prepared with no invented migration; `db/schema.sql` remains authoritative.
 - No business APIs or feature engines were implemented.
 
-## Step 6 Boundary
+## Step 6A Summary — Core Backend Domain Layer (COMPLETE)
 
-> **STEP 6 HAS NOT STARTED.**
+- Added SQLAlchemy mappings for the frozen reference/domain tables, including countries, corridors, crude grades, ports, refineries, suppliers, refinery supply mix, routes, strategic reserves, data sources, scenarios, and entity aliases.
+- Added Pydantic response schemas with nullable fields and semantic/data provenance fields where applicable.
+- Added repository/service boundaries for read-only reference data and reserves aggregation.
+- Added exact canonical/alias matching with configurable RapidFuzz fallback at the frozen 85% threshold; unresolved values return an explicit unresolved result and are never inserted.
+- Implemented only read-only endpoints: `/health`, `/countries`, `/corridors`, `/crude-grades`, `/routes`, `/refineries`, `/suppliers`, and `/reserves`.
+- Added backend tests for seeded API responses, invalid corridor filtering, exact/fuzzy/unresolved entity resolution. Current suite: 3 passed.
+- Removed hard-coded database URL/password fallbacks from application and database scripts; credentials must be supplied through environment variables.
 
-> Do not implement business APIs, ingestion, LLM integration, entity resolution, risk/scenario/optimization engines, dashboard features, ML, or deployment until explicitly directed.
+## Step 6B / 6C Boundary
+
+> **STEP 6B NOT STARTED. STEP 6C NOT STARTED.**
+
+> Do not implement event intelligence, LLM integration, risk computation, scenario execution, procurement optimization, NetworkX runtime, dashboard features, ML, or external data ingestion until explicitly directed.

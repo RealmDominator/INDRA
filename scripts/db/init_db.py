@@ -58,11 +58,13 @@ def _get_dsn() -> str:
         return db_url
 
     # Fallback: compose from individual vars
-    user     = os.environ.get("POSTGRES_USER",     "indra_user")
-    password = os.environ.get("POSTGRES_PASSWORD", "indra_dev_password")
-    db       = os.environ.get("POSTGRES_DB",       "indra_db")
+    user     = os.environ.get("POSTGRES_USER", "")
+    password = os.environ.get("POSTGRES_PASSWORD", "")
+    db       = os.environ.get("POSTGRES_DB", "")
     host     = os.environ.get("POSTGRES_HOST",     "localhost")
     port     = os.environ.get("POSTGRES_PORT",     "5432")
+    if not all((user, password, db)):
+        raise RuntimeError("DATABASE_URL or POSTGRES_USER/POSTGRES_PASSWORD/POSTGRES_DB must be configured")
     return f"postgresql://{user}:{password}@{host}:{port}/{db}"
 
 
@@ -96,7 +98,7 @@ def main():
     dsn = _get_dsn()
     # Mask password for logging
     display_dsn = dsn
-    pg_pass = os.environ.get("POSTGRES_PASSWORD", "indra_dev_password")
+    pg_pass = os.environ.get("POSTGRES_PASSWORD", "")
     if pg_pass and pg_pass in display_dsn:
         display_dsn = display_dsn.replace(pg_pass, "***")
     print("Connecting to: %s" % display_dsn)

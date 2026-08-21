@@ -295,3 +295,6 @@ Rationale: Aligns with project development rules; framework-agnostic UI spec abo
 ## Out-of-Scope UI (Phase 1)
 
 Do NOT build: mobile layout optimization, 3D globe, fake live AIS tanker layer, extra admin/settings pages, enterprise auth screens, or dashboards beyond the four primary views + evidence drawer.
+### Step 6C implementation
+
+Implemented the React/Vite MVP console with backend API client, loading/error/empty states, risk and corridor panels, event feed, reserves status, supply-network interpretation, scenario simulator, procurement result, evidence chain, semantic badges, and responsive vanilla CSS. Heavy calculations remain backend-owned.

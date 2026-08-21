@@ -18,3 +18,10 @@ psycopg2-binary>=2.9,<3.0  # sync driver for reproducible SQL initialization/che
 
 # --- Migrations ---
 alembic>=1.13,<2.0
+rapidfuzz>=3.9,<4.0
+
+# --- Step-6A tests ---
+pytest>=8.0,<9.0
+pytest-asyncio>=0.24,<1.0
+httpx>=0.27,<1.0
+networkx>=3.3,<4.0

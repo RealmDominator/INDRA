@@ -12,8 +12,15 @@ from app.config.settings import get_settings
 
 settings = get_settings()
 
+
+def _database_url() -> str:
+    """Require an environment-provided URL; never embed database credentials."""
+    if not settings.database_url:
+        raise RuntimeError("DATABASE_URL must be configured in the environment")
+    return settings.database_url
+
 engine = create_async_engine(
-    settings.database_url,
+    _database_url(),
     echo=settings.app_debug,   # SQL logging in development
     pool_pre_ping=True,        # verify connection before use
 )
