@@ -67,7 +67,7 @@ LLM Event Extraction → Entity Resolution (entity_aliases + RapidFuzz)
 The MVP release candidate is locally reproducible. Step 7C verified Docker/PostgreSQL reset and seed integrity, FastAPI runtime health, the complete event-to-evidence API workflow, and the React/Vite demo build. Step 8 is not started.
 
 **Implemented in Step 3:**
-- Python 3.11+ virtual-environment workflow and minimal backend dependency manifest
+- Python 3.11+ is supported; development verification was performed on Python 3.13.9
 - FastAPI application with local CORS and `GET /health`
 - Docker Compose PostgreSQL-only development service with a named volume and health check
 - React/Vite startup shell using vanilla CSS (port 3000)
@@ -129,8 +129,8 @@ INDRA/
 │   └── 10-demo/                       # Demo preparation
 │       └── DEMO_SCRIPT.md
 │
-├── backend/                           # FastAPI backend (not yet implemented)
-├── frontend/                          # React frontend (not yet implemented)
+├── backend/                           # FastAPI backend, domain layer, intelligence APIs, and tests
+├── frontend/                          # React/Vite dashboard and demo workflow
 ├── data/                              # Data directories
 │   ├── raw/                           # Raw ingested data
 │   ├── processed/                     # Cleaned/transformed data

@@ -55,9 +55,9 @@ This is a **hackathon MVP**, not an enterprise production platform.
 | **Step 6A** | Core Backend Domain Layer | ✅ COMPLETE |
 | **Step 6B** | Event Intelligence and Risk | ✅ COMPLETE |
 | **Step 6C** | Frontend Dashboard | ✅ COMPLETE |
-| **Step 7** | Polish and Demo Preparation | ❌ NOT STARTED |
+| **Step 7** | Polish, Final E2E Verification, and Demo Freeze | ✅ COMPLETE |
 
-> **Architecture is frozen for Phase-1 implementation.** Step 6 is COMPLETE. Step 7 must not start without explicit user direction.
+> **Architecture is frozen for Phase-1 implementation.** Step 7 is COMPLETE. Step 8 has NOT STARTED.
 
 ---
 
@@ -435,7 +435,7 @@ The primary UI workflow is **implemented (Step 6C)**: EVENT → RISK → SCENARI
 
 - Interactive India supply-network map
 - Price/FX display panels (EIA/RBI integration deferred)
-- Advanced visualizations and polish (Step 7 scope)
+- Advanced visualizations beyond the MVP polish scope (future work)
 
 ---
 
@@ -521,7 +521,7 @@ U-2 Redis excluded · U-3 ACLED best-effort · U-4 RBI verify Day 1 · U-5 compa
 
 | ID | Item | Status |
 |---|---|---|
-| U-8b | Final application LLM selection | OPEN — deferred to INDRA-specific benchmark (Step 7 or post-MVP) |
+| U-8b | Final application LLM selection | OPEN — deferred to INDRA-specific benchmark (Step 8 or post-MVP) |
 
 ---
 
@@ -796,10 +796,10 @@ Step 6C implemented the React/Vite dashboard with the full EVENT → RISK → SC
 
 > **STEP 6 COMPLETE (6A + 6B + 6C).**
 >
-> Step 6 delivered: core backend domain layer, event intelligence and risk engines, and the React/Vite dashboard with end-to-end workflow. Step 7 must not start without explicit user direction.
+> Step 6 delivered: core backend domain layer, event intelligence and risk engines, and the React/Vite dashboard with end-to-end workflow. Step 7 delivered polish, final verification, and demo freeze.
 
 ## Step 7 Boundary
 
-> **STEP 7 HAS NOT STARTED.**
+> **STEP 7 COMPLETE — MVP DEMO READY.**
 >
-> Step 7 scope (Polish and Demo Preparation) may include: demo script rehearsal, UI polish, map/visualization enhancements, price/FX panels (if data available), documentation updates, and final application-LLM benchmark. Do not start Step 7 without explicit user direction.
+> Step 7 completed UI polish, demo-path verification, clean PostgreSQL reset/seed validation, FastAPI and Vite runtime checks, CORS verification, backend regression tests (6/6), the scripted E2E workflow (54/54), and the Vite production build. Step 8 is NOT STARTED.
