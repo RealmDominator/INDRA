@@ -4,7 +4,7 @@
 >
 > **Date:** 21 August 2026
 >
-> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6A COMPLETE · Step 6B COMPLETE · Step 6C COMPLETE · Step 7 NOT STARTED
+> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6A COMPLETE · Step 6B COMPLETE · Step 6C COMPLETE · Step 7A COMPLETE · Step 7B COMPLETE · Step 7C COMPLETE · Step 8 NOT STARTED
 
 ---
 
@@ -12,7 +12,7 @@
 
 **INDRA — India Disruption Response Architecture**
 
-**STEP 6 COMPLETE — MVP FEATURE IMPLEMENTATION COMPLETE.** Steps 6A (core backend domain layer), 6B (event intelligence and risk), and 6C (frontend dashboard) are verified complete. Backend tests pass (6 total). Frontend builds successfully. The EVENT → RISK → SCENARIO → PROCUREMENT → EVIDENCE flow works end-to-end against real backend APIs. Step 7 (Polish and Demo Preparation) is NOT STARTED.
+**STEP 7 — COMPLETE · MVP — DEMO READY.** Steps 6A–6C, 7A, and 7B are complete. Step 7C final verification passed from a clean PostgreSQL reset/seed: Docker PostgreSQL healthy, 90 database integrity checks passed, FastAPI `/health` reported `ok`/`connected`, frontend Vite returned HTTP 200, CORS matched the configured origin, backend tests passed 6/6, the scripted E2E workflow passed 54/54, and the Vite production build succeeded. Step 8 is NOT STARTED.
 
 INDRA is an India-specific energy supply-chain decision-support system that connects geopolitical events to supply-chain risk, disruption scenarios, procurement alternatives, and evidence-backed recommendations.
 

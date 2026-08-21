@@ -129,7 +129,7 @@ def classify_risk(score: float) -> str:
 
 def calculate_risk(features: dict[str, float], weights: RiskWeights | None = None) -> RiskResult:
     weights = weights or RiskWeights()
-    values = {name: max(0.0, min(1.0, float(features.get(name, 0.0)))) for name in weights.model_fields}
+    values = {name: max(0.0, min(1.0, float(features.get(name, 0.0)))) for name in RiskWeights.model_fields}
     components = {name: {"value": values[name], "weight": getattr(weights, name), "contribution": values[name] * getattr(weights, name)} for name in values}
     score = sum(item["contribution"] for item in components.values())
     return RiskResult(score=score, display_score=score * 100, risk_level=classify_risk(score), components=components)

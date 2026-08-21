@@ -298,3 +298,7 @@ Do NOT build: mobile layout optimization, 3D globe, fake live AIS tanker layer, 
 ### Step 6C implementation
 
 Implemented the React/Vite MVP console with backend API client, loading/error/empty states, risk and corridor panels, event feed, reserves status, supply-network interpretation, scenario simulator, procurement result, evidence chain, semantic badges, and responsive vanilla CSS. Heavy calculations remain backend-owned.
+
+### Step 7B polish
+
+The demo console now uses a consistent dark decision-support visual system, clearer hierarchy, risk bars, semantic eyebrow labels, animated loading skeletons, explicit retry/error states, responsive desktop/laptop grids, scenario assumption controls, and a numbered evidence trail. It continues to render only live FastAPI responses and labels modeled values as DERIVED or SIMULATED.

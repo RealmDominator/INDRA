@@ -42,6 +42,13 @@ async def resolve_entity(session: AsyncSession, entity_type: str, value: str, th
         return ResolutionResult(entity_type, value, alias_row.canonical_entity_id, alias_match[0], "FUZZY", float(alias_match[1]))
     rows = list((await session.scalars(select(model))).all())
     choices = {getattr(row, "name", getattr(row, "code", "")): row for row in rows}
+    # Human-facing short names (for example "Red Sea") should resolve to
+    # canonical descriptive names ("Red Sea / Bab el-Mandeb") without
+    # weakening the configured fuzzy threshold globally.
+    normalized_lower = normalized.casefold()
+    for canonical, row in choices.items():
+        if normalized_lower in canonical.casefold() or canonical.casefold() in normalized_lower:
+            return ResolutionResult(entity_type, value, row.id, canonical, "CONTAINS", 95.0)
     match = process.extractOne(normalized, choices.keys(), scorer=fuzz.ratio)
     if match and match[1] >= threshold:
         row = choices[match[0]]

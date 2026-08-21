@@ -1,1 +1,1 @@
-export default function Panel({ title, children, action }) { return <section className="panel"><div className="panel-heading"><h2>{title}</h2>{action}</div>{children}</section>; }
+export default function Panel({ title, eyebrow, children, action }) { return <section className="panel"><div className="panel-heading"><div><h2>{title}</h2>{eyebrow && <p className="eyebrow">{eyebrow}</p>}</div>{action}</div>{children}</section>; }

@@ -1,8 +1,9 @@
 """Narrow Step-6B deterministic API surface."""
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
+from sqlalchemy import select
 
-from app.intelligence import RiskWeights, StructuredEvent, calculate_risk, scenario_supply_gap, rank_procurement, build_evidence_chain
+from app.intelligence import RiskWeights, StructuredEvent, calculate_risk, classify_risk, scenario_supply_gap, rank_procurement, build_evidence_chain
 from app.database import get_db
 from app.services.intelligence import resolve_structured_event
 from app.models import Corridor
@@ -20,8 +21,8 @@ async def event_feed():
 
 @router.get("/corridors/risk")
 async def corridor_risk(session=Depends(get_db)):
-    rows = (await session.execute(__import__("sqlalchemy").select(Corridor).order_by(Corridor.id))).scalars().all()
-    return {"items": [{"id": row.id, "code": row.code, "name": row.name, "display_score": float(row.base_risk_score or 0) * 100, "risk_level": "DERIVED", "data_semantic": "OBSERVED"} for row in rows]}
+    rows = (await session.execute(select(Corridor).order_by(Corridor.id))).scalars().all()
+    return {"items": [{"id": row.id, "code": row.code, "name": row.name, "display_score": float(row.base_risk_score or 0) * 100, "risk_level": classify_risk(float(row.base_risk_score or 0)), "data_semantic": "OBSERVED"} for row in rows]}
 
 
 class RiskRequest(BaseModel):

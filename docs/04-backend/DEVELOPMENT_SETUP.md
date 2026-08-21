@@ -1,8 +1,8 @@
 # Backend Development Setup
 
-> **Implemented in Step 3:** local FastAPI foundation, PostgreSQL connectivity check, and `GET /health` only.
+> **Implemented through Step 7C:** local FastAPI, PostgreSQL connectivity, reference APIs, deterministic intelligence endpoints, and final E2E verification.
 >
-> **Planned for later steps:** all business endpoints, schema deployment, migrations, ingestion, LLM integration, and engines.
+> **Planned for later steps:** external ingestion, production LLM provider wiring, Phase 2 ML, and deployment.
 
 ## Windows PowerShell
 
@@ -44,4 +44,4 @@ docker compose down
 
 `db/schema.sql` and `db/seed.sql` are planned artifacts. Step 3 does not mount, execute, or seed them.
 
-Step 6A adds read-only reference-data endpoints, SQLAlchemy domain mappings, repository/service boundaries, and exact-alias/RapidFuzz entity resolution. Event intelligence, risk, scenarios, procurement, evidence, and prices are not implemented.
+Steps 6A–7C add read-only reference-data endpoints, entity resolution, deterministic event/risk/scenario/procurement/evidence endpoints, and final runtime verification. External ingestion and production provider integrations remain out of scope.

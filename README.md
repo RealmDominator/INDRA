@@ -62,9 +62,9 @@ LLM Event Extraction → Entity Resolution (entity_aliases + RapidFuzz)
 
 ## Current Development Status
 
-**Step 5 — PostgreSQL Implementation + Verified Data Loading (COMPLETE)**
+**Step 7C — Final E2E Verification + Demo Freeze (COMPLETE)**
 
-The project is in the foundation phase. The repository structure, documentation contract, and development rules have been established. No application feature code has been implemented.
+The MVP release candidate is locally reproducible. Step 7C verified Docker/PostgreSQL reset and seed integrity, FastAPI runtime health, the complete event-to-evidence API workflow, and the React/Vite demo build. Step 8 is not started.
 
 **Implemented in Step 3:**
 - Python 3.11+ virtual-environment workflow and minimal backend dependency manifest
@@ -80,7 +80,13 @@ The project is in the foundation phase. The repository structure, documentation 
 - SQLAlchemy PostgreSQL connectivity and `/health` database status verified
 - Minimal Alembic structure prepared; `db/schema.sql` remains authoritative and no migration was generated
 
-**Planned for later steps:** business API routes, database schema deployment and migrations, data acquisition, external API ingestion, LLM integration, entity resolution, risk/scenario/optimization engines, dashboard features, ML, and deployment.
+**Implemented in Steps 6A–7C:**
+- SQLAlchemy reference APIs and entity resolution against seeded PostgreSQL data
+- Provider-neutral event contract, deterministic weighted risk, scenario, procurement, and evidence outputs
+- React/Vite dashboard with semantic labels, loading/error/empty states, corridor visualization, scenario controls, and demo presentation polish
+- Final E2E verification: backend suite 6 passed, scripted workflow 54 passed, frontend Vite build successful
+
+**Planned for later steps:** external data acquisition/ingestion, production LLM provider wiring, Phase 2 ML, deployment, and Step 8 work.
 
 ## Repository Structure
 

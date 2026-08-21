@@ -161,3 +161,15 @@ If live data sources fail during demo:
 ### Step 6C MVP demo path
 
 Open the Vite console, confirm backend status, review corridor risk and recent-event availability, click **Run demo flow**, then inspect the derived risk score, 30-day Hormuz scenario supply gap, procurement feasibility, and evidence chain. Values are fetched from FastAPI; missing observations are explicitly labeled.
+
+### Step 7A readiness
+
+The scripted API verification has completed successfully against the real seeded PostgreSQL database. The demo path is regression-checked; Step 7B presentation polish is complete and Step 7C is not started.
+
+### Step 7B presentation notes
+
+Use the polished console in a desktop/laptop viewport. Start by confirming the API status badge, scan the corridor risk bars, then adjust the scenario horizon/disruption controls before clicking **Run demo scenario**. Point out the semantic labels and numbered evidence trail; loading, empty, and retry states are intentionally visible when data is unavailable.
+
+### Step 7C demo freeze
+
+The release candidate has been verified from a clean PostgreSQL reset/seed through FastAPI and Vite startup. The reproducible command sequence is: `docker compose up -d postgres`; set `DATABASE_URL`; `python scripts/db/reset_db.py --confirm`; `python scripts/db/check_db.py`; start FastAPI on port 8000; start Vite on port 3000; open the console; confirm API status; run the scenario; inspect risk, supply gap, procurement, and evidence. Step 8 is not started.

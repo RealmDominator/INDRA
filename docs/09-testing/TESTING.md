@@ -228,3 +228,11 @@ This test should be runnable as a single command for demo preparation.
 Run `python -m pytest backend/tests -q`. The suite covers structured-event validation, provider retry/validation behavior, deterministic risk/scenario/optimizer calculations, and Step-6A resolution integration. No external APIs or datasets are required.
 
 Step 6C frontend verification: `npm run build` completes successfully. The browser flow uses the live FastAPI endpoints and renders unavailable/empty states when optional data is absent.
+
+### Step 7A integration verification
+
+With `DATABASE_URL` configured, run `python backend/tests/test_e2e_pipeline.py` (PowerShell: set `PYTHONIOENCODING=utf-8`). The verified run covers PostgreSQL health, reference data, India/corridor entity resolution with unresolved-name handling, corridor risk, deterministic risk/scenario/procurement outputs, evidence stages, validation errors, route filtering, and CORS: **54 passed, 0 failed**. `npm run build` remains green.
+
+### Step 7C release verification
+
+The final release check resets and reseeds PostgreSQL with `python scripts/db/reset_db.py --confirm`, runs `python scripts/db/check_db.py` (90 checks passed), starts FastAPI and Vite, verifies `/health` and frontend HTTP 200, confirms CORS for the configured frontend origin, reruns the 54-step E2E workflow, and confirms the Vite production build. No generated build artifacts or `.env` secrets are tracked.
