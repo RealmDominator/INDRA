@@ -62,9 +62,9 @@ LLM Event Extraction → Entity Resolution (entity_aliases + RapidFuzz)
 
 ## Current Development Status
 
-**Step 7C — Final E2E Verification + Demo Freeze (COMPLETE)**
+**Step 8E — Deployment + Production Hardening (COMPLETE)**
 
-The MVP release candidate is locally reproducible. Step 7C verified Docker/PostgreSQL reset and seed integrity, FastAPI runtime health, the complete event-to-evidence API workflow, and the React/Vite demo build. Step 8 is not started.
+The MVP release candidate is locally reproducible. Step 8E adds environment-driven production configuration, container definitions, healthchecks, CI, and deployment documentation. Step 8B remains partial because external source credentials/connectivity are separate. Step 8D-B is not modified by this deployment task.
 
 **Implemented in Step 3:**
 - Python 3.11+ is supported; development verification was performed on Python 3.13.9
@@ -210,7 +210,7 @@ Key rules:
 
 ## Local Development
 
-See [backend setup](docs/04-backend/DEVELOPMENT_SETUP.md) and [frontend setup](docs/03-frontend/DEVELOPMENT_SETUP.md) for tested commands. The local services are FastAPI at `http://localhost:8000`, health check at `http://localhost:8000/health`, Vite at `http://localhost:3000`, and PostgreSQL through `docker compose up -d postgres`.
+See [deployment](docs/DEPLOYMENT.md), [backend setup](docs/04-backend/DEVELOPMENT_SETUP.md), and [frontend setup](docs/03-frontend/DEVELOPMENT_SETUP.md) for tested commands. The local services are FastAPI at `http://localhost:8000`, health check at `http://localhost:8000/health`, Vite at `http://localhost:3000`, and PostgreSQL through `docker compose up -d postgres`.
 
 ## Links to Important Documents
 

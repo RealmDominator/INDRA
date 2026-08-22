@@ -1,5 +1,6 @@
 """Minimal ingestion status API."""
 from datetime import datetime, timezone
+import logging
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -11,6 +12,7 @@ from app.ingestion.runner import get_last_results
 from app.models.domain import DataSource
 
 router = APIRouter(prefix="/ingestion", tags=["ingestion"])
+logger = logging.getLogger("indra.api.ingestion")
 
 
 class SourceFreshness(BaseModel):
@@ -83,8 +85,9 @@ async def run_ingestion(session=Depends(get_db)):
     from app.ingestion.runner import run_all
     try:
         results = await run_all(session)
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Ingestion run failed: {exc}")
+    except Exception:
+        logger.exception("ingestion_run_failed")
+        raise HTTPException(status_code=500, detail="Ingestion run failed") from None
 
     return {
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -102,4 +105,3 @@ async def run_ingestion(session=Depends(get_db)):
             for r in results
         ],
     }
-

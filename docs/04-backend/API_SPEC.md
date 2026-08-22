@@ -2,22 +2,39 @@
 
 > **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION**
 >
-> Authoritative Phase-1 REST contract for the INDRA backend. All endpoints are design targets — not yet implemented.
+> Authoritative Phase-1 REST contract for the INDRA backend. Runtime route
+> status below was audited against the current FastAPI application.
 >
-> **Revision:** Step 2 Architecture Freeze (20 August 2026). See [ARCHITECTURE_DECISIONS.md](../02-architecture/ARCHITECTURE_DECISIONS.md) ADR-014.
+> **Revision:** Step 9C release-candidate audit (22 August 2026). See [ARCHITECTURE_DECISIONS.md](../02-architecture/ARCHITECTURE_DECISIONS.md) ADR-014.
 
 ---
 
-## Step-6A Implementation Status
+## Runtime Implementation Status
 
-Implemented against the verified PostgreSQL seed database: `GET /health`, `/countries`, `/corridors`, `/crude-grades`, `/routes`, `/refineries`, `/suppliers`, and `/reserves`. The remaining event, risk, scenario, procurement, prices, and evidence routes remain planned.
+Implemented against the verified PostgreSQL seed database: health, domain
+reference data, event persistence/listing, corridor risk and graph impact,
+deterministic risk/scenario/procurement calculations, bounded extraction and
+pipeline processing, and ingestion status/run operations. There are no
+implemented prices or standalone evidence routes in the current MVP; price
+and evidence data are returned through relevant pipeline/results.
+
+The current monolith is served at the root path; there is no `/api/v1` prefix.
+
+| Runtime status | Paths |
+|---|---|
+| IMPLEMENTED | `GET /health`, `GET /countries`, `GET /corridors`, `GET /crude-grades`, `GET /suppliers`, `GET /routes`, `GET /refineries`, `GET /reserves` |
+| IMPLEMENTED | `POST /events`, `GET /events`, `GET /corridors/risk`, `GET /corridors/risk/live`, `GET /corridors/{corridor_id}/impact` |
+| IMPLEMENTED | `GET /risk`, `POST /risk`, `POST /scenarios`, `POST /recommendations` |
+| IMPLEMENTED | `POST /events/extract`, `POST /events/process`, `POST /events/ingest-and-process` |
+| IMPLEMENTED | `GET /ingestion/status`, `POST /ingestion/run` |
+| DEFERRED / NOT IMPLEMENTED | Standalone prices, evidence, entity-detail, route-risk, supplier-risk, and recommendation-explanation routes |
 
 ## Base Configuration
 
 | Setting | Value |
 |---|---|
 | Framework | FastAPI |
-| Base URL | `http://localhost:8000/api/v1` |
+| Base URL | `http://localhost:8000` |
 | Documentation | Auto-generated at `/docs` (Swagger) and `/redoc` |
 | Format | JSON |
 | Authentication | None for Phase 1 |
@@ -64,7 +81,7 @@ Endpoints returning computed results SHOULD include enough identifiers for the e
 
 ---
 
-## MVP Endpoint Groups (12 groups, 14 routes)
+## MVP Endpoint Groups (audited runtime route set)
 
 ---
 
@@ -153,7 +170,7 @@ Endpoints returning computed results SHOULD include enough identifiers for the e
   "is_simulated": false,
   "llm_model_used": "provider/model-name",
   "data_semantic": "OBSERVED",
-  "evidence_url": "/api/v1/evidence/event/42"
+  "evidence_url": null
 }
 ```
 
@@ -225,7 +242,7 @@ Endpoints returning computed results SHOULD include enough identifiers for the e
     "import_structure": "PPAC FY2024-25"
   },
   "data_semantic": "DERIVED",
-  "evidence_url": "/api/v1/evidence/risk_score/123"
+  "evidence_url": null
 }
 ```
 
@@ -426,7 +443,7 @@ Parameters loaded from `config/scenario_assumptions.yaml`.
     {"name": "hormuz_share", "value": 0.42, "data_semantic": "HISTORICAL_CALIBRATED", "source": "PPAC FY2024-25"}
   ],
   "data_semantic": "DERIVED",
-  "evidence_url": "/api/v1/evidence/scenario_result/7"
+  "evidence_url": null
 }
 ```
 
@@ -510,14 +527,15 @@ Parameters loaded from `config/scenario_assumptions.yaml`.
 
 | Endpoint | Reason |
 |---|---|
-| `GET /suppliers`, `GET /suppliers/{id}` | Not needed for core demo |
+| `GET /suppliers/{id}` | Detail deferred; list endpoint is implemented and sufficient |
 | `GET /routes/{id}`, `GET /refineries/{id}` | Detail deferred; list endpoints sufficient |
 | `GET /refineries/{id}/exposure` | Derivable from scenario results |
 | `GET /risk/routes`, `GET /risk/suppliers` | Visible on map/recommendations |
 | `GET /prices/history`, `GET /prices/fx` | Included in `/prices/current` |
 | `GET /reserves/{location_id}`, `GET /reserves/scenario/{id}` | Aggregated in `/reserves` and scenario response |
 | `GET /recommendations/{id}/explain` | LLM explanation is NICE TO HAVE |
-| `POST /events/extract` | Not in core demo flow |
+| Standalone price/evidence endpoints | Current pipeline returns relevant derived/provenance data; standalone routes are deferred |
+| `POST /events/extract` | Implemented as bounded provider extraction; live use requires configured credentials |
 | `GET /events/feed` | `/events` sufficient |
 | `GET /status/data-sources` | Covered by `/health` |
 
@@ -525,11 +543,15 @@ Parameters loaded from `config/scenario_assumptions.yaml`.
 
 ## Implementation Notes (Phase 1)
 
-### Step 6B implemented
+### Current implementation
 
-The deterministic intelligence foundation now exposes `POST /events` (validated event plus Step-6A entity-resolution results), `GET /risk` readiness, `POST /risk`, `POST /scenarios`, and `POST /recommendations`. These are foundation endpoints only; external ingestion, LLM provider credentials, and dashboard workflows remain planned.
+The current application exposes the audited route set above. Event pipeline
+results include entity resolution, deterministic risk, NetworkX impact,
+scenario, procurement, and evidence-stage output. External source access and
+live LLM extraction remain configuration-dependent; the weighted deterministic
+engine remains the production baseline.
 
-- All routes implemented in single FastAPI app under `/api/v1` router
+- All routes implemented in a single FastAPI app at the root path
 - Pydantic models enforce request/response shapes
 - Internal 0.0–1.0 → display 0–100 conversion in response serializers
 - CORS middleware required for React frontend

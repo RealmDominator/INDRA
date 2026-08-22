@@ -122,6 +122,16 @@ Implemented scope is deliberately limited to the FastAPI startup foundation, `GE
 
 ## ML Tests (Phase 2)
 
+### Step 8D-B status — NOT STARTED
+
+The Step 8D-B candidate is **NOT STARTED**. A data-gap planning note is
+retained, but no XGBoost model, feature matrix, or evaluation artifact
+was created, so model-load, prediction-range, reproducibility, leakage, and
+metric tests are intentionally not enabled. Enabling those tests before an
+independent time-indexed disruption target exists would validate fabricated or
+circular labels. The required target, feature audit, temporal split, and
+additional data are specified in `docs/07-ai-ml/XGBOOST_EVALUATION.md`.
+
 | Test | Description |
 |---|---|
 | `test_xgboost_model_loads` | Saved model file loads without error |
@@ -287,3 +297,76 @@ Benchmark harness (offline): `python scripts/benchmark/run_llm_benchmark.py --of
 Live benchmark: `python scripts/benchmark/run_llm_benchmark.py` — **pending API-key availability** because `OPENROUTER_API_KEY=<required locally>` was unavailable/empty.
 
 See `docs/07-ai-ml/BENCHMARK_REPORT.md` for the provisional runtime-model rationale and the current live-benchmark status.
+
+### Step 9A security/configuration verification
+
+Security audit coverage added in `backend/tests/test_security.py` verifies:
+
+- configured-origin CORS behavior and rejection of an unapproved origin;
+- Pydantic validation returns 422 without traceback or source-file leakage;
+- unconfigured LLM provider errors return a safe 503 response without tokens;
+- production debug defaults are disabled when no environment file is loaded.
+
+The repository audit also verified that `.env` is ignored and untracked, no
+secrets are present in the frontend production bundle or committed fixtures,
+the production Compose profile binds PostgreSQL to loopback only, SQLAlchemy
+queries remain parameterized, and no unsafe HTML rendering, browser credential
+storage, unsafe deserialization, or shell execution exists in application code.
+The only confirmed secret-like documentation issue was a development database
+password example in `docs/06-data/DATA_INGESTION.md`; it was replaced with a
+placeholder. `npm audit --json` reports two development-tool advisories: one
+moderate `esbuild` advisory and one high `vite` advisory, both resolved by the
+available Vite 8 major upgrade. No major upgrade was applied; production uses
+the static Nginx image and the Vite development server is explicitly bound to
+loopback. A Vite major upgrade remains a follow-up requiring compatibility
+testing. `pip-audit` was not installed in the environment, so no independent
+Python advisory report is claimed.
+
+### Step 9B performance, reliability, and failure verification — COMPLETE
+
+The local MVP baseline was measured on 22 August 2026 with
+`python scripts/performance/measure_mvp.py --count 20 --concurrency 5`
+against the running FastAPI/PostgreSQL stack. These are measurements, not
+SLAs; they include local Docker, Windows, database, and first-request effects.
+
+| Operation | Requests | Average ms | Median ms | P95 ms | Failures |
+|---|---:|---:|---:|---:|---:|
+| `GET /health` | 20 | 93.89 | 10.99 | 347.51 | 0 |
+| `GET /countries` | 20 | 18.91 | 11.12 | 43.96 | 0 |
+| `GET /corridors/risk` | 20 | 13.60 | 11.53 | 22.19 | 0 |
+| `GET /routes` | 20 | 16.66 | 13.99 | 31.26 | 0 |
+| `POST /risk` | 20 | 12.31 | 11.96 | 18.24 | 0 |
+| `POST /scenarios` | 20 | 11.67 | 10.07 | 18.59 | 0 |
+| `POST /recommendations` | 20 | 11.57 | 9.97 | 19.23 | 0 |
+| `GET /ingestion/status` | 20 | 12.30 | 10.90 | 18.33 | 0 |
+| `POST /events/process` (local seeded event) | 5 | 7.72 | 7.55 | 10.15 | 0 |
+
+Event processing used the deterministic in-process path; live LLM and
+external-provider latency was not measured and is not claimed.
+
+Focused reliability coverage in `backend/tests/test_reliability.py` passed
+7/7, and the full backend suite passed **61 tests**. It verifies modest
+concurrency, database-unavailable health reporting, bounded provider
+timeout/retry behavior, missing-credential degradation, stale-source
+classification, explicit deterministic optimizer infeasibility, and repeated
+event processing without duplicate persistence. The repeated risk assertion
+allows only the documented wall-clock event-recency variation; classification,
+scenario, procurement, and evidence stages remain stable.
+
+Failure behavior verified: malformed requests return safe 422 responses;
+database unavailability is reported by health; unconfigured LLM access is
+explicitly unavailable; EIA is `SKIPPED`/`NOT_CONFIGURED`; ACLED is
+`SKIPPED`/`REQUIRES_ACCESS`; stale sources are `STALE`; infeasible procurement
+is explicit; unresolved entities remain unresolved; and missing optional data
+retains its semantic/availability state.
+
+Frontend reliability was regression-checked through the production build and
+existing UI behavior: loading, empty, API-unavailable/retry, busy-submission,
+and timeout states remain in place. No UI redesign was made. Database
+integrity remained **90/90** and Step-7 E2E remained **54/54**.
+
+Known limitations: this is a modest local concurrency check, not sustained
+load testing or an SLA; external credentials/connectivity remain the Step 8B
+limitation; live-provider timing, connection-pool saturation, and
+production-scale behavior were not claimed. No speculative indexes were
+added.

@@ -4,7 +4,7 @@
 >
 > **Revision:** Post-review corrections. Added explicit entity resolution layer, provenance tracking, and risk scale convention.
 
-> **Step 8C status:** COMPLETE. The persisted event-to-dashboard pipeline is implemented and verified with deterministic provider fallback/test extraction, seeded PostgreSQL entity resolution, Phase-1 risk, NetworkX impact traversal, scenario/procurement computation, and evidence-stage output. Step 8B external-source access remains partial; Step 8D/8E are not started.
+> **Step 8C status:** COMPLETE. The persisted event-to-dashboard pipeline is implemented and verified with deterministic provider fallback/test extraction, seeded PostgreSQL entity resolution, Phase-1 risk, NetworkX impact traversal, scenario/procurement computation, and evidence-stage output. Step 8B external-source access remains partial; Step 8D-B remains NOT STARTED; Step 8E is COMPLETE.
 
 ---
 

@@ -29,7 +29,7 @@ class RssAdapter:
 
     async def fetch(self) -> FetchResult:
         settings = get_settings()
-        feeds = settings.rss_feed_urls
+        feeds = settings.rss_feed_url_list
         if not feeds:
             return FetchResult(
                 source_name=self.source_name,

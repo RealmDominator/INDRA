@@ -294,7 +294,7 @@ async def run_rss(session: AsyncSession, adapter: RssAdapter | None = None) -> I
     adapter = adapter or RssAdapter()
     from app.config.settings import get_settings
     settings = get_settings()
-    if not settings.rss_feed_urls:
+    if not settings.rss_feed_url_list:
         result = IngestionRunResult(
             source_name=adapter.source_name,
             source_type=adapter.source_type,

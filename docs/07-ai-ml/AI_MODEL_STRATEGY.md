@@ -1,5 +1,11 @@
 # INDRA — AI Model Strategy
 
+**Step 8D-B audit:** The Phase-2 XGBoost candidate remains unevaluated. The
+repository does not contain defensible independent historical disruption
+labels, so training and model selection are blocked. See
+[XGBOOST_EVALUATION.md](XGBOOST_EVALUATION.md). The weighted deterministic
+engine remains the production baseline.
+
 > This document describes how INDRA manages AI models for two distinct purposes:
 > 1. **Development-agent models** — AI models used by the development team/agents to build and maintain the project
 > 2. **Application LLM** — The AI model embedded within INDRA itself for event extraction and explanation

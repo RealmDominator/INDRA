@@ -7,10 +7,12 @@ This module only establishes the database connection.
 """
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
+import logging
 
 from app.config.settings import get_settings
 
 settings = get_settings()
+logger = logging.getLogger("indra.database")
 
 
 def _database_url() -> str:
@@ -60,5 +62,6 @@ async def check_db_connection() -> bool:
         async with engine.connect() as conn:
             await conn.execute(text("SELECT 1"))
         return True
-    except Exception:
+    except Exception as exc:
+        logger.warning("database_healthcheck_failed error=%s", str(exc)[:200])
         return False

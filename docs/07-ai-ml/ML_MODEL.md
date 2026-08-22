@@ -1,5 +1,10 @@
 # INDRA — ML Model Strategy
 
+> **Step 8D-B status:** NOT STARTED. A data-gap planning note exists, but no
+> XGBoost model was trained or integrated. See
+> [XGBOOST_EVALUATION.md](XGBOOST_EVALUATION.md). The Phase-1 weighted
+> deterministic engine remains the production baseline.
+
 > Source: PETRAS Analysis §10; INDRA Master Report §5, §18, §19
 >
 > **Revision:** Post-review corrections. Risk scale frozen to 0.0–1.0 internal / 0–100 display. Weight conflict resolved.

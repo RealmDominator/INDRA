@@ -1,4 +1,6 @@
 """Step-8C intelligence API: deterministic engines + LLM extraction + full pipeline."""
+import logging
+
 from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel, Field
 from sqlalchemy import select
@@ -18,6 +20,7 @@ from app.models import Corridor
 from app.models.ingestion import GeopoliticalEvent
 
 router = APIRouter(tags=["intelligence"])
+logger = logging.getLogger("indra.api.intelligence")
 
 
 # ---------------------------------------------------------------------------
@@ -103,8 +106,9 @@ async def corridor_network_impact(corridor_id: int, session=Depends(get_db)):
     try:
         impact = await corridor_impact(session, [corridor_id])
         return impact
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Network impact analysis failed: {exc}") from exc
+    except Exception:
+        logger.exception("network_impact_failed corridor_id=%d", corridor_id)
+        raise HTTPException(status_code=500, detail="Network impact analysis failed") from None
 
 
 # ---------------------------------------------------------------------------
@@ -199,10 +203,12 @@ async def extract_event(request: ExtractionRequest, req: Request, session: Async
 
     try:
         result = await provider.extract_event(request.text)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=f"Extraction failed: {exc}") from exc
-    except RuntimeError as exc:
-        raise HTTPException(status_code=503, detail=f"Provider error: {exc}") from exc
+    except ValueError:
+        logger.warning("structured_extraction_failed")
+        raise HTTPException(status_code=422, detail="Structured extraction failed") from None
+    except RuntimeError:
+        logger.warning("llm_provider_unavailable")
+        raise HTTPException(status_code=503, detail="LLM provider unavailable") from None
 
     resolution = await resolve_structured_event(session, result.event)
 
@@ -231,8 +237,9 @@ async def process_event(request: ProcessRequest, req: Request, session: AsyncSes
     provider = getattr(req.app.state, "llm_provider", None)
     try:
         result = await process_event_by_id(session, request.event_id, llm_provider=provider)
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Pipeline error: {exc}") from exc
+    except Exception:
+        logger.exception("pipeline_failed event_id=%d", request.event_id)
+        raise HTTPException(status_code=500, detail="Pipeline processing failed") from None
     return result
 
 
@@ -245,6 +252,7 @@ async def ingest_and_process_event(request: IngestRequest, req: Request, session
     provider = getattr(req.app.state, "llm_provider", None)
     try:
         result = await ingest_and_process(session, request.text, request.source_name, llm_provider=provider)
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Pipeline error: {exc}") from exc
+    except Exception:
+        logger.exception("ingest_pipeline_failed source=%s", request.source_name)
+        raise HTTPException(status_code=500, detail="Pipeline processing failed") from None
     return result

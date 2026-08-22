@@ -7,7 +7,6 @@ Do NOT hard-code secrets here.
 """
 from functools import lru_cache
 
-from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,7 +22,7 @@ class Settings(BaseSettings):
     app_env: str = "development"
     app_host: str = "0.0.0.0"
     app_port: int = 8000
-    app_debug: bool = True
+    app_debug: bool = False
 
     # Database
     database_url: str = ""
@@ -31,6 +30,7 @@ class Settings(BaseSettings):
 
     # CORS — local frontend dev server
     frontend_url: str = "http://localhost:3000"
+    cors_origins: str = ""
 
     # LLM provider configuration
     llm_provider: str = "openrouter"
@@ -71,14 +71,15 @@ class Settings(BaseSettings):
     gdelt_max_records: int = 25
     eia_max_records: int = 30
     acled_max_records: int = 50
-    rss_feed_urls: list[str] = []
+    rss_feed_urls: str = ""
 
-    @field_validator("rss_feed_urls", mode="before")
-    @classmethod
-    def parse_rss_feeds(cls, value):
-        if isinstance(value, str):
-            return [item.strip() for item in value.split(",") if item.strip()]
-        return value or []
+    @property
+    def rss_feed_url_list(self) -> list[str]:
+        return [item.strip() for item in self.rss_feed_urls.split(",") if item.strip()]
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [item.strip() for item in self.cors_origins.split(",") if item.strip()]
 
 
 @lru_cache

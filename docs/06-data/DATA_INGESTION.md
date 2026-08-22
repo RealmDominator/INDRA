@@ -175,7 +175,7 @@ Each persisted row creates an `evidence_records` entry:
 ## Testing
 
 ```powershell
-$env:DATABASE_URL="postgresql+asyncpg://indra_user:indra_dev_password@localhost:5432/indra_db"
+$env:DATABASE_URL="postgresql+asyncpg://indra_user:<development_password>@localhost:5432/indra_db"
 python -m pytest backend/tests/test_ingestion.py -q
 ```
 

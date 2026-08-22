@@ -2,9 +2,9 @@
 
 > **Purpose:** Durable context file for AI development agents taking over the INDRA project.
 >
-> **Date:** 21 August 2026
+> **Date:** 22 August 2026
 >
-> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6A COMPLETE · Step 6B COMPLETE · Step 6C COMPLETE · Step 7 COMPLETE · Step 8A COMPLETE · Step 8B PARTIAL · Step 8C COMPLETE · Step 8D-A COMPLETE · Step 8D-B NOT STARTED · Step 8E NOT STARTED
+> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6A COMPLETE · Step 6B COMPLETE · Step 6C COMPLETE · Step 7 COMPLETE · Step 8A COMPLETE · Step 8B PARTIAL · Step 8C COMPLETE · Step 8D-A COMPLETE · Step 8D-B NOT STARTED · Step 8E COMPLETE · Step 9A COMPLETE · Step 9B COMPLETE · Step 9C COMPLETE · Step 10 NOT STARTED
 
 ---
 
@@ -12,7 +12,7 @@
 
 **INDRA — India Disruption Response Architecture**
 
-**STEP 8A COMPLETE — RUNTIME LLM PROVIDER INTEGRATED; LIVE BENCHMARK PENDING API KEY.** Provisional runtime model: `openai/gpt-4o-mini` via OpenRouter. Implemented: OpenRouter provider, provider factory, timeout/retry/JSON validation, `POST /events/extract`, 25-example evaluation set, offline benchmark harness, and provider/integration tests. Verified: 25 offline benchmark examples validated; 50 backend tests now pass including Step 8C and Step 8D-A coverage. Pending: live OpenRouter benchmark because `OPENROUTER_API_KEY` is unavailable/empty. Step 8B is PARTIAL; Step 8C and Step 8D-A are COMPLETE; Step 8D-B and Step 8E are NOT STARTED.
+**STEP 9C COMPLETE — FINAL SYSTEM AUDIT + RELEASE CANDIDATE FREEZE.** Step 8A runtime provider integration remains verified with offline benchmark coverage; live benchmarking still requires credentials. Step 8B remains PARTIAL because external source access is incomplete. Step 8D-B is NOT STARTED: its data-gap note is retained as planning documentation, with no model training or integration. Steps 8C, 8D-A, 8E, 9A, and 9B are COMPLETE. Step 10 is NOT STARTED.
 
 INDRA is an India-specific energy supply-chain decision-support system that connects geopolitical events to supply-chain risk, disruption scenarios, procurement alternatives, and evidence-backed recommendations.
 
@@ -60,10 +60,79 @@ This is a **hackathon MVP**, not an enterprise production platform.
 | **Step 8B** | Live External Data Ingestion + Freshness + Provenance | ⚠️ PARTIAL — Software implementation: COMPLETE. External source connectivity: PARTIAL (EIA/ACLED require credentials; GDELT/OFAC/RBI/RSS implemented) |
 | **Step 8C** | Full Pipeline Integration: Event → Dashboard | ✅ COMPLETE |
 | **Step 8D-A** | Procurement Optimization Upgrade | ✅ COMPLETE |
-| **Step 8D-B** | (planned) | ❌ NOT STARTED |
-| **Step 8E** | (planned) | ❌ NOT STARTED |
+| **Step 8D-B** | Phase-2 XGBoost candidate | ⏸️ NOT STARTED — planning/data-gap note retained; no training or integration |
+| **Step 8E** | Deployment + production hardening + release reproducibility | ✅ COMPLETE |
+| **Step 9A** | Security + dependency + configuration audit | ✅ COMPLETE |
+| **Step 9B** | Performance + reliability + failure testing | ✅ COMPLETE |
+| **Step 9C** | Final system audit + release candidate freeze | ✅ COMPLETE |
+| **Step 10** | (planned) | ❌ NOT STARTED |
 
-> **Architecture is frozen for Phase-1 implementation.** Step 8A is COMPLETE. Step 8B is PARTIAL (software complete, external connectivity partial). Step 8C is COMPLETE. Step 8D-A is COMPLETE; Step 8D-B and Step 8E are NOT STARTED.
+> **Architecture is frozen for Phase-1 implementation.** Step 8A is COMPLETE. Step 8B is PARTIAL (software complete, external connectivity partial). Step 8C, Step 8D-A, Step 8E, Step 9A, Step 9B, and Step 9C are COMPLETE. Step 8D-B is NOT STARTED; the retained data-gap note is planning only.
+
+## Step 9B Status — COMPLETE
+
+Performance and reliability verification was completed against the local
+FastAPI/PostgreSQL stack. A 20-request, concurrency-5 baseline recorded zero
+failures for `/health`, `/countries`, `/corridors/risk`, `/routes`, `/risk`,
+`/scenarios`, `/recommendations`, and `/ingestion/status`; five local
+deterministic event-processing requests also recorded zero failures. Exact
+latency measurements and methodology are recorded in
+`docs/09-testing/TESTING.md` and are not SLAs.
+
+Added `scripts/performance/measure_mvp.py` and
+`backend/tests/test_reliability.py`. Focused reliability tests passed 7/7;
+the full backend suite passed 61 tests; Step-7 E2E passed 54/54; database
+integrity passed 90/90; and the frontend production build passed. Verification
+covered modest concurrency, database/provider/ingestion degradation, bounded
+timeout/retry behavior, stale and missing optional data, infeasible
+procurement, repeated pipeline processing, and duplicate-event protection.
+The deterministic pipeline remains the baseline. Event recency is an
+intentional wall-clock-dependent feature; stable classifications and downstream
+outputs were verified. No external-provider latency was claimed.
+
+Step 8B remains PARTIAL because external source credentials/connectivity are
+outside this task. Step 8D-B is NOT STARTED; no ML work was performed. Step 10
+is NOT STARTED.
+
+## Step 9C Status — COMPLETE / RELEASE CANDIDATE FROZEN
+
+The final audit verified the architecture, PostgreSQL schema and integrity,
+FastAPI routes, repository/service/API/frontend contracts, entity resolution,
+bounded LLM abstraction, optional ingestion adapters, deterministic risk,
+NetworkX impact traversal, scenario engine, SciPy procurement with ranking
+fallback, evidence chain, React/Vite dashboard, Docker deployment, security
+configuration, and reliability coverage.
+
+Runtime API scope is frozen to the audited root-path endpoints documented in
+`docs/04-backend/API_SPEC.md`. No standalone prices or evidence endpoints are
+implemented; those data are exposed through existing result payloads where
+applicable. No forbidden infrastructure drift was found. PostgreSQL remains
+the source of truth, NetworkX remains an in-memory graph-operation layer, the
+LLM remains bounded to extraction/provider handling, and the Phase-1 weighted
+deterministic engines remain authoritative.
+
+Release-candidate verification: backend **61 passed**, Step-7 E2E **54/54**,
+database integrity **90/90**, frontend production build passed, and Docker
+Compose configuration validated. Step 8B remains PARTIAL. Step 8D-B is NOT
+STARTED; the XGBoost data-gap note is planning documentation only. Step 10 is
+NOT STARTED.
+
+## Step 8E Status — COMPLETE
+
+Deployment hardening preserves the React/Vite → FastAPI → PostgreSQL topology.
+The backend now uses environment-driven production settings, configurable
+CORS, safe generic 500 responses, and structured request/database/provider and
+pipeline logging without secrets. Production Dockerfiles, healthchecks, a
+three-service production-like Compose profile, CI verification, and
+`docs/DEPLOYMENT.md` were added. PostgreSQL schema/seed initialization remains
+explicit and reproducible; the database is bound to loopback only in the local
+production-like profile.
+
+Verification: backend **50 passed**; Step-7 E2E **54/54 passed**; database
+integrity **90 checks passed**; frontend build passed; Docker Compose config
+validated; production-like containers built and ran healthy; backend `/health`
+returned 200 with database connected; frontend HTTP returned 200. Step 8B
+remains PARTIAL and Step 8D-B was not started or modified by this step.
 
 ---
 
@@ -836,7 +905,7 @@ Step 6C implemented the React/Vite dashboard with the full EVENT → RISK → SC
 
 ## Step 8B Status — PARTIAL
 
-The ingestion framework, adapter contract, validation, normalization, source-aware deduplication, PostgreSQL persistence, provenance, freshness states, bounded retries, scheduler abstraction, status API, and deterministic fixture tests are implemented. Fixture-backed tests pass for GDELT, RSS, EIA, RBI, OFAC, ACLED access handling, deduplication, persistence, and freshness. GDELT direct live HTTP smoke returned 200. OFAC HTTP is reachable but adapter completion was not verified in the current run; EIA and ACLED are credential-gated; RBI is a processed official-format CSV fallback; RSS has no configured feeds. Step 8B remains PARTIAL because the complete live-source completion criteria are not met. Step 8C and Step 8D-A are complete; Step 8D-B and Step 8E are NOT STARTED.
+The ingestion framework, adapter contract, validation, normalization, source-aware deduplication, PostgreSQL persistence, provenance, freshness states, bounded retries, scheduler abstraction, status API, and deterministic fixture tests are implemented. Fixture-backed tests pass for GDELT, RSS, EIA, RBI, OFAC, ACLED access handling, deduplication, persistence, and freshness. GDELT direct live HTTP smoke returned 200. OFAC HTTP is reachable but adapter completion was not verified in the current run; EIA and ACLED are credential-gated; RBI is a processed official-format CSV fallback; RSS has no configured feeds. Step 8B remains PARTIAL because the complete live-source completion criteria are not met. Step 8C and Step 8D-A are complete; Step 8D-B is NOT STARTED and Step 8E is COMPLETE.
 
 ## Step 8C Status — COMPLETE
 
@@ -851,7 +920,7 @@ EVENT → EXTRACTION/FALLBACK → ENTITY RESOLUTION → DETERMINISTIC RISK
 - Fixed only verified integration defects: invalid fallback severity construction, route transit-field mapping, and an invalid supplier field filter.
 - Event submission now maps pipeline scenario/procurement results into the existing frontend panels and displays pipeline evidence stages.
 - Verification: `41 passed` in `python -m pytest backend/tests -q`; Step-7 E2E `54 passed, 0 failed`; `npm run build` succeeds with 34 modules.
-- No external LLM, EIA, ACLED, OFAC, or RSS access was fabricated or required for this verification. Step 8B remains PARTIAL. Step 8D-A uses SciPy locally; Step 8D-B and Step 8E remain NOT STARTED.
+- No external LLM, EIA, ACLED, OFAC, or RSS access was fabricated or required for this verification. Step 8B remains PARTIAL. Step 8D-A uses SciPy locally; Step 8D-B is NOT STARTED and Step 8E is COMPLETE.
 
 ## Step 8D-A Status — COMPLETE
 
@@ -859,4 +928,39 @@ Phase-1 procurement now uses `scipy.optimize.linprog(method="highs")` for fully 
 
 Results include selected suppliers, crude grades, routes, allocated volumes, objective value, solver status, exclusions, fallback metadata, `DERIVED` semantic classification, and optimization provenance/evidence. Incomplete candidate identity or unknown required numerical inputs are not fabricated; the existing deterministic ranking method remains the fallback. Infeasible LP results are explicit and remain `feasible: false`.
 
-Verification: `backend/tests/test_optimization.py` **9 passed**; full backend suite **50 passed**; Step-7 E2E **54/54 passed**; frontend production build passed. Step 8D-B is NOT STARTED.
+Verification: `backend/tests/test_optimization.py` **9 passed**; full backend suite **50 passed**; Step-7 E2E **54/54 passed**; frontend production build passed. Step 8D-B was not started; Step 8E is COMPLETE.
+
+## Step 9A Status — COMPLETE
+
+The security, dependency, and configuration audit is complete. No committed
+real credentials were found; `.env` remains ignored; frontend build assets and
+fixtures contain no secrets. A development database password in a historical
+documentation example was replaced with a placeholder. CORS now allows only
+configured origins and the required `Content-Type` header. Focused security
+tests cover CORS, validation errors, safe provider failures, and production
+debug defaults.
+
+Verification: **54 backend tests passed**, Step-7 E2E **54/54 passed**, database
+integrity **90 checks passed**, frontend production build passed, and Docker
+Compose configuration validated. `npm audit --json` reports one moderate
+esbuild advisory and one high Vite advisory; both require a Vite 8 major
+upgrade, so no aggressive upgrade was performed. The Vite dev server is
+loopback-bound and production uses Nginx. `pip-audit` was unavailable in the
+environment. Step 8B remains PARTIAL. Step 9B is now COMPLETE; Step 9C remains
+NOT STARTED.
+
+## Step 8D-B Status — NOT STARTED
+
+The Phase-2 XGBoost candidate was not started. A planning/data-gap assessment
+is retained, but no model was trained and no ML metrics or artifacts are
+claimed. The repository contains reference/seed
+data, OFAC sanctions reference rows, a three-row RBI sample, parser fixtures,
+and synthetic extraction examples, but no independent time-indexed disruption
+outcome panel. ACLED/GDELT historical event data are not acquired and EIA
+historical commodity observations are unavailable. Seed risk/scenario values
+are calibrated, derived, or simulated and cannot be used as labels.
+
+The proposed independent corridor disruption target, pre-cutoff feature plan,
+temporal split, exact additional data requirements, and leakage controls are
+documented in `docs/07-ai-ml/XGBOOST_EVALUATION.md`. The weighted deterministic
+risk engine remains the production baseline. Step 8E is COMPLETE.
