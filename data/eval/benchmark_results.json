@@ -1,6 +1,7 @@
 {
-  "benchmark_date": "2026-08-21",
+  "benchmark_date": "2026-08-22",
   "mode": "offline_harness_validation",
+  "prompt_version": "indra-event-extraction/v1",
   "models": [
     {
       "model": "harness-validation",

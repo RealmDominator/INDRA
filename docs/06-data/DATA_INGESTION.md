@@ -59,14 +59,14 @@ Run results report: source name, timestamps, record counts, errors, freshness st
 
 ---
 
-## Source Status (Verified 21 Aug 2026)
+## Source Status (Verified 22 Aug 2026 — Step 11A activation attempt)
 
 | Source | Connection Status | Notes |
 |---|---|---|
-| **GDELT** | CONNECTED (adapter + fixture tests + live HTTP smoke) | Poll ~15 min when scheduler enabled; keyword-filtered DOC API |
+| **GDELT** | PARTIAL (adapter + fixture tests; live runner blocked) | Bounded run returned `All connection attempts failed`; poll ~15 min when scheduler enabled |
 | **RSS** | NOT_CONFIGURED (adapter + fixture tests) | Requires `RSS_FEED_URLS`; poll ~60 min |
-| **OFAC** | PARTIAL (adapter + fixture tests; live adapter completion not verified) | Daily refresh to `data/raw/ofac` + `data/processed/ofac` |
-| **RBI** | PARTIAL | Loads from processed CSV; no reliable bulk automation API |
+| **OFAC** | PARTIAL (adapter + fixture tests; live runner blocked) | Bounded run returned `All connection attempts failed`; daily refresh to `data/raw/ofac` + `data/processed/ofac` |
+| **RBI** | PARTIAL | Processed CSV loaded; 3 existing rows were duplicates; no reliable bulk automation API |
 | **EIA** | REQUIRES_ACCESS | Adapter ready; needs `EIA_API_KEY` |
 | **ACLED** | REQUIRES_ACCESS | Adapter ready; needs `ACLED_API_KEY` + `ACLED_EMAIL` |
 

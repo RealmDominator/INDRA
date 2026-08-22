@@ -1,10 +1,10 @@
 # INDRA — AI Model Strategy
 
-**Step 8D-B status:** NOT STARTED. A data-gap planning note is retained, but
-the repository does not contain defensible independent historical disruption
-labels, so no training or model selection was performed. See
-[XGBOOST_EVALUATION.md](XGBOOST_EVALUATION.md). The weighted deterministic
-engine remains the production baseline.
+**Step 11B decision:** **INSUFFICIENT DATA FOR VALID EVALUATION.** The
+repository does not contain defensible independent historical disruption
+labels, so no XGBoost training or model selection was performed. See
+[XGBOOST_DATA_GAP.md](XGBOOST_DATA_GAP.md). Step 8D-B remains NOT STARTED;
+the weighted deterministic engine remains the production baseline.
 
 > This document describes how INDRA manages AI models for two distinct purposes:
 > 1. **Development-agent models** — AI models used by the development team/agents to build and maintain the project

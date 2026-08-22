@@ -242,7 +242,7 @@ Source: ISPRL official website, MoPNG reports.
 
 ## Data Source Status Tracking
 
-### Step 8B runtime status (22 August 2026) — PARTIAL
+### Step 11A activation status (22 August 2026) — PARTIAL
 
 Adapters and fixture-backed ingestion are implemented, but this table does
 not mean every source is live in the current environment. Credential-gated or
@@ -251,12 +251,17 @@ does not require them.
 
 | Source | Runtime status | Evidence |
 |---|---|---|
-| GDELT | CONNECTED | Adapter and deterministic fixtures pass; direct live HTTP smoke returned 200. |
-| OFAC | PARTIAL | Adapter and deterministic fixtures pass; direct HTTP is reachable, but adapter completion was not verified in the current run. |
+| GDELT | PARTIAL | Adapter and fixtures pass; bounded live runner was attempted and the environment returned `All connection attempts failed`. |
+| OFAC | PARTIAL | Adapter and fixtures pass; bounded live runner was attempted and the environment returned `All connection attempts failed`. |
 | RSS | NOT_CONFIGURED | Adapter and fixture pass; no `RSS_FEED_URLS` configured in the local environment. |
-| RBI | PARTIAL | Processed official-format CSV path loads and persists; no reliable automated bulk endpoint used. |
+| RBI | PARTIAL | Existing processed official-format CSV loaded; 3 rows were recognized as duplicates. No current automated bulk endpoint was used. |
 | EIA | REQUIRES_ACCESS | Adapter is implemented; `EIA_API_KEY` is not configured. |
 | ACLED | REQUIRES_ACCESS | Adapter is implemented; `ACLED_API_KEY` and `ACLED_EMAIL` are not configured. |
+
+Step 11A did not activate any new live credentialed source in this
+environment. The runner verified the configured-state, failure, duplicate, and
+fallback paths without fabricating observations. Step 8B therefore remains
+PARTIAL.
 
 Incoming observations remain `OBSERVED`; ingestion does not assign risk scores or bypass entity resolution.
 

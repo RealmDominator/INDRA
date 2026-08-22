@@ -1,7 +1,7 @@
 # INDRA — Application LLM Benchmark Report (Step 8A)
 
-> **Date:** 21 August 2026  
-> **Status:** Step 8A — provider integrated; live benchmark pending API-key availability  
+> **Date:** 22 August 2026
+> **Status:** Step 11A activation attempt; provider integrated; live benchmark pending API-key availability
 > **Provisional runtime model:** `openai/gpt-4o-mini` via OpenRouter
 
 ---
@@ -76,7 +76,11 @@ python scripts/benchmark/run_llm_benchmark.py
 python scripts/benchmark/run_llm_benchmark.py --offline
 ```
 
-**Live benchmark status (21 Aug 2026):** Not executed because `OPENROUTER_API_KEY=<required locally>` was unavailable/empty. The repository therefore does not claim a benchmark winner: the current runtime model is provisional, while the offline harness and provider/integration tests are verified. Re-run the live benchmark after setting a valid key.
+**Live benchmark status (22 Aug 2026):** Not executed because
+`OPENROUTER_API_KEY` was unavailable/empty. The repository therefore does not
+claim a benchmark winner: the current runtime model is provisional, while the
+offline harness and provider/integration tests are verified. Re-run the live
+benchmark after setting a valid key.
 
 ---
 

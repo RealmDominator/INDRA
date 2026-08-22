@@ -1,9 +1,10 @@
 # INDRA — ML Model Strategy
 
-> **Step 8D-B status:** NOT STARTED. A data-gap planning note exists, but no
-> XGBoost model was trained or integrated. See
-> [XGBOOST_EVALUATION.md](XGBOOST_EVALUATION.md). The Phase-1 weighted
-> deterministic engine remains the production baseline.
+> **Step 11B decision:** **INSUFFICIENT DATA FOR VALID EVALUATION.** No
+> XGBoost model was trained or integrated because the repository lacks an
+> independent, time-indexed corridor-disruption outcome series. See
+> [XGBOOST_DATA_GAP.md](XGBOOST_DATA_GAP.md). Step 8D-B remains NOT STARTED;
+> the Phase-1 weighted deterministic engine remains the production baseline.
 
 > Source: PETRAS Analysis §10; INDRA Master Report §5, §18, §19
 >

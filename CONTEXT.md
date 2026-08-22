@@ -4,7 +4,7 @@
 >
 > **Date:** 22 August 2026
 >
-> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6A COMPLETE · Step 6B COMPLETE · Step 6C COMPLETE · Step 7 COMPLETE · Step 8A COMPLETE · Step 8B PARTIAL · Step 8C COMPLETE · Step 8D-A COMPLETE · Step 8D-B NOT STARTED · Step 8E COMPLETE · Step 9A COMPLETE · Step 9B COMPLETE · Step 9C COMPLETE · Step 10A COMPLETE · Step 10B COMPLETE · Step 10C COMPLETE · Step 10D COMPLETE · Step 11 NOT STARTED
+> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6A COMPLETE · Step 6B COMPLETE · Step 6C COMPLETE · Step 7 COMPLETE · Step 8A COMPLETE — live benchmark PENDING · Step 8B PARTIAL · Step 8C COMPLETE · Step 8D-A COMPLETE · Step 8D-B NOT STARTED · Step 8E COMPLETE · Step 9A COMPLETE · Step 9B COMPLETE · Step 9C COMPLETE · Step 10A COMPLETE · Step 10B COMPLETE · Step 10C COMPLETE · Step 10D COMPLETE · Step 11A PARTIAL · Step 11B COMPLETE — INSUFFICIENT DATA · Step 11C COMPLETE · Step 12A COMPLETE · Step 12B COMPLETE · Step 12C COMPLETE · Step 13 NOT STARTED
 
 ---
 
@@ -12,7 +12,7 @@
 
 **INDRA — India Disruption Response Architecture**
 
-**STEP 10D COMPLETE — FINAL INDRA SUBMISSION AUDIT + FREEZE.** Step 8A runtime provider integration remains verified with offline benchmark coverage; live benchmarking still requires credentials. Step 8B remains PARTIAL because external source access is incomplete. Step 8D-B is NOT STARTED: its data-gap note is retained as planning documentation, with no model training or integration. Steps 8C, 8D-A, 8E, 9A–9C, and 10A–10D are COMPLETE.
+**STEP 12B COMPLETE — DATA + LLM + MODEL LIFECYCLE MANAGEMENT.** Data provenance/versioning, quality gates, prompt versioning, provider/model governance, XGBoost governance, and release gates are documented and regression-tested. The offline benchmark harness validated 25 examples with prompt version `indra-event-extraction/v1`; no live benchmark or model selection was claimed. Step 8B remains PARTIAL, Step 8D-B remains NOT STARTED, and Step 12C remains NOT STARTED.
 
 INDRA is an India-specific energy supply-chain decision-support system that connects geopolitical events to supply-chain risk, disruption scenarios, procurement alternatives, and evidence-backed recommendations.
 
@@ -69,9 +69,92 @@ This is a **hackathon MVP**, not an enterprise production platform.
 | **Step 10B** | Final demo scenario + judge walkthrough | ✅ COMPLETE |
 | **Step 10C** | Final presentation + technical evidence package | ✅ COMPLETE |
 | **Step 10D** | Final INDRA submission audit + freeze | ✅ COMPLETE |
-| **Step 11** | (planned) | ❌ NOT STARTED |
+| **Step 11A** | Live provider + external source activation | ⚠️ PARTIAL — existing integrations verified; credentials/network access unavailable |
+| **Step 11B** | Phase-2 XGBoost data-sufficiency evaluation | ✅ COMPLETE — INSUFFICIENT DATA; no training or integration |
+| **Step 11C** | Final technical closure + release audit | ✅ COMPLETE |
+| **Step 12A** | Monitoring + observability + maintenance | ✅ COMPLETE |
+| **Step 12B** | Data + LLM + model lifecycle management | ✅ COMPLETE |
+| **Step 12C** | Controlled product roadmap + long-term engineering plan | ✅ COMPLETE |
+| **Step 13** | (planned) | ❌ NOT STARTED |
 
 > **Architecture is frozen for Phase-1 implementation.** Step 8A is COMPLETE. Step 8B is PARTIAL (software complete, external connectivity partial). Step 8C, Step 8D-A, Step 8E, Step 9A, Step 9B, and Step 9C are COMPLETE. Step 8D-B is NOT STARTED; the retained data-gap note is planning only.
+
+## Step 12A Status — COMPLETE / MONITORING + OBSERVABILITY
+
+Operational visibility is implemented without changing the frozen architecture.
+`GET /health` now reports safe component states for the application, database,
+ingestion subsystem, LLM provider configuration, and aggregate external-source
+freshness, using `HEALTHY`, `DEGRADED`, `UNAVAILABLE`, and
+`NOT_CONFIGURED`. `GET /ingestion/status` remains the detailed source-level
+view with attempt/status, timestamps, counts, freshness, and bounded errors.
+
+Added `scripts/ops/check_runtime.py`, focused observability tests, and
+`docs/OPERATIONS.md`. Provider, ingestion, database, and pipeline logging
+remains credential-safe. Verification passed: **64 backend tests**, **54/54
+E2E**, **90/90 database integrity checks**, and backend/operations script
+compilation. Step 12B is now **COMPLETE**; Step 12C remains **NOT STARTED**.
+
+## Step 12B Status — COMPLETE / DATA + LLM + MODEL LIFECYCLE
+
+Lifecycle governance is documented in `docs/06-data/DATA_GOVERNANCE.md` and
+`docs/07-ai-ml/MODEL_LIFECYCLE.md`. The extraction prompt now has a stable
+version (`indra-event-extraction/v1`) recorded in provider metadata and the
+benchmark artifact. CI-safe regression tests validate manifest provenance and
+prompt/schema compatibility; the offline harness validated **25 examples**.
+Verification passed: **66 backend tests**, seed and historical-data validation,
+**54/54 E2E**, and **90/90** database integrity checks. Historical validation
+retains the explicit warning that the EIA price feed requires registration.
+
+No XGBoost model was trained, no deterministic baseline changed, and no LLM
+provider was selected or replaced. The live benchmark remains pending access,
+Step 8B remains **PARTIAL**, Step 8D-B remains **NOT STARTED**, and Step 13
+remains **NOT STARTED**.
+
+## Step 12C Status — COMPLETE / CONTROLLED PRODUCT ROADMAP
+
+`docs/ROADMAP.md` records the current capability map and separates future work
+into NOW, NEXT, LATER, and DO NOT BUILD. It reflects the implemented
+PostgreSQL/FastAPI/React system, partial external-source access, provisional LLM
+status, deterministic Phase-1 engines, and lightweight deployment/monitoring.
+XGBoost is explicitly conditional on a defensible historical target. No roadmap
+item is represented as implemented. Step 13 is **NOT STARTED**.
+
+## Step 11B Status — COMPLETE / INSUFFICIENT DATA
+
+The Phase-2 evaluation gate was completed without training. The actual
+repository contains 2 persisted events, 0 `risk_scores` rows, 0
+`commodity_prices` rows, and 3 RBI fallback FX observations. Seed data,
+derived risk/scenario outputs, ingestion fixtures, and synthetic extraction
+examples cannot be used as independent disruption labels. A temporal split,
+evaluation metrics, baseline comparison, and explainability analysis would
+therefore be invalid.
+
+The required target, source data, timestamp/leakage controls, and future
+experiment protocol are recorded in `docs/07-ai-ml/XGBOOST_DATA_GAP.md`. The
+decision is **INSUFFICIENT DATA FOR VALID EVALUATION**. No XGBoost model,
+artifact, dependency, API, or frontend behavior was added. Step 8D-B remains
+**NOT STARTED** and Step 11A remains **PARTIAL**.
+
+## Step 11C Status — COMPLETE / FINAL TECHNICAL CLOSURE
+
+The final technical closure audit verified the cross-layer contract:
+
+`SOURCE → INGESTION → EXTRACTION → RESOLUTION → PERSISTENCE → RISK → NETWORK → SCENARIO → PROCUREMENT → EVIDENCE → DASHBOARD`.
+
+Mandatory verification passed: **61 backend tests**, **54/54 E2E**, **90/90
+database integrity checks**, frontend production build (**34 modules**), and
+Docker Compose configuration. The local production-like deployment was also
+verified with healthy PostgreSQL, backend, and frontend containers; backend
+`/health` returned HTTP 200 with database connectivity and the frontend
+returned HTTP 200.
+
+The audit confirms PostgreSQL remains the source of truth; NetworkX is limited
+to graph operations; LLM use remains bounded/provisional; Phase-1 weighted
+deterministic risk, scenario, and procurement calculations remain authoritative;
+and XGBoost is not implemented. No enterprise production-readiness claim is
+made. Step 8B remains **PARTIAL**, Step 8D-B remains **NOT STARTED**, Step 11A
+remains **PARTIAL**, Step 11B is **COMPLETE — INSUFFICIENT DATA**, Step 12A
+and Step 12B are **COMPLETE**, and Step 12C is **NOT STARTED**.
 
 ## Step 10D Status — COMPLETE / FINAL SUBMISSION FREEZE
 
@@ -93,8 +176,9 @@ tracked large generated files, and committed secret patterns were not found.
 Release classification: **RELEASE READY for the hackathon MVP**, not an
 enterprise-production claim. Step 8B remains **PARTIAL** because live
 credentialed external sources are unavailable. Step 8D-B remains **NOT
-STARTED**: no XGBoost model is trained or integrated. Step 11 is **NOT
-STARTED**.
+STARTED**: no XGBoost model is trained or integrated. Step 11A is **PARTIAL**;
+Step 11B is **COMPLETE** with an insufficient-data decision; Step 11C,
+Step 12A, and Step 12B are **COMPLETE**; Step 12C is **NOT STARTED**.
 
 ## Step 10A Status — COMPLETE / DOCUMENTATION FROZEN
 
@@ -109,7 +193,9 @@ Current verification evidence is **61 backend tests passed**, **54/54 E2E**,
 **90/90 database integrity**, successful frontend production build, valid
 Docker Compose configuration, backend `/health` HTTP 200, and frontend HTTP
 200. Step 8B remains PARTIAL, Step 8D-B remains NOT STARTED, and Step 10B is
-COMPLETE. Step 10C is COMPLETE. Step 11 is NOT STARTED. No enterprise
+COMPLETE. Step 10C and Step 10D are COMPLETE. Step 11A is PARTIAL; Step 11B
+is COMPLETE with an insufficient-data decision; Step 11C, Step 12A, and Step
+12B are COMPLETE; Step 12C is NOT STARTED. No enterprise
 production-readiness claim is made.
 
 ## Step 10C Status — COMPLETE / PRESENTATION PACKAGE

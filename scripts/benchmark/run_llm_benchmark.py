@@ -27,6 +27,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "backend"))
 
 from app.intelligence import StructuredEvent
+from app.providers.openrouter import PROMPT_VERSION
 
 # Default candidate models (OpenRouter IDs) — limited set per Step 8A scope
 DEFAULT_MODELS = [
@@ -104,7 +105,7 @@ async def call_openrouter(api_key: str, model: str, text: str, timeout: float = 
     except json.JSONDecodeError:
         return {"error": "invalid_json", "raw": content[:200], "latency_ms": latency_ms}
 
-    return {"parsed": parsed, "latency_ms": latency_ms}
+    return {"parsed": parsed, "latency_ms": latency_ms, "prompt_version": PROMPT_VERSION}
 
 
 def score_extraction(parsed: dict, expected: dict) -> dict:
@@ -267,6 +268,7 @@ async def main():
                 {
                     "benchmark_date": time.strftime("%Y-%m-%d"),
                     "mode": "offline_harness_validation",
+                    "prompt_version": PROMPT_VERSION,
                     "models": [harness],
                     "winner": None,
                 },
@@ -309,7 +311,7 @@ async def main():
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
-        json.dump({"benchmark_date": time.strftime("%Y-%m-%d"), "models": all_results, "winner": winner["model"]}, f, indent=2, default=str)
+        json.dump({"benchmark_date": time.strftime("%Y-%m-%d"), "prompt_version": PROMPT_VERSION, "models": all_results, "winner": winner["model"]}, f, indent=2, default=str)
     print(f"\nResults saved to: {output_path}")
 
 

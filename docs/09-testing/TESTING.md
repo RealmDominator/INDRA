@@ -412,3 +412,33 @@ Known release limitations remain unchanged: Step 8B external-source access is
 partial; the runtime LLM's live benchmark needs a credential; Step 8D-B
 XGBoost is not started; and this is a hackathon-MVP release, not a claim of
 enterprise-scale production readiness.
+
+### Step 11B Phase-2 XGBoost data-sufficiency evaluation — COMPLETE
+
+The Step 11B audit made the decision **INSUFFICIENT DATA FOR VALID
+EVALUATION**. It found 2 persisted events, 0 risk-score outcomes, 0 commodity
+price observations, and only 3 RBI fallback FX observations. The seed data,
+scenario outputs, deterministic risk scores, ingestion fixtures, and synthetic
+LLM extraction benchmark cannot become disruption labels without circularity
+or fabrication. No training, preprocessing, XGBoost dependency, model-load,
+prediction, metric, calibration, or feature-importance test was added because
+there is no valid model to test.
+
+The required independent historical target, temporal feature panel, leakage
+controls, and future evaluation protocol are documented in
+`docs/07-ai-ml/XGBOOST_DATA_GAP.md`. The Phase-1 weighted deterministic risk
+engine remains authoritative, and Step 8D-B remains NOT STARTED.
+
+### Step 12B lifecycle governance verification — COMPLETE
+
+Lifecycle rules are recorded in `docs/06-data/DATA_GOVERNANCE.md` and
+`docs/07-ai-ml/MODEL_LIFECYCLE.md`. `backend/tests/test_lifecycle.py` checks
+the current manifest’s source/acquisition/semantic/transformation/checksum
+provenance and locks the versioned extraction prompt to the `StructuredEvent`
+schema. The tests use repository data and a dummy provider key only; normal CI
+does not require external credentials. The offline benchmark harness validates
+25 examples and records its prompt version, but does not make a live-model
+performance claim. Verification after the lifecycle change: **66 backend
+tests passed**; seed and historical-data validation passed (the unavailable EIA
+price feed remains an explicit `REQUIRES_REGISTRATION` warning); E2E remains
+**54/54** and database integrity remains **90/90**.

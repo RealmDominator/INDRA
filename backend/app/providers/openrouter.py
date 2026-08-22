@@ -32,6 +32,7 @@ from app.intelligence import ExtractionResult, ProviderMetadata, StructuredEvent
 logger = logging.getLogger("indra.providers.openrouter")
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+PROMPT_VERSION = "indra-event-extraction/v1"
 
 # System prompt instructs the model to act as a geopolitical event extractor
 # for India's energy supply chain. Temperature 0 for determinism.
@@ -48,6 +49,9 @@ with EXACTLY these fields:
   "corridor_names": ["HORMUZ" | "RED_SEA" | "SUEZ" | "MALACCA" | "RUSSIA" | "CAPE"],
   "route_names": [],
   "disruption_description": "one sentence describing the disruption",
+  "occurred_at": "optional ISO-8601 timestamp or null",
+  "source_url": "optional source URL or null",
+  "source_name": "optional source name or null",
   "confidence": <float 0.0 to 1.0>
 }
 
@@ -203,6 +207,7 @@ class OpenRouterProvider:
         return {
             "provider": "openrouter",
             "model": self.model,
+            "prompt_version": PROMPT_VERSION,
             "timeout_seconds": str(self.timeout_seconds),
             "max_retries": str(self.max_retries),
         }

@@ -124,11 +124,17 @@ def validate_ofac_entities():
         rows = list(reader)
     stats[name] = len(rows)
 
-    required = ["sdn_name", "source", "data_semantic"]
+    # Match the current OfacAdapter.write_processed() contract. Source
+    # provenance belongs to the OFAC adapter/acquisition manifest; this
+    # normalized extract retains the official SDN identifier and entity name.
+    required = ["entity_id", "entity_name", "data_semantic"]
     for i, row in enumerate(rows):
         for field in required:
             if field not in row or not row[field].strip():
                 error(name, "Row %d: missing field '%s'" % (i + 1, field))
+
+        if not row.get("entity_id", "").strip():
+            error(name, "Row %d: empty OFAC entity identifier" % (i + 1))
 
         # Data semantic check
         semantic = row.get("data_semantic", "")
