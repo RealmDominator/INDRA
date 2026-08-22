@@ -4,7 +4,7 @@
 >
 > **Date:** 21 August 2026
 >
-> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6A COMPLETE · Step 6B COMPLETE · Step 6C COMPLETE · Step 7A COMPLETE · Step 7B COMPLETE · Step 7C COMPLETE · Step 8 NOT STARTED
+> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6A COMPLETE · Step 6B COMPLETE · Step 6C COMPLETE · Step 7 COMPLETE · Step 8A COMPLETE · Step 8B PARTIAL · Step 8C COMPLETE · Step 8D-A COMPLETE · Step 8D-B NOT STARTED · Step 8E NOT STARTED
 
 ---
 
@@ -12,7 +12,7 @@
 
 **INDRA — India Disruption Response Architecture**
 
-**STEP 7 — COMPLETE · MVP — DEMO READY.** Steps 6A–6C, 7A, and 7B are complete. Step 7C final verification passed from a clean PostgreSQL reset/seed: Docker PostgreSQL healthy, 90 database integrity checks passed, FastAPI `/health` reported `ok`/`connected`, frontend Vite returned HTTP 200, CORS matched the configured origin, backend tests passed 6/6, the scripted E2E workflow passed 54/54, and the Vite production build succeeded. Step 8 is NOT STARTED.
+**STEP 8A COMPLETE — RUNTIME LLM PROVIDER INTEGRATED; LIVE BENCHMARK PENDING API KEY.** Provisional runtime model: `openai/gpt-4o-mini` via OpenRouter. Implemented: OpenRouter provider, provider factory, timeout/retry/JSON validation, `POST /events/extract`, 25-example evaluation set, offline benchmark harness, and provider/integration tests. Verified: 25 offline benchmark examples validated; 50 backend tests now pass including Step 8C and Step 8D-A coverage. Pending: live OpenRouter benchmark because `OPENROUTER_API_KEY` is unavailable/empty. Step 8B is PARTIAL; Step 8C and Step 8D-A are COMPLETE; Step 8D-B and Step 8E are NOT STARTED.
 
 INDRA is an India-specific energy supply-chain decision-support system that connects geopolitical events to supply-chain risk, disruption scenarios, procurement alternatives, and evidence-backed recommendations.
 
@@ -56,8 +56,14 @@ This is a **hackathon MVP**, not an enterprise production platform.
 | **Step 6B** | Event Intelligence and Risk | ✅ COMPLETE |
 | **Step 6C** | Frontend Dashboard | ✅ COMPLETE |
 | **Step 7** | Polish, Final E2E Verification, and Demo Freeze | ✅ COMPLETE |
+| **Step 8A** | Runtime LLM Benchmark + Provider Integration | ✅ COMPLETE |
+| **Step 8B** | Live External Data Ingestion + Freshness + Provenance | ⚠️ PARTIAL — Software implementation: COMPLETE. External source connectivity: PARTIAL (EIA/ACLED require credentials; GDELT/OFAC/RBI/RSS implemented) |
+| **Step 8C** | Full Pipeline Integration: Event → Dashboard | ✅ COMPLETE |
+| **Step 8D-A** | Procurement Optimization Upgrade | ✅ COMPLETE |
+| **Step 8D-B** | (planned) | ❌ NOT STARTED |
+| **Step 8E** | (planned) | ❌ NOT STARTED |
 
-> **Architecture is frozen for Phase-1 implementation.** Step 7 is COMPLETE. Step 8 has NOT STARTED.
+> **Architecture is frozen for Phase-1 implementation.** Step 8A is COMPLETE. Step 8B is PARTIAL (software complete, external connectivity partial). Step 8C is COMPLETE. Step 8D-A is COMPLETE; Step 8D-B and Step 8E are NOT STARTED.
 
 ---
 
@@ -109,6 +115,7 @@ INDRA/
 ├── frontend/                           ← React/Vite dashboard with EVENT→RISK→SCENARIO→PROCUREMENT→EVIDENCE flow, semantic states, evidence presentation (Step 6 COMPLETE)
 ├── data/
 │   ├── seed/                           ← 11 curated seed CSV files (167 rows total)
+│   ├── eval/                           ← extraction benchmark dataset + harness results (Step 8A)
 │   ├── raw/ofac/                       ← OFAC SDN list (raw download, .gitignored)
 │   ├── processed/ofac/                 ← Energy-relevant OFAC extract (.gitignored)
 │   ├── processed/rbi/                  ← RBI FX sample format (.gitignored)
@@ -117,6 +124,7 @@ INDRA/
 ├── prompts/                            ← empty
 ├── db/                                 ← schema.sql (reconciled with frozen schema), seed.sql (generated from CSVs)
 ├── scripts/data/                       ← validation, acquisition, and loader scripts
+├── scripts/benchmark/                  ← LLM benchmark harness (Step 8A)
 └── deployment/                         ← empty
 ```
 
@@ -322,11 +330,20 @@ All weights must be changeable without code changes.
 
 ## Application LLM Status
 
-The application LLM has **NOT been selected** yet.
+The application runtime model is **provisional for Step 8A**: `openai/gpt-4o-mini` via **OpenRouter**. The live benchmark remains pending because `OPENROUTER_API_KEY=<required locally>` was unavailable/empty.
 
-The **provider abstraction is implemented (Step 6B)**: `LLMProvider` protocol with `UnconfiguredLLMProvider` (safe default) and `CallableLLMProvider`. No external LLM provider is connected.
+| Property | Value |
+|---|---|
+| Provider | `OpenRouterProvider` (`backend/app/providers/openrouter.py`) |
+| Factory | `create_llm_provider()` — returns `UnconfiguredLLMProvider` when no API key |
+| Endpoint | `POST /events/extract` — text → LLM → validation → entity resolution → evidence |
+| Configuration | `LLM_PROVIDER`, `LLM_MODEL`, `OPENROUTER_API_KEY=<required locally>`, `LLM_TIMEOUT_SECONDS`, `LLM_MAX_RETRIES` |
+| Benchmark dataset | `data/eval/extraction_benchmark.json` (25 examples) |
+| Benchmark report | `docs/07-ai-ml/BENCHMARK_REPORT.md` |
+| Verified status | 24 backend tests passed; 25 offline benchmark examples validated |
+| Pending status | Live OpenRouter benchmark against the 25-example evaluation set |
 
-Development-agent models and application LLMs are **separate decisions**.
+Development-agent models and application LLMs remain **separate decisions**. See [AI_MODEL_STRATEGY.md](docs/07-ai-ml/AI_MODEL_STRATEGY.md) for the current runtime-model rationale and constraints.
 
 ### Approved Development-Model Pool
 
@@ -343,7 +360,7 @@ Development-agent models and application LLMs are **separate decisions**.
 
 These are task-specific role assignments, NOT a universal model ranking.
 
-The final runtime application LLM will be chosen later through an INDRA-specific benchmark. Do NOT select the application LLM now.
+Explanation generation (second LLM call) is not yet implemented — Step 8A covers extraction only.
 
 ---
 
@@ -380,7 +397,7 @@ The LLM is NOT responsible for scenario mathematics.
 
 | Approach | Description | Status |
 |---|---|---|
-| **Preferred (Phase 1)** | PuLP/scipy linear programming | NOT implemented |
+| **Preferred (Phase 1)** | SciPy `linprog(method="highs")` linear programming | **Implemented (Step 8D-A)** |
 | **Fallback** | Deterministic weighted ranking | **Implemented (Step 6B)** via `rank_procurement` |
 
 Potential constraints: supplier availability, route capacity, sanctions, crude compatibility, transit time, disrupted routes, required supply volume.
@@ -399,7 +416,7 @@ The MVP API is **implemented (Steps 6A–6B)** within the frozen ~12 endpoint-gr
 |---|---|---|
 | Health | `GET /health` | ✅ Implemented |
 | Domain reference | `GET /countries`, `/corridors`, `/crude-grades`, `/suppliers`, `/routes`, `/refineries`, `/reserves` | ✅ Implemented (Step 6A) |
-| Events | `POST /events`, `GET /events` | ✅ Implemented (Step 6B) |
+| Events | `POST /events`, `GET /events`, `POST /events/extract` | ✅ Implemented (6B + 8A) |
 | Risk | `GET /corridors/risk`, `POST /risk`, `GET /risk` | ✅ Implemented (Step 6B) |
 | Scenarios | `POST /scenarios` | ✅ Implemented (Step 6B) |
 | Recommendations | `POST /recommendations` | ✅ Implemented (Step 6B) |
@@ -521,7 +538,7 @@ U-2 Redis excluded · U-3 ACLED best-effort · U-4 RBI verify Day 1 · U-5 compa
 
 | ID | Item | Status |
 |---|---|---|
-| U-8b | Final application LLM selection | OPEN — deferred to INDRA-specific benchmark (Step 8 or post-MVP) |
+| U-8b | Final application runtime-model benchmark | **PENDING LIVE VALIDATION** — provisional runtime model is `openai/gpt-4o-mini` via OpenRouter; live benchmark awaits `OPENROUTER_API_KEY=<required locally>` |
 
 ---
 
@@ -572,13 +589,15 @@ If two research reports disagree and the review process did not resolve the disa
 - ✅ Entity resolution (Step 6A)
 - ✅ Risk engine — weighted deterministic (Step 6B)
 - ✅ Scenario engine — deterministic parametric (Step 6B)
-- ✅ Optimization / procurement engine — ranking fallback (Step 6B)
+- ✅ Optimization / procurement engine — SciPy LP with deterministic ranking fallback (Step 8D-A)
 - ✅ Dashboard with EVENT → RISK → SCENARIO → PROCUREMENT → EVIDENCE flow (Step 6C)
-- ❌ LLM integration and final application-LLM selection
+- ✅ Runtime LLM extraction provider — OpenRouter + gpt-4o-mini (Step 8A)
+- ❌ LLM explanation generation (second LLM call)
+- ❌ Live OpenRouter benchmark scores (requires `OPENROUTER_API_KEY` in `.env`)
 - ❌ Real-time data ingestion (GDELT, ACLED)
 - ❌ EIA commodity prices API integration
 - ❌ RBI FX bulk data integration
-- ❌ PuLP/scipy linear programming for procurement
+- ✅ SciPy linear programming for procurement (Step 8D-A); PuLP is not used
 - ❌ Maps and advanced visualizations
 - ❌ ML / XGBoost risk model
 - ❌ Deployment infrastructure
@@ -781,7 +800,7 @@ Step 6C implemented the React/Vite dashboard with the full EVENT → RISK → SC
 - ✅ No fake frontend demo data (frontend uses real backend APIs)
 - ✅ Risk engine is weighted deterministic (not ML/XGBoost)
 - ✅ Scenario engine is deterministic parametric
-- ✅ Procurement uses ranking fallback (not PuLP/scipy yet)
+- ✅ Procurement uses Phase-1 SciPy LP with deterministic ranking fallback
 - ✅ Entity resolution uses exact alias + RapidFuzz fuzzy (no vector DB)
 - ✅ PostgreSQL is source of truth
 - ✅ NetworkX for in-memory traversal only
@@ -802,4 +821,42 @@ Step 6C implemented the React/Vite dashboard with the full EVENT → RISK → SC
 
 > **STEP 7 COMPLETE — MVP DEMO READY.**
 >
-> Step 7 completed UI polish, demo-path verification, clean PostgreSQL reset/seed validation, FastAPI and Vite runtime checks, CORS verification, backend regression tests (6/6), the scripted E2E workflow (54/54), and the Vite production build. Step 8 is NOT STARTED.
+> Step 7 completed UI polish, demo-path verification, clean PostgreSQL reset/seed validation, FastAPI and Vite runtime checks, CORS verification, backend regression tests, the scripted E2E workflow (54/54), and the Vite production build.
+
+## Step 8A Summary — Runtime LLM Benchmark + Provider Integration (COMPLETE)
+
+- **Evaluation dataset:** 25 synthetic paraphrase examples in `data/eval/extraction_benchmark.json` (labeled evaluation data; all EventType + corridor coverage).
+- **Benchmark harness:** `scripts/benchmark/run_llm_benchmark.py` with documented composite scoring weights; `--offline` mode validates harness without API key.
+- **Provisional runtime model:** `openai/gpt-4o-mini` via OpenRouter. The live benchmark was not executed because `OPENROUTER_API_KEY=<required locally>` was unavailable/empty, so it is not yet the empirically proven benchmark winner.
+- **Provider:** `OpenRouterProvider` with timeout, retries, JSON validation, secret-free logging, graceful 503 when unconfigured.
+- **Pipeline:** `POST /events/extract` → LLM → `StructuredEvent` validation → entity resolution → evidence chain. LLM does not compute risk/scenario/procurement or database IDs.
+- **Verified status:** 25 offline benchmark examples validated; the Step 8A baseline suite had 35 passing tests. The current suite has 50 passing tests including Step 8C and Step 8D-A coverage.
+- **Pending status:** live OpenRouter benchmark against the 25-example evaluation set.
+- **Configuration:** `.env.example` updated with `OPENROUTER_API_KEY=<required locally>`, `LLM_MODEL`, timeout/retry settings.
+
+## Step 8B Status — PARTIAL
+
+The ingestion framework, adapter contract, validation, normalization, source-aware deduplication, PostgreSQL persistence, provenance, freshness states, bounded retries, scheduler abstraction, status API, and deterministic fixture tests are implemented. Fixture-backed tests pass for GDELT, RSS, EIA, RBI, OFAC, ACLED access handling, deduplication, persistence, and freshness. GDELT direct live HTTP smoke returned 200. OFAC HTTP is reachable but adapter completion was not verified in the current run; EIA and ACLED are credential-gated; RBI is a processed official-format CSV fallback; RSS has no configured feeds. Step 8B remains PARTIAL because the complete live-source completion criteria are not met. Step 8C and Step 8D-A are complete; Step 8D-B and Step 8E are NOT STARTED.
+
+## Step 8C Status — COMPLETE
+
+The full event pipeline is implemented and verified against the real seeded PostgreSQL database:
+
+```
+EVENT → EXTRACTION/FALLBACK → ENTITY RESOLUTION → DETERMINISTIC RISK
+→ NETWORKX IMPACT → SCENARIO → PROCUREMENT → EVIDENCE → DASHBOARD
+```
+
+- Added focused coverage in `backend/tests/test_pipeline.py` for persistence, provider fallback and structured extraction, exact/fuzzy/unresolved entity handling, risk recalculation, NetworkX impact, scenario arithmetic, procurement ranking, evidence stages, and missing-event/validation errors.
+- Fixed only verified integration defects: invalid fallback severity construction, route transit-field mapping, and an invalid supplier field filter.
+- Event submission now maps pipeline scenario/procurement results into the existing frontend panels and displays pipeline evidence stages.
+- Verification: `41 passed` in `python -m pytest backend/tests -q`; Step-7 E2E `54 passed, 0 failed`; `npm run build` succeeds with 34 modules.
+- No external LLM, EIA, ACLED, OFAC, or RSS access was fabricated or required for this verification. Step 8B remains PARTIAL. Step 8D-A uses SciPy locally; Step 8D-B and Step 8E remain NOT STARTED.
+
+## Step 8D-A Status — COMPLETE
+
+Phase-1 procurement now uses `scipy.optimize.linprog(method="highs")` for fully identified supplier–crude-grade–route candidates. The objective minimizes effective unit cost with risk-aversion and optional transit-time penalty. Constraints cover target supply gap, supplier and route capacity, sanctions, operational/disrupted routes, compatibility threshold, and optional maximum transit time.
+
+Results include selected suppliers, crude grades, routes, allocated volumes, objective value, solver status, exclusions, fallback metadata, `DERIVED` semantic classification, and optimization provenance/evidence. Incomplete candidate identity or unknown required numerical inputs are not fabricated; the existing deterministic ranking method remains the fallback. Infeasible LP results are explicit and remain `feasible: false`.
+
+Verification: `backend/tests/test_optimization.py` **9 passed**; full backend suite **50 passed**; Step-7 E2E **54/54 passed**; frontend production build passed. Step 8D-B is NOT STARTED.

@@ -4,9 +4,27 @@
 >
 > **Revision:** Post-review corrections. Added explicit entity resolution layer, provenance tracking, and risk scale convention.
 
+> **Step 8C status:** COMPLETE. The persisted event-to-dashboard pipeline is implemented and verified with deterministic provider fallback/test extraction, seeded PostgreSQL entity resolution, Phase-1 risk, NetworkX impact traversal, scenario/procurement computation, and evidence-stage output. Step 8B external-source access remains partial; Step 8D/8E are not started.
+
 ---
 
 ## Pipeline Overview
+
+## Step 8C Full Pipeline Integration
+
+`POST /events/ingest-and-process` is the primary manual event path. It persists the event and then runs the shared pipeline:
+
+1. Persist the normalized event and source evidence in PostgreSQL.
+2. Run the configured provider when available; otherwise record the explicit no-provider fallback stage without inventing extraction.
+3. Resolve human-readable country/corridor/route names using exact/direct matching and RapidFuzz fallback; unresolved names remain visible.
+4. Recalculate the Phase-1 weighted deterministic corridor risk.
+5. Traverse the PostgreSQL-derived NetworkX graph for affected routes and refineries.
+6. Run deterministic scenario arithmetic and deterministic procurement ranking.
+7. Return the complete evidence chain with stage-specific semantic labels.
+
+The frontend maps returned `scenario` and `procurement` objects into the existing dashboard panels and displays the returned evidence stages. Seed suppliers with unknown availability remain infeasible; the system does not fabricate capacity.
+
+The pipeline contract is provider-neutral. External LLM access is not required for the regression suite: `UnconfiguredLLMProvider` is a safe fallback and `CallableLLMProvider` supplies deterministic structured test output. The LLM never calculates risk, scenario values, or procurement results.
 
 INDRA uses a **hybrid AI architecture** where the LLM handles what it is good at (unstructured text processing) and deterministic systems handle what they are good at (numerical computation, optimization, scenario propagation).
 
@@ -90,14 +108,17 @@ After the LLM returns structured output, apply these deterministic validation ru
 
 Events that fail validation are logged but NOT inserted into the risk calculation.
 
-### LLM Call Configuration
+### LLM Call Configuration — Implemented (Step 8A)
 
-- **Temperature:** 0 (or as close to 0 as the provider allows) — structured extraction requires determinism
-- **Max tokens:** ~200 (structured JSON is compact)
-- **System prompt:** Define role as "geopolitical event extractor for India energy supply chain"
-- **Response format:** JSON mode where supported by the provider
-- **Timeout:** 15 seconds. Skip article on timeout.
-- **Retries:** Max 2 retries on malformed JSON. If still malformed after retries, skip and log.
+- **Provider:** OpenRouter (`https://openrouter.ai/api/v1/chat/completions`)
+- **Provisional runtime model:** `openai/gpt-4o-mini` via OpenRouter (configurable via `LLM_MODEL`; live benchmark pending API-key availability)
+- **Temperature:** 0 — structured extraction requires determinism
+- **Max tokens:** 300 (structured JSON is compact)
+- **System prompt:** Geopolitical event extractor for India energy supply chain (see `SYSTEM_PROMPT` in `app/providers/openrouter.py`)
+- **Response format:** `{"type": "json_object"}` — enforced JSON mode
+- **Timeout:** 15 seconds (configurable via `LLM_TIMEOUT_SECONDS`)
+- **Retries:** Max 2 retries on malformed JSON (configurable via `LLM_MAX_RETRIES`)
+- **Endpoint:** `POST /events/extract` — accepts `{"text": "..."}` and returns structured event + evidence chain
 
 ---
 
@@ -224,42 +245,34 @@ The LLM must **NOT invent** prices, transit times, stock levels, optimization re
 
 ---
 
-## Application LLM Abstraction Requirement
+## Application LLM Abstraction — Implemented (Step 8A)
 
-INDRA must NOT hard-code any specific LLM provider. The LLM integration must use a provider abstraction layer:
+INDRA uses a provider abstraction layer. The LLM integration lives in `backend/app/providers/`:
 
 ```python
-# Conceptual interface — not implemented yet
-class LLMProvider(ABC):
-    @abstractmethod
-    async def extract_event(self, article_text: str) -> StructuredEvent:
-        """Extract structured event from news article text.
-        Returns human-readable names, NOT database IDs."""
-        pass
+# backend/app/intelligence.py — Protocol
+class LLMProvider(Protocol):
+    async def extract_event(self, text: str) -> ExtractionResult: ...
 
-    @abstractmethod
-    async def generate_explanation(self, structured_results: dict) -> str:
-        """Generate natural language explanation from computed results."""
-        pass
-
-    @abstractmethod
-    def get_model_info(self) -> dict:
-        """Return model name, provider, version for evidence trail."""
-        pass
+# backend/app/providers/openrouter.py — Concrete implementation
+class OpenRouterProvider:
+    async def extract_event(self, text: str) -> ExtractionResult
+    def get_model_info(self) -> dict
 ```
 
-**Required configuration:**
-- `max_retries: int = 2` — retry on malformed JSON
-- `timeout_seconds: int = 15` — skip article on timeout
-- `fallback_provider: Optional[LLMProvider]` — cheaper/faster model if primary fails
+**Implemented providers:**
+- `OpenRouterProvider` — production provider via OpenRouter API (any model)
+- `UnconfiguredLLMProvider` — safe fallback when no API key is set
+- `CallableLLMProvider` — adapter for testing with mock functions
 
-Concrete implementations would exist for:
-- OpenAI (GPT-4o-mini, etc.)
-- Anthropic (Claude Haiku, etc.)
-- Google (Gemini Flash, etc.)
-- Others as evaluated
+**Configuration:**
+- `LLM_PROVIDER=openrouter` — provider selection
+- `LLM_MODEL=openai/gpt-4o-mini` — provisional OpenRouter model ID
+- `OPENROUTER_API_KEY=<required locally>` — required for live extraction, unavailable during the live benchmark execution
+- `LLM_TIMEOUT_SECONDS=15` — per-call timeout
+- `LLM_MAX_RETRIES=2` — retries on malformed JSON
 
-The actual application LLM will be selected through a controlled benchmark. See [AI_MODEL_STRATEGY.md](AI_MODEL_STRATEGY.md).
+See [AI_MODEL_STRATEGY.md](AI_MODEL_STRATEGY.md) for the model selection rationale.
 
 ---
 

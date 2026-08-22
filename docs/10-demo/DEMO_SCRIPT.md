@@ -4,6 +4,8 @@
 >
 > Demonstration structure for Phase 1 submission. Do not fabricate final numerical results — numbers come from the running system at demo time.
 
+> **Step 8C status:** COMPLETE. The event submission path now runs the persisted event pipeline and maps returned risk, scenario, procurement, and evidence stages into the existing dashboard. Step 8B remains PARTIAL; do not claim unavailable live source access.
+
 ---
 
 ## Demo Objective
@@ -45,6 +47,10 @@ in 3–5 minutes. Everything must be explainable and traceable to a data source.
 - Events come from real data sources (show source URL)
 - Classification is LLM-powered but validated
 - Risk update is immediate and explainable
+
+**Step 8C verified event-submission path:** Use the dashboard's **Ingest & Process** action with an event description of at least 20 characters. The returned result is persisted, passes through provider extraction when configured or explicit fallback when unavailable, resolves known and fuzzy entities, recalculates deterministic risk, traverses network impact, runs scenario/procurement computation, and returns evidence stages. The dashboard maps the returned scenario and procurement state into the existing panels.
+
+For a no-key demo, use the explicit fallback path and describe extraction as unavailable rather than pretending an external LLM response occurred. The deterministic engines and evidence output remain testable.
 
 ---
 
@@ -116,6 +122,8 @@ in 3–5 minutes. Everything must be explainable and traceable to a data source.
 **What to show:**
 - Evidence drawer showing: source article → extracted event → risk contribution → scenario assumptions → recommendation
 
+The event-processing result also exposes the machine-readable stages `source`, `extraction` (when a provider is configured), `entity_resolution`, `risk`, `scenario`, and `optimization` where their corresponding output exists. Do not present an omitted extraction stage as a live LLM result.
+
 **Closing statement:**
 
 > "INDRA integrates real geopolitical intelligence from GDELT, ACLED, and OFAC with India's actual refinery network, PPAC import data, and ISPRL strategic reserves. It uses LLM-based extraction for news intelligence, [optimization method] for procurement optimization, and a parametric scenario engine calibrated on historical disruption data. Every recommendation is traceable to a source event."
@@ -172,4 +180,4 @@ Use the polished console in a desktop/laptop viewport. Start by confirming the A
 
 ### Step 7C demo freeze
 
-The release candidate has been verified from a clean PostgreSQL reset/seed through FastAPI and Vite startup. The reproducible command sequence is: `docker compose up -d postgres`; set `DATABASE_URL`; `python scripts/db/reset_db.py --confirm`; `python scripts/db/check_db.py`; start FastAPI on port 8000; start Vite on port 3000; open the console; confirm API status; run the scenario; inspect risk, supply gap, procurement, and evidence. Step 8 is not started.
+The release candidate has been verified from a clean PostgreSQL reset/seed through FastAPI and Vite startup. The reproducible command sequence is: `docker compose up -d postgres`; set `DATABASE_URL`; `python scripts/db/reset_db.py --confirm`; `python scripts/db/check_db.py`; start FastAPI on port 8000; start Vite on port 3000; open the console; confirm API status; run the scenario; inspect risk, supply gap, procurement, and evidence. At that historical release-checkpoint, Step 8 had not started; Step 8C is now complete and Step 8B remains partial.

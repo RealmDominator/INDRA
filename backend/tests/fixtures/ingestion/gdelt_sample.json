@@ -1,0 +1,16 @@
+{
+  "articles": [
+    {
+      "title": "Iran conducts naval drills near Strait of Hormuz",
+      "url": "https://example.com/gdelt-001",
+      "seendate": "20250821120000",
+      "snippet": "Iranian navy exercises raised concerns for crude tanker traffic through Hormuz."
+    },
+    {
+      "title": "Houthi attack targets oil tanker in Red Sea",
+      "url": "https://example.com/gdelt-002",
+      "seendate": "20250820103000",
+      "snippet": "A commercial tanker was attacked in the Bab el-Mandeb corridor."
+    }
+  ]
+}

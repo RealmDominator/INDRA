@@ -1,0 +1,3 @@
+currency_pair,rate,source,source_timestamp,data_semantic
+USD_INR,83.25,RBI,2025-08-19T00:00:00Z,OBSERVED
+USD_INR,83.30,RBI,2025-08-20T00:00:00Z,OBSERVED

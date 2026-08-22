@@ -1,6 +1,6 @@
 # INDRA — Testing Strategy
 
-> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION.** Step 3 verified the local foundation manually; feature test cases below remain planned until their corresponding implementation steps.
+> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION.** Historical Step 3 foundation checks are retained below; implemented Step 8C checks are recorded in the verification sections.
 >
 > This document defines the testing contract for INDRA. Tests should be written alongside Step 3 implementation, not before.
 
@@ -236,3 +236,54 @@ With `DATABASE_URL` configured, run `python backend/tests/test_e2e_pipeline.py` 
 ### Step 7C release verification
 
 The final release check resets and reseeds PostgreSQL with `python scripts/db/reset_db.py --confirm`, runs `python scripts/db/check_db.py` (90 checks passed), starts FastAPI and Vite, verifies `/health` and frontend HTTP 200, confirms CORS for the configured frontend origin, reruns the 54-step E2E workflow, and confirms the Vite production build. No generated build artifacts or `.env` secrets are tracked.
+
+### Step 8B ingestion verification
+
+At Step 8B completion, the suite had 35 tests. Ingestion tests use deterministic fixtures and cover GDELT, RSS, EIA, RBI, OFAC, ACLED access handling, normalization, validation, source-aware deduplication, persistence, provenance, freshness, and retry-safe runner behavior. The optional `python scripts/data/run_ingestion.py` smoke run reported GDELT/OFAC connection failures in this environment, RBI processed-CSV success, and explicit EIA/ACLED/RSS unavailable states; it is not used as the default test path. Step 8B remains PARTIAL because external source access is incomplete.
+
+### Step 8C pipeline verification — COMPLETE
+
+Run from the repository root with the project virtual environment and PostgreSQL available:
+
+```powershell
+python -m pytest backend/tests -q
+$env:PYTHONIOENCODING = "utf-8"
+python backend/tests/test_e2e_pipeline.py
+Push-Location frontend
+npm run build
+Pop-Location
+```
+
+The dedicated `backend/tests/test_pipeline.py` covers event ingestion/persistence, provider fallback and structured extraction, exact/fuzzy/unresolved entity resolution, persisted-event risk recalculation, NetworkX corridor impact, scenario output, procurement output, evidence-chain stages, and missing-event/validation errors. Verified results: **41 backend tests passed**, Step-7 E2E **54/54 passed**, and the Vite production build completed successfully (34 modules). Tests use real seeded PostgreSQL and deterministic in-process provider output; no external API access or fabricated aliases/data is required.
+
+### Step 8D-A procurement optimization verification — COMPLETE
+
+`backend/tests/test_optimization.py` covers the Phase-1 `scipy.optimize.linprog(method="highs")` path and the existing deterministic ranking fallback:
+
+- feasible LP allocation and objective output;
+- supplier and route capacity bounds;
+- sanctions and disrupted/non-operational route exclusion;
+- crude compatibility threshold;
+- exact target-volume satisfaction;
+- explicit infeasible status and unmet volume;
+- fallback for incomplete candidate identity or unavailable solver;
+- deterministic repeatability.
+
+Verified results: **9 focused optimization tests passed**, **50 total backend tests passed**, Step-7 E2E **54/54 passed**, and the frontend production build passed. The optimizer does not invent unknown capacity, compatibility, cost, or transit values. Step 8D-B is NOT STARTED.
+
+### Step 8A provider verification
+
+Run `python -m pytest backend/tests -q` — **24 tests passed** (18 provider mocks + 6 core). Provider tests use mocked HTTP; no external LLM or API key required.
+
+| Test file | Coverage |
+|---|---|
+| `test_provider.py` | OpenRouter provider, retries, timeout, validation, `/events/extract`, factory |
+| `test_intelligence.py` | Deterministic risk/scenario/procurement; StructuredEvent ID rejection |
+| `test_domain.py` | Reference endpoints, entity resolution (exact/fuzzy/unresolved) |
+| `test_e2e_pipeline.py` | Full API workflow (54 checks; requires `DATABASE_URL`) |
+
+Benchmark harness (offline): `python scripts/benchmark/run_llm_benchmark.py --offline` — **25 examples validated**.
+
+Live benchmark: `python scripts/benchmark/run_llm_benchmark.py` — **pending API-key availability** because `OPENROUTER_API_KEY=<required locally>` was unavailable/empty.
+
+See `docs/07-ai-ml/BENCHMARK_REPORT.md` for the provisional runtime-model rationale and the current live-benchmark status.

@@ -1,0 +1,8 @@
+{
+  "response": {
+    "data": [
+      {"period": "2025-08-20", "value": "82.15", "_grade_name": "Brent"},
+      {"period": "2025-08-20", "value": "78.42", "_grade_name": "WTI"}
+    ]
+  }
+}

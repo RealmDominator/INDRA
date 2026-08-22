@@ -2,9 +2,11 @@
 
 > Source: PETRAS Analysis §14; INDRA Master Report §16
 >
-> The procurement engine is algorithmic — not LLM-generated. It uses deterministic ranking or linear programming.
+> The procurement engine is algorithmic — not LLM-generated. Phase 1 uses deterministic linear programming with deterministic ranking fallback.
 >
 > **Revision:** Post-review corrections. References crude_grades and refinery_supply_mix tables. Added provenance tracking.
+
+> **Step 8D-A status:** COMPLETE. The implementation uses `scipy.optimize.linprog(method="highs")` when supplier, crude-grade, route, capacity, cost, risk, compatibility, and route-status inputs are known. Incomplete legacy payloads, unavailable SciPy, and solver failures use the existing deterministic ranking fallback. Step 8D-B is NOT STARTED.
 
 ---
 
@@ -108,7 +110,21 @@ Compatibility data comes from the `refinery_supply_mix` table, which references 
 
 ## Implementation Approach
 
-### Primary: Deterministic Ranking (Simpler, Reliable)
+### Primary: SciPy Linear Programming (Phase 1)
+
+For each eligible supplier–crude-grade–route candidate, the optimizer chooses a continuous allocation `x_k` in MMT and minimizes effective landed cost:
+
+```
+effective_unit_cost[k]
+  = unit_cost[k] × (1 + risk_aversion × risk_score[k])
+    + transit_penalty_per_day × transit_days[k]
+
+Minimize: Σ effective_unit_cost[k] × x_k
+```
+
+The current implementation calls `scipy.optimize.linprog` with the HiGHS method. Allocations are deterministic for the same validated candidate set and parameters.
+
+### Fallback: Deterministic Ranking
 
 For each candidate supplier-route-grade combination:
 
@@ -128,46 +144,41 @@ Filter out:
 
 Sort by score, return top 3–5 options.
 
-### Secondary: LP Optimization (scipy/PuLP)
+The fallback preserves the existing stable ranking behavior for legacy candidates that do not identify a supplier, crude grade, and route, or when required numerical inputs are unknown. It never substitutes fabricated capacity, cost, compatibility, or transit values.
 
-If the deterministic ranking is implemented and stable, upgrade to a proper LP formulation:
+### LP Constraints and Eligibility
 
-```python
-# Conceptual — not implemented
-from scipy.optimize import linprog
+The implementation applies these rules before solving:
 
-def optimize_procurement(suppliers, routes, target_volume,
-                         disrupted_routes, sanctioned_suppliers,
-                         risk_tolerance=0.5):
-    n = len(suppliers) * len(routes)
-    
-    # Objective: minimize cost + risk penalty
-    c = []
-    for s in suppliers:
-        for r in routes:
-            if s.is_sanctioned or r.id in disrupted_routes:
-                c.append(1e9)  # effectively exclude
-            else:
-                cost = s.price_cif + risk_tolerance * s.risk * r.risk * s.price_cif
-                c.append(cost)
-    
-    # Constraint: total volume = target
-    A_eq = [[1] * n]
-    b_eq = [target_volume]
-    
-    # Bounds: capacity limits
-    bounds = [(0, s.capacity * r.availability) 
-              for s in suppliers for r in routes]
-    
-    result = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs')
-    return parse_result(result, suppliers, routes)
-```
+| Constraint | Implementation behavior |
+|---|---|
+| Required supply volume | Equality constraint `Σ x_k = target_volume`; target is normally the scenario supply gap. |
+| Supplier availability | Upper bound `x_k ≤ available_volume`; unknown capacity is excluded from LP. |
+| Route capacity | If known, upper bound is additionally limited by `route_capacity`. |
+| Route availability | `is_operational=False` or `route_operational=False` excludes the candidate. |
+| Route disruption | `is_route_disrupted=True` or `route_disrupted=True` excludes the candidate. |
+| Sanctions | `is_sanctioned=True` excludes the candidate. |
+| Crude compatibility | Missing compatibility is unknown and excluded; scores below the default 0.5 threshold are excluded. |
+| Transit time | If `max_transit_days` is supplied, missing or excessive transit time excludes the candidate. Otherwise known transit time contributes the configured penalty. |
+| Infeasibility | Solver status is `INFEASIBLE`; the result remains `feasible=false` and includes the deterministic fallback allocation and reason. |
 
-This is real optimization. Judges who are technically strong will recognize it.
+The LP requires `supplier_id`, `crude_grade_id`, and `route_id`. This prevents ambiguous allocations and ensures the result can identify all three domain entities.
 
 ---
 
 ## Output Format
+
+### Step 8D-A Result Contract
+
+`optimize_procurement` returns:
+
+- `selected`: supplier, crude grade, route, allocated volume, unit cost, risk, transit, and compatibility;
+- `objective_value`: effective objective value for an optimal LP result, otherwise `null` when fallback values are not safely computable;
+- `solver_status`: `OPTIMAL`, `INFEASIBLE`, or `FALLBACK`;
+- `constraints`: target, threshold, transit/risk parameters, exclusions, and route/sanctions rules;
+- `fallback_used` and `fallback_reason`;
+- `data_semantic: DERIVED`;
+- `provenance` and `evidence` optimization-stage records containing method and input constraint metadata.
 
 ### Ranked Recommendations
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Energy News</title>
+    <item>
+      <title>Oil prices rise on Hormuz shipping concerns</title>
+      <link>https://example.com/rss-001</link>
+      <pubDate>Thu, 21 Aug 2025 10:00:00 GMT</pubDate>
+      <description>Crude oil prices increased amid shipping disruption fears in the Strait of Hormuz.</description>
+    </item>
+  </channel>
+</rss>

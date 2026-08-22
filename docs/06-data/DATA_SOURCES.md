@@ -242,6 +242,19 @@ Source: ISPRL official website, MoPNG reports.
 
 ## Data Source Status Tracking
 
+### Step 8B runtime status (22 August 2026)
+
+| Source | Runtime status | Evidence |
+|---|---|---|
+| GDELT | CONNECTED | Adapter and deterministic fixtures pass; direct live HTTP smoke returned 200. |
+| OFAC | PARTIAL | Adapter and deterministic fixtures pass; direct HTTP is reachable, but adapter completion was not verified in the current run. |
+| RSS | NOT_CONFIGURED | Adapter and fixture pass; no `RSS_FEED_URLS` configured in the local environment. |
+| RBI | PARTIAL | Processed official-format CSV path loads and persists; no reliable automated bulk endpoint used. |
+| EIA | REQUIRES_ACCESS | Adapter is implemented; `EIA_API_KEY` is not configured. |
+| ACLED | REQUIRES_ACCESS | Adapter is implemented; `ACLED_API_KEY` and `ACLED_EMAIL` are not configured. |
+
+Incoming observations remain `OBSERVED`; ingestion does not assign risk scores or bypass entity resolution.
+
 The system must maintain a `data_sources` table that tracks:
 - Last successful fetch timestamp
 - Current status (ACTIVE, STALE, ERROR, UNAVAILABLE)
@@ -285,4 +298,3 @@ This is a **query-time calculation**, not a stored column. The previous design u
 | **ISPRL** | **ACQUIRED** (manual) | 3 SPR locations with capacities from ISPRL official website. Current fill levels not publicly disclosed. |
 | **Data.gov.in** | DEFERRED | No specific datasets required for Phase 1 seed data beyond PPAC. |
 | **World Bank** | DEFERRED | Historical commodity prices deferred; EIA is primary source. |
-

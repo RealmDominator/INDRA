@@ -1,0 +1,23 @@
+{
+  "benchmark_date": "2026-08-21",
+  "mode": "offline_harness_validation",
+  "models": [
+    {
+      "model": "harness-validation",
+      "total_examples": 25,
+      "schema_valid_count": 25,
+      "schema_valid_pct": 100.0,
+      "error_count": 0,
+      "error_pct": 0.0,
+      "avg_latency_ms": 0,
+      "event_type_accuracy": 100.0,
+      "severity_accuracy": 100.0,
+      "avg_country_jaccard": 1.0,
+      "avg_corridor_jaccard": 1.0,
+      "no_hallucination_pct": 100.0,
+      "composite_score": 1.0,
+      "note": "Offline harness validation only \u2014 not a live model score."
+    }
+  ],
+  "winner": null
+}

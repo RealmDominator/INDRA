@@ -1,0 +1,337 @@
+{
+  "_metadata": {
+    "name": "INDRA Event Extraction Benchmark v1",
+    "purpose": "Evaluate LLM structured event extraction for India energy supply-chain events",
+    "created": "2026-08-21",
+    "license": "Evaluation use only — synthetic/paraphrased texts based on publicly known geopolitical events",
+    "schema_version": "1.0",
+    "notes": "Each entry has input_text (simulated article snippet) and expected output fields. Texts are synthetic paraphrases, not verbatim copies."
+  },
+  "examples": [
+    {
+      "id": "eval-001",
+      "input_text": "Iran's Revolutionary Guard Corps announced military exercises near the Strait of Hormuz on Tuesday, deploying fast-attack boats and anti-ship missiles in the narrow waterway through which roughly 20% of global crude oil passes daily. Analysts warn the drills could disrupt tanker traffic serving India's western refineries.",
+      "expected": {
+        "event_type": "MILITARY",
+        "severity": 7,
+        "country_names": ["Iran"],
+        "corridor_names": ["Hormuz"],
+        "route_names": [],
+        "confidence": 0.9,
+        "disruption_description": "Iranian military exercises near Strait of Hormuz threatening tanker traffic"
+      }
+    },
+    {
+      "id": "eval-002",
+      "input_text": "Houthi rebels in Yemen fired anti-ship missiles at two commercial tankers transiting the Bab el-Mandeb strait early Wednesday. One vessel sustained minor damage. The attack forced several shipping companies to reroute via the Cape of Good Hope, adding 10-14 days to voyages from the Persian Gulf to India.",
+      "expected": {
+        "event_type": "ATTACK",
+        "severity": 8,
+        "country_names": ["Yemen"],
+        "corridor_names": ["Red Sea"],
+        "route_names": [],
+        "confidence": 0.95,
+        "disruption_description": "Houthi missile attack on tankers in Bab el-Mandeb forcing rerouting via Cape of Good Hope"
+      }
+    },
+    {
+      "id": "eval-003",
+      "input_text": "The United States Treasury Department imposed new sanctions on six Iranian petrochemical companies and three tanker vessels linked to Iranian crude exports. The action targets entities facilitating the sale of Iranian oil in violation of existing OFAC restrictions.",
+      "expected": {
+        "event_type": "SANCTION",
+        "severity": 6,
+        "country_names": ["Iran", "United States"],
+        "corridor_names": ["Hormuz"],
+        "route_names": [],
+        "confidence": 0.85,
+        "disruption_description": "US sanctions on Iranian petrochemical entities and tankers"
+      }
+    },
+    {
+      "id": "eval-004",
+      "input_text": "Russia's Primorsk port on the Baltic Sea suspended crude oil loading operations for 48 hours due to severe winter storms. The port is a key export terminal for Urals crude, which has become a major supply source for Indian refiners since Western sanctions redirected Russian crude flows eastward.",
+      "expected": {
+        "event_type": "PORT_CLOSURE",
+        "severity": 4,
+        "country_names": ["Russia"],
+        "corridor_names": ["Russia"],
+        "route_names": [],
+        "confidence": 0.9,
+        "disruption_description": "Primorsk port suspended crude loading due to winter storms"
+      }
+    },
+    {
+      "id": "eval-005",
+      "input_text": "Saudi Arabia and the UAE reached an agreement to extend OPEC+ production cuts by an additional three months, keeping 2.2 million barrels per day off the market. The decision is expected to tighten global supply and put upward pressure on Brent crude prices.",
+      "expected": {
+        "event_type": "DIPLOMATIC",
+        "severity": 5,
+        "country_names": ["Saudi Arabia", "United Arab Emirates"],
+        "corridor_names": [],
+        "route_names": [],
+        "confidence": 0.85,
+        "disruption_description": "OPEC+ extends production cuts, tightening global crude supply"
+      }
+    },
+    {
+      "id": "eval-006",
+      "input_text": "Three suspected pirate skiffs approached a VLCC carrying Iraqi Basrah Light crude through the Gulf of Aden on Saturday. The vessel's armed security team fired warning shots, dispersing the attackers. The incident occurred 40 nautical miles south of Yemen's coastline.",
+      "expected": {
+        "event_type": "ATTACK",
+        "severity": 5,
+        "country_names": ["Iraq", "Yemen"],
+        "corridor_names": ["Red Sea"],
+        "route_names": [],
+        "confidence": 0.8,
+        "disruption_description": "Piracy attempt on VLCC carrying Iraqi crude through Gulf of Aden"
+      }
+    },
+    {
+      "id": "eval-007",
+      "input_text": "Kuwait's Al Ahmadi refinery suffered a fire in its crude distillation unit on Monday, forcing a partial shutdown. The 460,000 bpd facility processes Kuwait Export Blend for domestic use and export. Indian refiners who source Kuwait Export Blend may face short-term supply tightness.",
+      "expected": {
+        "event_type": "OTHER",
+        "severity": 6,
+        "country_names": ["Kuwait"],
+        "corridor_names": ["Hormuz"],
+        "route_names": [],
+        "confidence": 0.85,
+        "disruption_description": "Fire at Kuwait Al Ahmadi refinery forces partial shutdown"
+      }
+    },
+    {
+      "id": "eval-008",
+      "input_text": "The European Union adopted its fourteenth sanctions package against Russia, adding a price cap enforcement mechanism and designating 20 additional tankers in Russia's shadow fleet. The measure targets vessels carrying Russian crude above the $60 per barrel price ceiling.",
+      "expected": {
+        "event_type": "SANCTION",
+        "severity": 6,
+        "country_names": ["Russia"],
+        "corridor_names": ["Russia"],
+        "route_names": [],
+        "confidence": 0.9,
+        "disruption_description": "EU adopts new sanctions package targeting Russian shadow fleet tankers"
+      }
+    },
+    {
+      "id": "eval-009",
+      "input_text": "Cyclone Biparjoy made landfall on India's Gujarat coast near the port city of Mundra, forcing the closure of Mundra and Sikka (Vadinar) ports for 72 hours. Reliance Industries' Jamnagar refinery, the world's largest, halted crude imports during the storm.",
+      "expected": {
+        "event_type": "PORT_CLOSURE",
+        "severity": 7,
+        "country_names": ["India"],
+        "corridor_names": [],
+        "route_names": [],
+        "confidence": 0.95,
+        "disruption_description": "Cyclone forces closure of Mundra and Sikka ports, halting crude imports at Jamnagar refinery"
+      }
+    },
+    {
+      "id": "eval-010",
+      "input_text": "Nigeria's state oil company NNPC announced force majeure on Bonny Light crude exports after pipeline vandalism in the Niger Delta region. Nigeria is a significant supplier of light sweet crude to Indian refiners, particularly BPCL Kochi and MRPL Mangalore.",
+      "expected": {
+        "event_type": "OTHER",
+        "severity": 6,
+        "country_names": ["Nigeria"],
+        "corridor_names": [],
+        "route_names": [],
+        "confidence": 0.9,
+        "disruption_description": "Force majeure on Nigerian Bonny Light exports due to pipeline vandalism"
+      }
+    },
+    {
+      "id": "eval-011",
+      "input_text": "Iran and Iraq signed a memorandum of understanding to jointly develop the shared Naft Shahr oil field on their common border. The agreement could unlock 500 million barrels of recoverable reserves and increase regional crude output by approximately 80,000 barrels per day.",
+      "expected": {
+        "event_type": "DIPLOMATIC",
+        "severity": 3,
+        "country_names": ["Iran", "Iraq"],
+        "corridor_names": ["Hormuz"],
+        "route_names": [],
+        "confidence": 0.75,
+        "disruption_description": "Iran-Iraq joint oil field development agreement"
+      }
+    },
+    {
+      "id": "eval-012",
+      "input_text": "The Suez Canal Authority raised transit fees by 15% effective January 1, citing increased operational costs. Approximately 12% of global trade passes through the canal, and the fee increase will raise shipping costs for crude oil tankers moving between the Mediterranean and the Red Sea.",
+      "expected": {
+        "event_type": "OTHER",
+        "severity": 3,
+        "country_names": ["Egypt"],
+        "corridor_names": ["Suez"],
+        "route_names": [],
+        "confidence": 0.9,
+        "disruption_description": "Suez Canal transit fee increase raising shipping costs"
+      }
+    },
+    {
+      "id": "eval-013",
+      "input_text": "Two Iranian naval vessels were spotted laying mines near the shipping lane at the eastern approach to the Strait of Hormuz, according to US Fifth Fleet intelligence reports. The Pentagon described the activity as 'provocative' and dispatched additional minesweeping assets to the area.",
+      "expected": {
+        "event_type": "MILITARY",
+        "severity": 9,
+        "country_names": ["Iran", "United States"],
+        "corridor_names": ["Hormuz"],
+        "route_names": [],
+        "confidence": 0.85,
+        "disruption_description": "Iranian mine-laying activity near Strait of Hormuz shipping lanes"
+      }
+    },
+    {
+      "id": "eval-014",
+      "input_text": "India's Petroleum Planning and Analysis Cell reported that the country's crude oil imports reached 4.66 million barrels per day in March, the highest monthly figure on record. Iraq remained India's top supplier at 1.06 million bpd, followed by Russia at 0.98 million bpd and Saudi Arabia at 0.74 million bpd.",
+      "expected": {
+        "event_type": "OTHER",
+        "severity": 2,
+        "country_names": ["India", "Iraq", "Russia", "Saudi Arabia"],
+        "corridor_names": [],
+        "route_names": [],
+        "confidence": 0.8,
+        "disruption_description": "India crude imports hit record high with Iraq, Russia, Saudi Arabia as top suppliers"
+      }
+    },
+    {
+      "id": "eval-015",
+      "input_text": "Militant groups attacked a crude oil pumping station on Iraq's Kirkuk-Ceyhan pipeline, halting the flow of approximately 450,000 barrels per day of Basrah crude destined for Mediterranean export terminals. Turkish authorities confirmed the pipeline section near the Iraqi border was shut for emergency repairs.",
+      "expected": {
+        "event_type": "ATTACK",
+        "severity": 8,
+        "country_names": ["Iraq"],
+        "corridor_names": [],
+        "route_names": [],
+        "confidence": 0.95,
+        "disruption_description": "Militant attack on Kirkuk-Ceyhan pipeline halts 450,000 bpd crude flow"
+      }
+    },
+    {
+      "id": "eval-016",
+      "input_text": "The Malaysian Maritime Enforcement Agency intercepted three unlicensed tankers conducting ship-to-ship transfers of sanctioned crude oil in the Strait of Malacca. The vessels were allegedly transferring Iranian and Venezuelan crude to disguise its origin before delivery to Asian buyers.",
+      "expected": {
+        "event_type": "SANCTION",
+        "severity": 5,
+        "country_names": ["Malaysia", "Iran"],
+        "corridor_names": ["Malacca"],
+        "route_names": [],
+        "confidence": 0.8,
+        "disruption_description": "Interception of sanctioned crude transfers in Strait of Malacca"
+      }
+    },
+    {
+      "id": "eval-017",
+      "input_text": "Angola's Sonangol postponed loading of three cargoes of Dalia crude due to unplanned maintenance at the FPSO facility offshore Luanda. The delay affects approximately 3 million barrels of medium sweet crude typically exported to Asian refiners.",
+      "expected": {
+        "event_type": "OTHER",
+        "severity": 4,
+        "country_names": ["Angola"],
+        "corridor_names": [],
+        "route_names": [],
+        "confidence": 0.85,
+        "disruption_description": "Angola crude loading delays due to FPSO maintenance"
+      }
+    },
+    {
+      "id": "eval-018",
+      "input_text": "Qatar announced it would increase LNG production capacity by 85% by 2030, adding 48 million tonnes per year from the North Field expansion. While primarily an LNG story, the expansion will produce significant volumes of condensate that compete with light crude oil imports in Indian refinery feedstock.",
+      "expected": {
+        "event_type": "DIPLOMATIC",
+        "severity": 2,
+        "country_names": ["Qatar"],
+        "corridor_names": ["Hormuz"],
+        "route_names": [],
+        "confidence": 0.7,
+        "disruption_description": "Qatar LNG capacity expansion with condensate production implications for Indian refiners"
+      }
+    },
+    {
+      "id": "eval-019",
+      "input_text": "A collision between two Aframax tankers in the Strait of Hormuz's westbound traffic separation zone caused a significant oil spill and temporary closure of the lane to one-way traffic. The incident created a 12-hour backlog of vessels waiting to transit the strait.",
+      "expected": {
+        "event_type": "OTHER",
+        "severity": 7,
+        "country_names": [],
+        "corridor_names": ["Hormuz"],
+        "route_names": [],
+        "confidence": 0.95,
+        "disruption_description": "Tanker collision and oil spill causing temporary partial closure of Strait of Hormuz"
+      }
+    },
+    {
+      "id": "eval-020",
+      "input_text": "India's Ministry of Petroleum and Natural Gas directed ISPRL to accelerate the filling of strategic petroleum reserves at Visakhapatnam, Mangalore, and Padur caverns, purchasing an additional 1.5 million tonnes of crude oil at current low prices. The directive follows heightened tensions in the Middle East.",
+      "expected": {
+        "event_type": "DIPLOMATIC",
+        "severity": 4,
+        "country_names": ["India"],
+        "corridor_names": [],
+        "route_names": [],
+        "confidence": 0.85,
+        "disruption_description": "India accelerates strategic petroleum reserve filling amid Middle East tensions"
+      }
+    },
+    {
+      "id": "eval-021",
+      "input_text": "Brazilian state oil company Petrobras halted crude exports from the Santos basin terminal after a labor strike by dock workers entered its second week. Brazil has emerged as a growing crude supplier to India, with Tupi and Buzios grades increasingly processed at Reliance and Nayara refineries.",
+      "expected": {
+        "event_type": "PORT_CLOSURE",
+        "severity": 5,
+        "country_names": ["Brazil"],
+        "corridor_names": [],
+        "route_names": [],
+        "confidence": 0.85,
+        "disruption_description": "Labor strike halts Brazilian crude exports affecting India-bound supply"
+      }
+    },
+    {
+      "id": "eval-022",
+      "input_text": "The UAE's ADNOC announced a new long-term crude supply agreement with Indian Oil Corporation for 1 million tonnes per year of Murban crude, strengthening bilateral energy ties. The contract includes favorable pricing and guaranteed delivery schedules via the Hormuz corridor.",
+      "expected": {
+        "event_type": "DIPLOMATIC",
+        "severity": 2,
+        "country_names": ["United Arab Emirates", "India"],
+        "corridor_names": ["Hormuz"],
+        "route_names": [],
+        "confidence": 0.85,
+        "disruption_description": "UAE-India long-term Murban crude supply agreement"
+      }
+    },
+    {
+      "id": "eval-023",
+      "input_text": "Russian crude oil exports via the ESPO pipeline to the Pacific port of Kozmino fell by 15% in November as severe cold weather disrupted pumping operations in eastern Siberia. Indian refiners who increased purchases of ESPO blend since 2022 may need to source alternatives.",
+      "expected": {
+        "event_type": "OTHER",
+        "severity": 5,
+        "country_names": ["Russia"],
+        "corridor_names": ["Russia"],
+        "route_names": [],
+        "confidence": 0.85,
+        "disruption_description": "Russian ESPO pipeline exports reduced by cold weather disrupting supplies to India"
+      }
+    },
+    {
+      "id": "eval-024",
+      "input_text": "Oman's Ministry of Energy announced the discovery of a new offshore oil field in the Sea of Oman with estimated reserves of 200 million barrels. First production is expected in 2028. Omani crude is a benchmark grade for Asian markets and Oman is a regular supplier to Indian refineries.",
+      "expected": {
+        "event_type": "OTHER",
+        "severity": 1,
+        "country_names": ["Oman"],
+        "corridor_names": [],
+        "route_names": [],
+        "confidence": 0.7,
+        "disruption_description": "Oman discovers new offshore oil field with long-term supply implications"
+      }
+    },
+    {
+      "id": "eval-025",
+      "input_text": "The US Navy intercepted an Iranian drone surveillance operation over the Strait of Hormuz, shooting down two armed drones that approached within 1,000 yards of the aircraft carrier USS Eisenhower. Tehran described the incident as a defensive patrol within Iranian airspace.",
+      "expected": {
+        "event_type": "MILITARY",
+        "severity": 8,
+        "country_names": ["Iran", "United States"],
+        "corridor_names": ["Hormuz"],
+        "route_names": [],
+        "confidence": 0.9,
+        "disruption_description": "US Navy shoots down Iranian drones over Strait of Hormuz"
+      }
+    }
+  ]
+}
