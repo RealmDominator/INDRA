@@ -242,7 +242,12 @@ Source: ISPRL official website, MoPNG reports.
 
 ## Data Source Status Tracking
 
-### Step 8B runtime status (22 August 2026)
+### Step 8B runtime status (22 August 2026) — PARTIAL
+
+Adapters and fixture-backed ingestion are implemented, but this table does
+not mean every source is live in the current environment. Credential-gated or
+unverified sources remain explicitly unavailable/partial; the basic MVP demo
+does not require them.
 
 | Source | Runtime status | Evidence |
 |---|---|---|

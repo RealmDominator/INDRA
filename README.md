@@ -23,7 +23,7 @@ INDRA is a hackathon MVP that demonstrates one complete, explainable decision lo
 
 1. **Geopolitical Event Monitor** — Ingest events from GDELT, ACLED, RSS feeds; extract structured data via LLM
 2. **India Risk Dashboard** — Explainable, weighted risk scores for Hormuz, Red Sea, Russia, and other corridors
-3. **India Supply Network Map** — Interactive Leaflet map showing refineries, ports, SPR locations, routes, and chokepoints
+3. **India Supply Network Panel** — Reference visualization showing refineries, ports, SPR locations, routes, and chokepoints
 4. **Scenario Simulator** — Deterministic disruption scenarios (Hormuz closure, Russia supply loss, Red Sea disruption, price spikes)
 5. **Procurement Alternative Ranker** — Algorithmic/LP-based ranking of crude alternatives with refinery compatibility constraints
 6. **SPR Decision Support Calculator** — Modelled drawdown requirements and bridge duration estimates
@@ -57,14 +57,14 @@ LLM Event Extraction → Entity Resolution (entity_aliases + RapidFuzz)
                                ↓
                     Recommendation Builder
                                ↓
-                    React Dashboard + Leaflet Map
+                    React Dashboard + network visualization
 ```
 
 ## Current Development Status
 
-**Step 8E — Deployment + Production Hardening (COMPLETE)**
+**Step 10D — Final INDRA Submission Audit + Freeze (COMPLETE)**
 
-The MVP release candidate is locally reproducible. Step 8E adds environment-driven production configuration, container definitions, healthchecks, CI, and deployment documentation. Step 8B remains partial because external source credentials/connectivity are separate. Step 8D-B is not modified by this deployment task.
+The hackathon MVP release candidate is locally reproducible and frozen against the actual implementation. The final Docker audit verified healthy PostgreSQL, FastAPI, and Nginx frontend containers; idempotent schema/seed initialization; backend `/health` with database connectivity; frontend HTTP; E2E; integrity; and production build. Step 8B remains PARTIAL because external source credentials/connectivity are separate. Step 8D-B remains NOT STARTED; no XGBoost model or training has been performed. Steps 9A–9C and Steps 10A–10D are COMPLETE.
 
 **Implemented in Step 3:**
 - Python 3.11+ is supported; development verification was performed on Python 3.13.9
@@ -80,13 +80,13 @@ The MVP release candidate is locally reproducible. Step 8E adds environment-driv
 - SQLAlchemy PostgreSQL connectivity and `/health` database status verified
 - Minimal Alembic structure prepared; `db/schema.sql` remains authoritative and no migration was generated
 
-**Implemented in Steps 6A–7C:**
+**Implemented in Steps 6A–9C:**
 - SQLAlchemy reference APIs and entity resolution against seeded PostgreSQL data
-- Provider-neutral event contract, deterministic weighted risk, scenario, procurement, and evidence outputs
+- Provider-neutral event contract, deterministic weighted risk, scenario, SciPy LP procurement with deterministic ranking fallback, and evidence outputs
 - React/Vite dashboard with semantic labels, loading/error/empty states, corridor visualization, scenario controls, and demo presentation polish
-- Final E2E verification: backend suite 6 passed, scripted workflow 54 passed, frontend Vite build successful
+- Verified release candidate: backend suite 61 passed, scripted workflow 54/54 passed, database integrity 90/90, frontend Vite build successful, Docker Compose configuration valid
 
-**Planned for later steps:** external data acquisition/ingestion, production LLM provider wiring, Phase 2 ML, deployment, and Step 8 work.
+**Still limited or deferred:** credentialed external-source completion, live OpenRouter benchmark, Phase-2 XGBoost, standalone prices/evidence endpoints, and enterprise production readiness.
 
 ## Repository Structure
 
@@ -228,6 +228,8 @@ See [deployment](docs/DEPLOYMENT.md), [backend setup](docs/04-backend/DEVELOPMEN
 | AI Model Strategy | [docs/07-ai-ml/AI_MODEL_STRATEGY.md](docs/07-ai-ml/AI_MODEL_STRATEGY.md) |
 | Scenario Engine | [docs/08-engines/SCENARIO_ENGINE.md](docs/08-engines/SCENARIO_ENGINE.md) |
 | Procurement Optimization | [docs/08-engines/OPTIMIZATION.md](docs/08-engines/OPTIMIZATION.md) |
+| Final Presentation Story | [docs/10-demo/PRESENTATION_STORY.md](docs/10-demo/PRESENTATION_STORY.md) |
+| Technical Evidence Package | [docs/10-demo/TECHNICAL_EVIDENCE.md](docs/10-demo/TECHNICAL_EVIDENCE.md) |
 | Testing Strategy | [docs/09-testing/TESTING.md](docs/09-testing/TESTING.md) |
 | Demo Script | [docs/10-demo/DEMO_SCRIPT.md](docs/10-demo/DEMO_SCRIPT.md) |
 | Development Rules | [docs/DEVELOPMENT_RULES.md](docs/DEVELOPMENT_RULES.md) |

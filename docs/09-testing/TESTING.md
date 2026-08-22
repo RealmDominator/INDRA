@@ -1,6 +1,6 @@
 # INDRA — Testing Strategy
 
-> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION.** Historical Step 3 foundation checks are retained below; implemented Step 8C checks are recorded in the verification sections.
+> **STATUS: FROZEN FOR PHASE 1 IMPLEMENTATION; STEP 10A DOCUMENTATION FREEZE.** Historical step checks are retained below; current release-candidate verification is recorded in the final sections.
 >
 > This document defines the testing contract for INDRA. Tests should be written alongside Step 3 implementation, not before.
 
@@ -16,9 +16,9 @@
 
 ## Step 3 Foundation Checks
 
-Implemented scope is deliberately limited to the FastAPI startup foundation, `GET /health`, PostgreSQL connectivity reporting, and the React/Vite startup shell. Run the commands in the backend and frontend development setup documents to verify them independently.
+The following section records the original Step 3 foundation scope for historical reference. The current implementation and verification are recorded below.
 
-`GET /health` must respond successfully whether PostgreSQL is connected or temporarily unavailable; its `database` field communicates the dependency state without leaking credentials. Full schema, business API, engine, and UI tests below are planned for later steps.
+`GET /health` responds whether PostgreSQL is connected or temporarily unavailable; its `database` field communicates dependency state without leaking credentials.
 
 ---
 
@@ -170,7 +170,7 @@ additional data are specified in `docs/07-ai-ml/XGBOOST_EVALUATION.md`.
 | Test | Description |
 |---|---|
 | `test_risk_dashboard_renders` | Risk overview page loads with corridor cards |
-| `test_map_renders_india` | Leaflet map shows India with markers |
+| `test_network_panel_renders` | India supply network reference panel renders seeded entities |
 | `test_scenario_form_submits` | Scenario form sends request to backend |
 | `test_recommendation_table_renders` | Procurement table shows ranked results |
 | `test_evidence_drawer_opens` | Clicking risk score opens evidence panel |
@@ -264,7 +264,7 @@ npm run build
 Pop-Location
 ```
 
-The dedicated `backend/tests/test_pipeline.py` covers event ingestion/persistence, provider fallback and structured extraction, exact/fuzzy/unresolved entity resolution, persisted-event risk recalculation, NetworkX corridor impact, scenario output, procurement output, evidence-chain stages, and missing-event/validation errors. Verified results: **41 backend tests passed**, Step-7 E2E **54/54 passed**, and the Vite production build completed successfully (34 modules). Tests use real seeded PostgreSQL and deterministic in-process provider output; no external API access or fabricated aliases/data is required.
+The dedicated `backend/tests/test_pipeline.py` covers event ingestion/persistence, provider fallback and structured extraction, exact/fuzzy/unresolved entity resolution, persisted-event risk recalculation, NetworkX corridor impact, scenario output, procurement output, evidence-chain stages, and missing-event/validation errors. The current full suite passed **61 tests**, Step-7 E2E passed **54/54**, and the Vite production build completed successfully with 34 modules. Tests use real seeded PostgreSQL and deterministic in-process provider output; no external API access or fabricated aliases/data is required.
 
 ### Step 8D-A procurement optimization verification — COMPLETE
 
@@ -279,11 +279,11 @@ The dedicated `backend/tests/test_pipeline.py` covers event ingestion/persistenc
 - fallback for incomplete candidate identity or unavailable solver;
 - deterministic repeatability.
 
-Verified results: **9 focused optimization tests passed**, **50 total backend tests passed**, Step-7 E2E **54/54 passed**, and the frontend production build passed. The optimizer does not invent unknown capacity, compatibility, cost, or transit values. Step 8D-B is NOT STARTED.
+Verified results: **9 focused optimization tests passed**, **61 total backend tests passed**, Step-7 E2E **54/54 passed**, and the frontend production build passed. The optimizer does not invent unknown capacity, compatibility, cost, or transit values. Step 8D-B is NOT STARTED.
 
 ### Step 8A provider verification
 
-Run `python -m pytest backend/tests -q` — **24 tests passed** (18 provider mocks + 6 core). Provider tests use mocked HTTP; no external LLM or API key required.
+The historical Step 8A baseline was 24 tests (18 provider mocks + 6 core); the current full suite is **61 passed**. Provider tests use mocked HTTP; no external LLM or API key is required for the test suite.
 
 | Test file | Coverage |
 |---|---|
@@ -370,3 +370,45 @@ load testing or an SLA; external credentials/connectivity remain the Step 8B
 limitation; live-provider timing, connection-pool saturation, and
 production-scale behavior were not claimed. No speculative indexes were
 added.
+
+### Step 10A final product/documentation freeze — COMPLETE
+
+The documentation freeze is synchronized to the actual repository state:
+
+- backend suite: **61 passed**;
+- scripted event-to-dashboard E2E: **54 passed, 0 failed**;
+- database integrity: **90/90 checks passed**;
+- frontend production build: **passed, 34 modules**;
+- Docker Compose production configuration: **valid**;
+- local backend `/health`: **HTTP 200**;
+- local frontend HTTP availability: **HTTP 200**.
+
+Step 8B remains PARTIAL because credentialed/live external-source completion
+is unavailable. The runtime LLM remains provisional and its live benchmark is
+pending `OPENROUTER_API_KEY`. Step 8D-B is NOT STARTED; no XGBoost model,
+training, or evaluation artifact exists. The Phase-1 weighted deterministic
+risk engine, NetworkX graph operations, SciPy procurement optimizer, and
+deterministic ranking fallback remain the documented production baseline for
+the MVP. Enterprise production readiness is not claimed.
+
+### Step 10D final submission audit and freeze — COMPLETE
+
+The final release-gate rerun verified the actual containerized topology after
+the last audit fixes: PostgreSQL, backend, and frontend were healthy;
+containerized `scripts/db/init_db.py` completed schema and seed loading; the
+connection string output was verified as password-redacted; `/health` returned
+HTTP 200 with `database: connected`; and the Nginx frontend returned HTTP 200.
+
+The standalone Windows E2E runner was made UTF-8-safe and then completed
+**54 passed, 0 failed**. The final data-honesty check also corrected manual
+dashboard submissions so their persisted event and evidence source semantic is
+`SIMULATED`, not `OBSERVED`. Focused pipeline coverage passed **6 tests** after
+that change; the preceding full backend run passed **61 tests**. The database
+integrity check passed **90/90**, and the production frontend build passed with
+**34 modules**. Compose configuration, local Markdown links, import/compile
+checks, generated-file checks, and committed-secret pattern checks passed.
+
+Known release limitations remain unchanged: Step 8B external-source access is
+partial; the runtime LLM's live benchmark needs a credential; Step 8D-B
+XGBoost is not started; and this is a hackathon-MVP release, not a claim of
+enterprise-scale production readiness.

@@ -1,8 +1,8 @@
 # INDRA — AI Model Strategy
 
-**Step 8D-B audit:** The Phase-2 XGBoost candidate remains unevaluated. The
-repository does not contain defensible independent historical disruption
-labels, so training and model selection are blocked. See
+**Step 8D-B status:** NOT STARTED. A data-gap planning note is retained, but
+the repository does not contain defensible independent historical disruption
+labels, so no training or model selection was performed. See
 [XGBOOST_EVALUATION.md](XGBOOST_EVALUATION.md). The weighted deterministic
 engine remains the production baseline.
 
@@ -10,7 +10,9 @@ engine remains the production baseline.
 > 1. **Development-agent models** — AI models used by the development team/agents to build and maintain the project
 > 2. **Application LLM** — The AI model embedded within INDRA itself for event extraction and explanation
 >
-> **Revision:** Step 8A complete. Provisional runtime model: `openai/gpt-4o-mini` via OpenRouter. Live benchmark pending API-key availability.
+> **Revision:** Step 10A documentation freeze. Provisional runtime model:
+> `openai/gpt-4o-mini` via OpenRouter. Live benchmark pending API-key
+> availability.
 
 ---
 
@@ -58,11 +60,15 @@ New models may only be added to this list after explicit evaluation demonstratin
 
 ### Current Status: PROVISIONAL RUNTIME MODEL — `openai/gpt-4o-mini` via OpenRouter
 
-> **Step 8A status (August 2026):** The application runtime model for event extraction is **GPT-4o-mini** accessed through the **OpenRouter** unified API. The live benchmark was not executed because `OPENROUTER_API_KEY=<required locally>` was unavailable/empty, so this is a provisional runtime choice pending live evaluation.
+> **Runtime status:** The application runtime model is provisionally configured
+> as **GPT-4o-mini** through OpenRouter. The live benchmark was not executed
+> because `OPENROUTER_API_KEY=<required locally>` was unavailable/empty. This
+> is not a benchmark winner claim.
 
 **Implemented:** OpenRouter provider, provider factory, timeout/retry/JSON validation, `POST /events/extract`, 25-example evaluation set, offline benchmark harness, provider/integration tests.
 
-**Verified:** 24 backend tests passed; 25 offline benchmark examples validated.
+**Verified:** the current backend suite has 61 passing tests; 25 offline
+benchmark examples validated.
 
 **Pending:** live OpenRouter benchmark against the 25-example evaluation set.
 
@@ -70,17 +76,17 @@ New models may only be added to this list after explicit evaluation demonstratin
 
 | Criterion | Weight | GPT-4o-mini Score | Notes |
 |---|---|---|---|
-| Structured output reliability | 30% | **Excellent** | Native JSON mode; near-100% schema validity |
-| Event extraction accuracy | 25% | **High** | Correct event type, country, corridor extraction |
-| Latency | 15% | **Fast** | ~500–1500ms per extraction |
-| Cost | 15% | **Very low** | ~$0.0002/extraction; hackathon budget < $1 |
-| Failure rate | 15% | **Very low** | Consistent availability; retries handle transients |
+| Structured output reliability | 30% | Candidate criterion | Requires live benchmark |
+| Event extraction accuracy | 25% | Candidate criterion | Requires live benchmark |
+| Latency | 15% | Candidate criterion | Requires live benchmark |
+| Cost | 15% | Candidate criterion | Requires live benchmark |
+| Failure rate | 15% | Candidate criterion | Requires live benchmark |
 
 #### Why GPT-4o-mini?
 
-1. **Best structured output reliability** — native `response_format: {"type": "json_object"}` ensures consistent valid JSON
-2. **Optimal cost/quality for hackathon** — 10–100x cheaper than frontier models, quality sufficient for extraction
-3. **Fastest viable candidate** — sub-second latency for simple extraction tasks
+1. **Structured-output capability** — supports the provider contract and validation path
+2. **Candidate cost/quality fit** — retained as a provisional implementation choice
+3. **Provider abstraction compatibility** — can be swapped without application changes
 4. **Transparent access via OpenRouter** — single API key, no provider lock-in
 
 #### Models considered but not selected

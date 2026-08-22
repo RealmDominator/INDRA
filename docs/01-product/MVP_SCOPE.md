@@ -14,19 +14,19 @@ These features are required for a credible Phase-1 demo. Without any one of thes
 
 | # | Feature | Reason |
 |---|---|---|
-| M1 | **Geopolitical Event Monitor** — Ingest events from GDELT/RSS, filter energy/geopolitical keywords, extract event structure with LLM, store source URL and timestamp | Core AI component; demonstrates real data ingestion |
+| M1 | **Geopolitical Event Monitor** — Ingestion adapters, deterministic fixtures/fallback, optional provider extraction, and persisted provenance | Implemented in software; live-source completion remains Step 8B PARTIAL |
 | M2 | **India Risk Dashboard** — Display risk scores (0–100 display scale) for corridors (Hormuz, Red Sea, Russia, Suez) as first-class entities. Each card shows: risk score, risk level, trend, top contributing events, last update, confidence/data quality | Core value proposition; explainable risk |
-| M3 | **India Supply Network Map** — Interactive Leaflet map showing major Indian ports, selected refineries, SPR locations, chokepoints, supply routes with risk color overlays | India-specific differentiation; visual impact |
+| M3 | **India Supply Network Panel** — Reference visualization of major Indian ports, refineries, SPR locations, and supply-network entities | India-specific differentiation; visual impact |
 | M4 | **Scenario Simulator** — Minimum 3–4 preset scenarios: Hormuz 50% disruption, Hormuz 100% closure, Russia supply reduction, Red Sea disruption. Calculate national gap, affected refineries, days-to-minimum-stock, SPR bridge requirement | Demo impact; proves the system is computational |
-| M5 | **Procurement Alternative Ranker** — For a selected refinery, display top alternatives with crude grade, origin, compatibility, route, transit time, estimated landed-cost premium, route risk, compliance flags, overall score | Real technical depth; strongest differentiator |
+| M5 | **Procurement Optimizer** — SciPy LP for fully identified candidates with deterministic ranking fallback and compatibility/sanctions/route constraints | Implemented and verified in Step 8D-A |
 | M6 | **SPR Decision Support** — Display estimated supply gap, reserve bridge requirement, estimated days covered, suggested drawdown amount under scenario | India-specific; high relevance |
 | M7 | **Evidence Chain / Explainability** — Every recommendation traceable via provenance model: source article → LLM extraction → entity resolution → risk contribution → scenario assumptions → supply impact → recommendation. Uses `evidence_records` and `evidence_links` tables | Credibility differentiator; what makes judges believe it's real |
-| M8 | **Crude Price Feed** — Integrate EIA API for real crude price data (Brent, WTI) | Easy, free, real data |
-| M9 | **OFAC Sanctions Integration** — Check suppliers/entities against OFAC sanctions list | Easy, free, real compliance data |
+| M8 | **Crude Price Feed** — EIA adapter and data model | Implemented in software; EIA credentials/data access remain unavailable |
+| M9 | **OFAC Sanctions Integration** — Adapter and sanctions-aware procurement filtering | Implemented in software; live adapter completion remains unverified |
 | M10 | **FastAPI Backend** — REST API serving all data endpoints | Foundation |
 | M11 | **React Frontend** — Component-based UI rendering dashboard, map, scenario, procurement, evidence | Foundation |
 | M12 | **PostgreSQL Database** — Single database with full entity schema | Foundation |
-| M13 | **India Seed Data** — Refineries (~20), ports (~10), routes (~15+), corridors (~6), suppliers (~8), SPR locations (3), crude grades (~10–15 via `crude_grades` table), refinery-grade compatibility (`refinery_supply_mix` table), entity aliases (~50–100) | India-specific data model |
+| M13 | **India Seed Data** — Refineries (20), ports (20), routes (15), corridors (6), suppliers (8), SPR locations (3), crude grades (14), refinery-grade compatibility (51 rows), and entity-resolution fallback | Seed data verified; `entity_aliases` is empty and unresolved names remain explicit |
 | M14 | **Risk Scoring Engine** — Weighted explainable formula (not LLM-generated scores) | Core; deterministic, reproducible |
 | M15 | **LLM Event Extraction** — Structured JSON extraction from news articles via abstracted LLM provider, followed by entity resolution layer (alias lookup + RapidFuzz) to map names → internal IDs | Core AI component |
 | M16 | **Data Semantic Labels** — Every data point in UI tagged as OBSERVED / DERIVED / HISTORICAL_CALIBRATED / ASSUMED / SIMULATED | Non-negotiable transparency contract |
@@ -45,7 +45,7 @@ These features significantly strengthen the demo but can be partially descoped w
 | S6 | **Price Charts** — Historical crude price charts using Recharts | Visual enrichment; real data |
 | S7 | **ACLED Conflict Events** — Structured conflict data for risk scoring | Authoritative; free for research |
 | S8 | **Docker Deployment** — Containerized deployment for environment consistency | Simplifies demo setup |
-| S9 | **LP Procurement Optimizer** — Full linear programming via scipy/PuLP instead of simple ranking | Upgrades M5 from ranking to real optimization |
+| S9 | **LP Procurement Optimizer** — Full linear programming via SciPy with deterministic ranking fallback | COMPLETE in Step 8D-A; retained here as a delivered upgrade |
 
 ## NICE TO HAVE
 

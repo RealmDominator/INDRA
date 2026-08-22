@@ -16,6 +16,7 @@ Exit codes:
 """
 import argparse
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -68,6 +69,11 @@ def _get_dsn() -> str:
     return f"postgresql://{user}:{password}@{host}:{port}/{db}"
 
 
+def redact_dsn(dsn: str) -> str:
+    """Mask any URL password before emitting a database connection target."""
+    return re.sub(r"(://[^:/?#]+:)[^@/]*@", r"\1***@", dsn)
+
+
 def _execute_sql_file(conn, filepath: Path, label: str):
     """Execute a SQL file against the given connection."""
     print("[%s] Reading %s ..." % (label, filepath.relative_to(PROJECT_ROOT)))
@@ -96,12 +102,7 @@ def main():
         sys.exit(1)
 
     dsn = _get_dsn()
-    # Mask password for logging
-    display_dsn = dsn
-    pg_pass = os.environ.get("POSTGRES_PASSWORD", "")
-    if pg_pass and pg_pass in display_dsn:
-        display_dsn = display_dsn.replace(pg_pass, "***")
-    print("Connecting to: %s" % display_dsn)
+    print("Connecting to: %s" % redact_dsn(dsn))
 
     try:
         conn = psycopg2.connect(dsn)

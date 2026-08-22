@@ -50,14 +50,24 @@ SUPPLY-CHAIN IMPACT (graph propagation via NetworkX)
         ↓
 SCENARIO SIMULATION (deterministic parametric engine)
         ↓
-PROCUREMENT OPTIMIZATION (ranking + LP via PuLP/scipy)
+PROCUREMENT OPTIMIZATION (SciPy LP + deterministic ranking fallback)
         ↓
 EVIDENCE TRAIL (source → event → risk → impact → recommendation)
         ↓
-DASHBOARD (React + Leaflet map)
+DASHBOARD (React + network visualization)
 ```
 
 The dashboard is only the interface around this chain. The chain IS the product.
+
+### Current implementation boundary
+
+The Phase-1 chain is implemented and verified against seeded PostgreSQL. Risk,
+scenario, and procurement calculations are deterministic; NetworkX performs
+graph traversal and impact analysis only. The LLM provider is bounded to
+structured extraction and is unavailable until credentials are configured, with
+an explicit deterministic fallback. External ingestion adapters are present
+but Step 8B remains PARTIAL because EIA/ACLED credentials and some live-source
+completion are unavailable. XGBoost is a NOT STARTED Phase-2 candidate.
 
 ## Value Proposition
 

@@ -4,7 +4,7 @@
 >
 > **Date:** 22 August 2026
 >
-> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6A COMPLETE · Step 6B COMPLETE · Step 6C COMPLETE · Step 7 COMPLETE · Step 8A COMPLETE · Step 8B PARTIAL · Step 8C COMPLETE · Step 8D-A COMPLETE · Step 8D-B NOT STARTED · Step 8E COMPLETE · Step 9A COMPLETE · Step 9B COMPLETE · Step 9C COMPLETE · Step 10 NOT STARTED
+> **Development State:** Step 0 COMPLETE · Step 1 COMPLETE · Step 2 COMPLETE · Step 3 COMPLETE · Step 4 COMPLETE · Step 5 COMPLETE · Step 6A COMPLETE · Step 6B COMPLETE · Step 6C COMPLETE · Step 7 COMPLETE · Step 8A COMPLETE · Step 8B PARTIAL · Step 8C COMPLETE · Step 8D-A COMPLETE · Step 8D-B NOT STARTED · Step 8E COMPLETE · Step 9A COMPLETE · Step 9B COMPLETE · Step 9C COMPLETE · Step 10A COMPLETE · Step 10B COMPLETE · Step 10C COMPLETE · Step 10D COMPLETE · Step 11 NOT STARTED
 
 ---
 
@@ -12,7 +12,7 @@
 
 **INDRA — India Disruption Response Architecture**
 
-**STEP 9C COMPLETE — FINAL SYSTEM AUDIT + RELEASE CANDIDATE FREEZE.** Step 8A runtime provider integration remains verified with offline benchmark coverage; live benchmarking still requires credentials. Step 8B remains PARTIAL because external source access is incomplete. Step 8D-B is NOT STARTED: its data-gap note is retained as planning documentation, with no model training or integration. Steps 8C, 8D-A, 8E, 9A, and 9B are COMPLETE. Step 10 is NOT STARTED.
+**STEP 10D COMPLETE — FINAL INDRA SUBMISSION AUDIT + FREEZE.** Step 8A runtime provider integration remains verified with offline benchmark coverage; live benchmarking still requires credentials. Step 8B remains PARTIAL because external source access is incomplete. Step 8D-B is NOT STARTED: its data-gap note is retained as planning documentation, with no model training or integration. Steps 8C, 8D-A, 8E, 9A–9C, and 10A–10D are COMPLETE.
 
 INDRA is an India-specific energy supply-chain decision-support system that connects geopolitical events to supply-chain risk, disruption scenarios, procurement alternatives, and evidence-backed recommendations.
 
@@ -65,9 +65,64 @@ This is a **hackathon MVP**, not an enterprise production platform.
 | **Step 9A** | Security + dependency + configuration audit | ✅ COMPLETE |
 | **Step 9B** | Performance + reliability + failure testing | ✅ COMPLETE |
 | **Step 9C** | Final system audit + release candidate freeze | ✅ COMPLETE |
-| **Step 10** | (planned) | ❌ NOT STARTED |
+| **Step 10A** | Final product + documentation freeze | ✅ COMPLETE |
+| **Step 10B** | Final demo scenario + judge walkthrough | ✅ COMPLETE |
+| **Step 10C** | Final presentation + technical evidence package | ✅ COMPLETE |
+| **Step 10D** | Final INDRA submission audit + freeze | ✅ COMPLETE |
+| **Step 11** | (planned) | ❌ NOT STARTED |
 
 > **Architecture is frozen for Phase-1 implementation.** Step 8A is COMPLETE. Step 8B is PARTIAL (software complete, external connectivity partial). Step 8C, Step 8D-A, Step 8E, Step 9A, Step 9B, and Step 9C are COMPLETE. Step 8D-B is NOT STARTED; the retained data-gap note is planning only.
+
+## Step 10D Status — COMPLETE / FINAL SUBMISSION FREEZE
+
+The final release gate passed against the actual repository and the rebuilt
+production-like Docker deployment. PostgreSQL, backend, and frontend containers
+were healthy; containerized schema/seed initialization completed idempotently;
+the backend `/health` endpoint returned HTTP 200 with `database: connected`;
+and the frontend returned HTTP 200. The initialization/check/reset scripts now
+redact URL passwords in diagnostic output.
+
+Final verification recorded: backend suite **61 passed** (pre-freeze full
+suite) plus affected pipeline tests **6 passed** after the final semantic fix;
+the standalone E2E script **54 passed, 0 failed**; database integrity **90/90**;
+and the production frontend build completed with **34 modules**. Docker Compose
+configuration and local startup were verified. The audited API specification
+now documents only the actual runtime endpoints; broken local Markdown links,
+tracked large generated files, and committed secret patterns were not found.
+
+Release classification: **RELEASE READY for the hackathon MVP**, not an
+enterprise-production claim. Step 8B remains **PARTIAL** because live
+credentialed external sources are unavailable. Step 8D-B remains **NOT
+STARTED**: no XGBoost model is trained or integrated. Step 11 is **NOT
+STARTED**.
+
+## Step 10A Status — COMPLETE / DOCUMENTATION FROZEN
+
+The requested product and documentation set is synchronized to the actual
+repository. The frozen MVP is a React/Vite frontend → FastAPI backend →
+PostgreSQL system with NetworkX graph operations, bounded/provisional LLM
+extraction, a Phase-1 weighted deterministic risk engine, deterministic
+scenario computation, and SciPy LP procurement with deterministic ranking
+fallback.
+
+Current verification evidence is **61 backend tests passed**, **54/54 E2E**,
+**90/90 database integrity**, successful frontend production build, valid
+Docker Compose configuration, backend `/health` HTTP 200, and frontend HTTP
+200. Step 8B remains PARTIAL, Step 8D-B remains NOT STARTED, and Step 10B is
+COMPLETE. Step 10C is COMPLETE. Step 11 is NOT STARTED. No enterprise
+production-readiness claim is made.
+
+## Step 10C Status — COMPLETE / PRESENTATION PACKAGE
+
+The final submission support package consists of
+`docs/10-demo/PRESENTATION_STORY.md` and
+`docs/10-demo/TECHNICAL_EVIDENCE.md`. It covers the problem, solution,
+architecture, data/LLM/entity-resolution boundaries, deterministic engines,
+evidence, dashboard, verification, limitations, and roadmap. Claims are
+explicitly classified as IMPLEMENTED, PARTIAL, DEFERRED, or FUTURE and remain
+consistent with the release-candidate evidence: 61 backend tests passed, E2E
+54/54, database integrity 90/90, frontend build passed, and Compose config
+validated.
 
 ## Step 9B Status — COMPLETE
 
@@ -91,8 +146,8 @@ intentional wall-clock-dependent feature; stable classifications and downstream
 outputs were verified. No external-provider latency was claimed.
 
 Step 8B remains PARTIAL because external source credentials/connectivity are
-outside this task. Step 8D-B is NOT STARTED; no ML work was performed. Step 10
-is NOT STARTED.
+outside this task. Step 8D-B is NOT STARTED; no ML work was performed. Steps
+10A–10C are COMPLETE.
 
 ## Step 9C Status — COMPLETE / RELEASE CANDIDATE FROZEN
 
@@ -114,8 +169,8 @@ deterministic engines remain authoritative.
 Release-candidate verification: backend **61 passed**, Step-7 E2E **54/54**,
 database integrity **90/90**, frontend production build passed, and Docker
 Compose configuration validated. Step 8B remains PARTIAL. Step 8D-B is NOT
-STARTED; the XGBoost data-gap note is planning documentation only. Step 10 is
-NOT STARTED.
+STARTED; the XGBoost data-gap note is planning documentation only. Steps
+10A–10C are COMPLETE.
 
 ## Step 8E Status — COMPLETE
 
@@ -477,7 +532,8 @@ LLM may explain the result but must NOT generate the numerical optimization resu
 
 ## API Status
 
-The MVP API is **implemented (Steps 6A–6B)** within the frozen ~12 endpoint-group boundary. See `docs/04-backend/API_SPEC.md` for the authoritative contract.
+The MVP API is implemented in the current root-path FastAPI monolith. See
+`docs/04-backend/API_SPEC.md` for the authoritative audited contract.
 
 ### Implemented Endpoints
 
@@ -485,10 +541,11 @@ The MVP API is **implemented (Steps 6A–6B)** within the frozen ~12 endpoint-gr
 |---|---|---|
 | Health | `GET /health` | ✅ Implemented |
 | Domain reference | `GET /countries`, `/corridors`, `/crude-grades`, `/suppliers`, `/routes`, `/refineries`, `/reserves` | ✅ Implemented (Step 6A) |
-| Events | `POST /events`, `GET /events`, `POST /events/extract` | ✅ Implemented (6B + 8A) |
-| Risk | `GET /corridors/risk`, `POST /risk`, `GET /risk` | ✅ Implemented (Step 6B) |
-| Scenarios | `POST /scenarios` | ✅ Implemented (Step 6B) |
-| Recommendations | `POST /recommendations` | ✅ Implemented (Step 6B) |
+| Events / pipeline | `POST /events`, `GET /events`, `POST /events/extract`, `POST /events/process`, `POST /events/ingest-and-process` | ✅ Implemented (Steps 6B–8C) |
+| Risk / impact | `GET /corridors/risk`, `GET /corridors/risk/live`, `GET /corridors/{corridor_id}/impact`, `POST /risk`, `GET /risk` | ✅ Implemented |
+| Scenarios | `POST /scenarios` | ✅ Implemented |
+| Recommendations | `POST /recommendations` | ✅ Implemented |
+| Ingestion | `GET /ingestion/status`, `POST /ingestion/run` | ✅ Implemented; external availability remains partial |
 
 ### Not Yet Implemented
 
@@ -585,7 +642,7 @@ Step 2 reconciled all Step-1 corrections into a frozen Phase-1 technical contrac
 | **Price/FX** | Separate `commodity_prices` + `fx_rates`; INR derived at query time |
 | **Provenance** | `evidence_records` + `evidence_links` + `data_sources` |
 | **Data semantics** | OBSERVED / DERIVED / HISTORICAL_CALIBRATED / ASSUMED / SIMULATED |
-| **API boundary** | ~12 endpoint groups / 14 routes (see API_SPEC.md) |
+| **API boundary** | Audited root-path FastAPI route set (see API_SPEC.md); no API expansion |
 | **UI boundary** | EVENT→RISK→SCENARIO→PROCUREMENT→EVIDENCE; Vanilla CSS |
 | **Redis** | Excluded from Phase 1 |
 

@@ -226,8 +226,9 @@ async def process_event_by_id(
             result.errors.append(f"Procurement failed: {exc}")
 
     # 9. Evidence chain
+    source_semantic = "SIMULATED" if event.is_simulated else "OBSERVED"
     evidence = build_evidence_chain(
-        source={"source_name": event.source_name, "source_url": event.source_url, "data_semantic": "OBSERVED"} if event.source_name else None,
+        source={"source_name": event.source_name, "source_url": event.source_url, "data_semantic": source_semantic} if event.source_name else None,
         extraction=result.extraction,
         entity_resolution={"data_semantic": "DERIVED", **(result.entity_resolution or {})},
         risk=result.risk,
@@ -266,6 +267,7 @@ async def ingest_and_process(
         event_type="OTHER",
         source_published_at=datetime.now(timezone.utc),
         data_semantic="OBSERVED" if source_name != "manual" else "SIMULATED",
+        is_simulated=source_name == "manual",
     )
 
     outcome, event_id = await persist_event(session, normalized)

@@ -17,7 +17,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "scripts" / "db"))
-from init_db import _load_env, _get_dsn
+from init_db import _load_env, _get_dsn, redact_dsn
 
 # ---- expected state --------------------------------------------------------
 
@@ -352,9 +352,7 @@ def main():
         sys.exit(1)
 
     dsn = _get_dsn()
-    pg_pass = os.environ.get("POSTGRES_PASSWORD", "")
-    display_dsn = dsn.replace(pg_pass, "***") if pg_pass and pg_pass in dsn else dsn
-    print("Connecting to: %s\n" % display_dsn)
+    print("Connecting to: %s\n" % redact_dsn(dsn))
 
     try:
         conn = psycopg2.connect(dsn)

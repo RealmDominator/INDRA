@@ -181,7 +181,7 @@ The LLM outputs human-readable names only — never internal database IDs. See [
                     ┌──────────────┐
                     │ React        │
                     │ Dashboard    │
-                    │ + Leaflet    │
+                    │ + network    │
                     │ + Recharts   │
                     └──────────────┘
 ```
@@ -309,7 +309,7 @@ The Scenario Engine **does not traverse the graph itself** — it receives the g
 ### 6. Backend (FastAPI)
 
 Single FastAPI application serving:
-- ~12 MVP REST API endpoint groups (see [API_SPEC.md](../04-backend/API_SPEC.md))
+- Audited MVP REST route set at the root path (see [API_SPEC.md](../04-backend/API_SPEC.md))
 - Background scheduler management (APScheduler)
 - AI pipeline orchestration
 - Engine invocation
@@ -318,7 +318,7 @@ Single FastAPI application serving:
 
 Single-page React application with:
 - Risk overview dashboard (corridor risk cards)
-- Interactive Leaflet map (India supply network)
+- India supply network reference panel
 - Scenario simulator + Procurement recommendations (combined view)
 - Evidence drawer (accessible from any page via "Why?" links)
 
@@ -499,7 +499,7 @@ The evidence panel in the UI must allow drill-down at every level.
 | Map tiles fail | No map visualization | Static map image / simplified view |
 | External news noisy | Too many irrelevant events | Fixed energy/geopolitics keyword filters |
 | Live feeds rate-limited | Stale data | Demo mode fixture with labeled timestamps |
-| RBI API unavailable | No FX rate | Hardcoded recent USD/INR rate labeled HISTORICAL |
+| RBI API unavailable | No FX rate | Retain explicit unavailable/partial state; any fallback is labeled HISTORICAL_CALIBRATED |
 
 ---
 
@@ -520,7 +520,7 @@ The evidence panel in the UI must allow drill-down at every level.
 | Optimization | scipy.optimize.linprog | MUST (ranking fallback) |
 | LLM | Abstracted provider (see AI_MODEL_STRATEGY) | MUST |
 | Frontend | React | MUST |
-| Map | React-Leaflet | MUST |
+| Network visualization | React/CSS reference panel | MUST |
 | Charts | Recharts | SHOULD |
 | Deployment | Docker Compose | SHOULD |
 

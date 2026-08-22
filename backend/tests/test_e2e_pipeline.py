@@ -4,6 +4,15 @@ Tests the full pipeline: EVENT → EXTRACTION → ENTITY RESOLUTION → RISK →
 import asyncio
 import json
 import sys
+
+# The script is intentionally runnable directly on Windows as part of the
+# release checklist.  Use UTF-8 when the host console supports reconfiguration
+# so human-readable check labels cannot abort the verification on CP1252.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 sys.path.insert(0, "backend")
 
 from httpx import ASGITransport, AsyncClient
